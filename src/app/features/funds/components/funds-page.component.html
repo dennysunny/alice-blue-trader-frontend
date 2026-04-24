@@ -1,0 +1,27 @@
+<div class="funds-page">
+  <div class="funds-page__header">
+    <h1 class="page-title">Funds</h1>
+  </div>
+
+  <div class="loading-overlay" *ngIf="loading"><app-spinner size="lg"></app-spinner></div>
+
+  <ng-container *ngIf="!loading">
+    <app-empty-state *ngIf="fundsGroups.length === 0" icon="₹" title="No funds data" subtitle="Margin information will appear here"></app-empty-state>
+
+    <div class="funds-grid" *ngIf="fundsGroups.length > 0">
+      <div class="card funds-card" *ngFor="let group of fundsGroups">
+        <div class="funds-card__segment">{{ group.segment }}</div>
+        <table class="data-table">
+          <tbody>
+            <tr *ngFor="let row of group.rows" [class.funds-row--highlight]="row.highlight">
+              <td class="funds-row__label">{{ row.label }}</td>
+              <td class="text-right font-mono funds-row__value">
+                {{ row.value | inr }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>

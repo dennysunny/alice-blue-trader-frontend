@@ -1,0 +1,55 @@
+<div class="login-page">
+  <button class="theme-toggle" (click)="toggleTheme()" title="Toggle theme">
+    {{ isDark ? '☀️' : '🌙' }}
+  </button>
+
+  <div class="login-card">
+    <div class="login-card__logo">
+      <div class="logo-mark">ANT</div>
+      <div class="logo-text">
+        <span class="logo-text__main">AliceBlue</span>
+        <span class="logo-text__sub">Trading Platform</span>
+      </div>
+    </div>
+
+    <h2 class="login-card__title">Sign in to trade</h2>
+    <p class="login-card__subtitle">
+      Enter your App Code from the
+      <a href="https://a3.aliceblueonline.com" target="_blank" rel="noopener">AliceBlue Developer Console</a>
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+      <div class="form-group">
+        <label class="form-label">App Code</label>
+        <div class="input-wrapper">
+          <input
+            class="form-control"
+            [type]="showApiKey ? 'text' : 'password'"
+            formControlName="appCode"
+            placeholder="Your AliceBlue App Code"
+            autocomplete="off"
+          />
+          <button
+            type="button"
+            class="input-toggle"
+            (click)="showApiKey = !showApiKey"
+          >{{ showApiKey ? '🙈' : '👁️' }}</button>
+        </div>
+      </div>
+
+      <button
+        class="login-btn"
+        type="submit"
+        [disabled]="form.invalid"
+      >
+        <span>Connect to AliceBlue →</span>
+      </button>
+    </form>
+
+    <div class="login-card__info">
+      <div class="info-item">🔒 Secure OAuth 2.0 authentication</div>
+      <div class="info-item">⚡ Real-time market data via WebSocket</div>
+      <div class="info-item">📊 NSE · BSE · NFO · MCX supported</div>
+    </div>
+  </div>
+</div>

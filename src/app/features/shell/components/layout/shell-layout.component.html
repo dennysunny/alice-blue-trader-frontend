@@ -1,0 +1,15 @@
+<div class="shell" [class.shell--collapsed]="!sidebarOpen">
+  <app-sidebar
+    [open]="sidebarOpen"
+    (toggleSidebar)="toggleSidebar()"
+  ></app-sidebar>
+
+  <div class="shell__main">
+    <app-navbar (menuToggle)="toggleSidebar()"></app-navbar>
+    <main class="shell__content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<app-toast-container></app-toast-container>

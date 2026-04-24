@@ -1,0 +1,97 @@
+<div class="dashboard">
+  <div class="dashboard__header">
+    <h1 class="dashboard__title">Dashboard</h1>
+    <span class="dashboard__date">{{ today | date: 'EEEE, d MMMM y' }}</span>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stat-grid" *ngIf="!loading; else loadingTpl">
+    <div
+      class="stat-card"
+      *ngFor="let card of statCards"
+      [class.stat-card--positive]="card.isPositive === true"
+      [class.stat-card--negative]="card.isPositive === false"
+    >
+      <div class="stat-card__label">{{ card.label }}</div>
+      <div class="stat-card__value">{{ card.value }}</div>
+      <div *ngIf="card.subValue" class="stat-card__sub">{{ card.subValue }}</div>
+    </div>
+  </div>
+
+  <div class="dashboard__grid" *ngIf="!loading">
+    <!-- Recent Orders -->
+    <div class="card">
+      <div class="dashboard__section-header">
+        <h3 class="section-title">Recent Orders</h3>
+        <a routerLink="/orders" class="dashboard__view-all">View all →</a>
+      </div>
+      <app-empty-state *ngIf="recentOrders.length === 0" icon="↕" title="No orders today"></app-empty-state>
+      <table class="data-table" *ngIf="recentOrders.length > 0">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Type</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of recentOrders">
+            <td>
+              <span class="symbol-name">{{ order.formattedInstrumentName }}</span>
+              <span class="exchange-tag">{{ order.exchange }}</span>
+            </td>
+            <td>
+              <span [class]="order.transactionType === 'BUY' ? 'text-up' : 'text-down'" class="font-bold">
+                {{ order.transactionType }}
+              </span>
+            </td>
+            <td class="font-mono">{{ order.quantity }}</td>
+            <td class="font-mono">{{ order.price | number: '1.2-2' }}</td>
+            <td>
+              <app-badge [variant]="getOrderStatusVariant(order.status)">{{ order.status }}</app-badge>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Top Holdings -->
+    <div class="card">
+      <div class="dashboard__section-header">
+        <h3 class="section-title">Top Holdings</h3>
+        <a routerLink="/portfolio" class="dashboard__view-all">View all →</a>
+      </div>
+      <app-empty-state *ngIf="holdings.length === 0" icon="◉" title="No holdings found"></app-empty-state>
+      <table class="data-table" *ngIf="holdings.length > 0">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Qty</th>
+            <th>Avg Price</th>
+            <th>P&L</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let h of holdings">
+            <td>
+              <span class="symbol-name">{{ h.formattedInstrumentName }}</span>
+            </td>
+            <td class="font-mono">{{ h.dpQuantity }}</td>
+            <td class="font-mono">₹{{ h.averageTradedPrice | number: '1.2-2' }}</td>
+            <td [class]="(h.pnl ?? 0) >= 0 ? 'text-up font-mono' : 'text-down font-mono'">
+              {{ (h.pnl ?? 0) >= 0 ? '+' : '' }}{{ h.pnl ?? 0 | number: '1.2-2' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-overlay">
+    <app-spinner size="lg"></app-spinner>
+  </div>
+</ng-template>

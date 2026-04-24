@@ -1,0 +1,65 @@
+.portfolio-page {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+}
+
+.page-title { font-size: 22px; font-weight: 700; color: var(--color-text); }
+
+.portfolio-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr 1fr; }
+}
+
+.summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+
+  &__label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+  }
+
+  &__value {
+    font-size: 20px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text);
+  }
+
+  &__sub {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  &--up   { border-left: 3px solid var(--color-up); }
+  &--down { border-left: 3px solid var(--color-down); }
+}
+
+.table-wrap { overflow-x: auto; }
+.text-right { text-align: right; }
+
+.symbol-name { font-weight: 600; font-size: 13px; }
+.isin-tag {
+  display: block;
+  font-size: 10px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  font-family: monospace;
+}
+
+.hide-sm { @media (max-width: 640px) { display: none; } }
+.hide-md { @media (max-width: 900px) { display: none; } }

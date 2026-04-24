@@ -1,0 +1,14 @@
+<aside class="sidebar" [class.sidebar--collapsed]="!open">
+  <nav class="sidebar__nav">
+    <a
+      *ngFor="let link of navLinks"
+      class="sidebar__link"
+      [routerLink]="link.route"
+      routerLinkActive="sidebar__link--active"
+      [title]="link.label"
+    >
+      <span class="sidebar__icon">{{ link.icon }}</span>
+      <span class="sidebar__label">{{ link.label }}</span>
+    </a>
+  </nav>
+</aside>

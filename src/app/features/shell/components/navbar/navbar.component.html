@@ -1,0 +1,33 @@
+<nav class="navbar">
+  <div class="navbar__left">
+    <button class="navbar__menu-btn" (click)="menuToggle.emit()" title="Toggle sidebar">
+      ☰
+    </button>
+    <div class="navbar__brand">
+      <span class="navbar__brand-mark">ANT</span>
+      <span class="navbar__brand-name">AliceBlue</span>
+    </div>
+  </div>
+
+  <div class="navbar__center">
+    <div class="market-status">
+      <span class="market-status__dot"></span>
+      <span class="market-status__label">NSE · Live</span>
+    </div>
+  </div>
+
+  <div class="navbar__right">
+    <button class="navbar__icon-btn" (click)="toggleTheme()" [title]="isDark ? 'Light mode' : 'Dark mode'">
+      {{ isDark ? '☀️' : '🌙' }}
+    </button>
+
+    <div class="navbar__user">
+      <div class="navbar__avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+      <span class="navbar__username">{{ userName }}</span>
+    </div>
+
+    <button class="navbar__icon-btn navbar__logout" (click)="logout()" title="Logout">
+      ⏻
+    </button>
+  </div>
+</nav>

@@ -1,0 +1,142 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: var(--color-nav-bg);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  z-index: 200;
+  backdrop-filter: blur(8px);
+
+  &__left, &__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__menu-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.15s;
+    line-height: 1;
+    &:hover { background: var(--color-surface-2); color: var(--color-text); }
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__brand-mark {
+    font-size: 12px;
+    font-weight: 800;
+    background: var(--color-primary);
+    color: #fff;
+    padding: 3px 7px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+  }
+
+  &__brand-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+
+    @media (max-width: 576px) { display: none; }
+  }
+
+  &__icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: var(--color-text-secondary);
+    transition: all 0.15s;
+    &:hover { background: var(--color-surface-2); color: var(--color-text); }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    @media (max-width: 576px) { gap: 0; }
+  }
+
+  &__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  &__username {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    @media (max-width: 768px) { display: none; }
+  }
+
+  &__logout {
+    color: var(--color-down) !important;
+    font-size: 18px !important;
+    &:hover { background: rgba(var(--color-down-rgb), 0.1) !important; }
+  }
+}
+
+.market-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  padding: 4px 12px;
+  border-radius: 20px;
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-up);
+    box-shadow: 0 0 6px var(--color-up);
+    animation: pulse 2s infinite;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.3px;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

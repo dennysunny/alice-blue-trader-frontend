@@ -1,0 +1,13 @@
+<div class="toast-container">
+  <div
+    *ngFor="let toast of toasts"
+    class="toast toast--{{ toast.type }}"
+    (click)="dismiss(toast.id)"
+  >
+    <span class="toast__icon">{{ iconFor(toast.type) }}</span>
+    <div class="toast__content">
+      <div *ngIf="toast.title" class="toast__title">{{ toast.title }}</div>
+      <div class="toast__message">{{ toast.message }}</div>
+    </div>
+  </div>
+</div>
