@@ -1,15 +1,13 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
-import * as CryptoJS from 'crypto-js';
 
-import { environment } from '../../../environments/environment.local';
 import { API_CONFIG, API_ENDPOINTS } from '../configs/api.config';
 import { ApiStatus } from '../enums/api.enums';
 import { RouteSegment, StorageKey } from '../enums/app.enums';
-import { ApiResponse, UserSessionApiResponse } from '../models/api-response.models';
+import { UserSessionApiResponse } from '../models/api-response.models';
 import { AuthState, UserSession } from '../models/auth.models';
 import { StorageService } from './storage.service';
 
