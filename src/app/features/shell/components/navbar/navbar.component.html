@@ -22,12 +22,11 @@
     </button>
 
     <div class="navbar__user">
-      <div class="navbar__avatar">{{ userName.charAt(0).toUpperCase() }}</div>
-      <span class="navbar__username">{{ userName }}</span>
+      <button class="navbar__avatar" (click)="goToProfile()" >{{ userName.slice(0,3) }}</button>
     </div>
 
-    <button class="navbar__icon-btn navbar__logout" (click)="logout()" title="Logout">
-      ⏻
+    <button class="navbar__logout_btn navbar__logout" (click)="logout()" title="Logout">
+      ➜]
     </button>
   </div>
 </nav>

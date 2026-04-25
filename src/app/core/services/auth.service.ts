@@ -4,12 +4,13 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
 
-import { API_CONFIG, API_ENDPOINTS } from '../configs/api.config';
+import { API_CONFIG, API_ENDPOINTS, API_METHODS } from '../configs/api.config';
 import { ApiStatus } from '../enums/api.enums';
 import { RouteSegment, StorageKey } from '../enums/app.enums';
 import { UserSessionApiResponse } from '../models/api-response.models';
 import { AuthState, UserSession } from '../models/auth.models';
 import { StorageService } from './storage.service';
+import { ApiService } from './api.service';
 
 const INITIAL_AUTH_STATE: AuthState = {
   isAuthenticated: false,
@@ -27,7 +28,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private apiService: ApiService
   ) {
     this.rehydrateSession();
   }
@@ -56,7 +58,7 @@ export class AuthService {
     return this.http.post<UserSessionApiResponse>(url, { userId, authCode }).pipe(
       tap((res) => {
         if (res.stat === ApiStatus.OK) {
-          this.setAuthSuccess({userId: res.clientId}, res.clientId);
+          this.setAuthSuccess({ userId: res.clientId }, res.clientId);
           this.storage.set(StorageKey.AUTH_TOKEN, res.userSession);
           this.storage.set(StorageKey.USER_ID, res.clientId);
         }
@@ -104,5 +106,33 @@ export class AuthService {
 
   private setError(error: string): void {
     this.authState.next({ ...this.authState.value, loading: false, error });
+  }
+
+  getUserInfo(): void {
+    this.apiService.post(API_CONFIG.PROXY_URL, {
+      method: API_METHODS.GET,
+      endpoint: API_ENDPOINTS.PROFILE.GET_PROFILE,
+      session: this.sessionId
+    }).subscribe({
+      next: (response: any) => {
+        const { clientId, clientName, accountStatus, exchanges, products, } = response.result[0];
+        const user = {
+          userId: clientId,
+          sessionId: this.sessionId!,
+          userName: clientName,
+          accountStatus,
+          enabledExchanges: exchanges,
+          enabledProducts: products
+        }
+        console.log('user', user)
+        // this.authState.next({
+        //   ...this.authState.value,
+        //   user: user as UserSession
+        // })
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
   }
 }

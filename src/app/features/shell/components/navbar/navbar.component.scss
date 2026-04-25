@@ -13,7 +13,8 @@
   z-index: 200;
   backdrop-filter: blur(8px);
 
-  &__left, &__right {
+  &__left,
+  &__right {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -36,7 +37,11 @@
     border-radius: 6px;
     transition: all 0.15s;
     line-height: 1;
-    &:hover { background: var(--color-surface-2); color: var(--color-text); }
+
+    &:hover {
+      background: var(--color-surface-2);
+      color: var(--color-text);
+    }
   }
 
   &__brand {
@@ -60,53 +65,84 @@
     font-weight: 700;
     color: var(--color-text);
 
-    @media (max-width: 576px) { display: none; }
+    @media (max-width: 576px) {
+      display: none;
+    }
   }
 
   &__icon-btn {
-    background: none;
     border: none;
     cursor: pointer;
-    font-size: 15px;
-    padding: 6px 8px;
-    border-radius: 6px;
+    font-size: 16px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     color: var(--color-text-secondary);
     transition: all 0.15s;
-    &:hover { background: var(--color-surface-2); color: var(--color-text); }
+    background: var(--color-surface-2);
+    color: var(--color-text);
+
+    &:hover {
+      background: var(--color-surface-3);
+      color: var(--color-text);
+    }
   }
 
   &__user {
     display: flex;
     align-items: center;
     gap: 8px;
-    @media (max-width: 576px) { gap: 0; }
+
+    @media (max-width: 576px) {
+      gap: 0;
+    }
   }
 
   &__avatar {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
+    background: var(--color-primary-dim);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     flex-shrink: 0;
+    border: none;
+    cursor: pointer;
   }
 
   &__username {
+
     font-size: 13px;
     font-weight: 600;
     color: var(--color-text);
-    @media (max-width: 768px) { display: none; }
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   &__logout {
     color: var(--color-down) !important;
-    font-size: 18px !important;
-    &:hover { background: rgba(var(--color-down-rgb), 0.1) !important; }
+    font-weight: 600;
+    font-size: 13px;
+    background: var(--color-dim) !important;
+  }
+
+  &__logout_btn {
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+
+    &:hover {
+      background: rgba(var(--color-down-rgb), 0.2) !important;
+    }
   }
 }
 
@@ -137,6 +173,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }

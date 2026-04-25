@@ -14,6 +14,7 @@ export interface UserSession {
   accountType?: string;
   enabledExchanges?: string[];
   enabledProducts?: string[];
+  accountStatus?: string
 }
 
 export interface AuthState {

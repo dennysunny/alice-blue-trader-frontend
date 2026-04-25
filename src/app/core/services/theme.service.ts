@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Theme } from '../enums/app.enums';
-import { StorageKey } from '../enums/app.enums';
+
+import { StorageKey, Theme } from '../enums/app.enums';
 import { StorageService } from './storage.service';
 
 @Injectable({ providedIn: 'root' })
@@ -9,7 +9,9 @@ export class ThemeService {
   private readonly themeSubject: BehaviorSubject<Theme>;
   readonly theme$;
 
-  constructor(private storage: StorageService) {
+  constructor(
+    private storage: StorageService,
+  ) {
     const initialTheme = this.getInitialTheme();
     this.themeSubject = new BehaviorSubject<Theme>(initialTheme);
     this.theme$ = this.themeSubject.asObservable();

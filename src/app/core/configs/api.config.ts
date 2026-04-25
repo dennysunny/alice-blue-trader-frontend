@@ -46,6 +46,9 @@ export const API_ENDPOINTS = {
     ADD_SCRIP: '/marketWatch/addScripToMW',
     DELETE_SCRIP: '/marketWatch/deleteMWScrip',
   },
+  PROFILE: {
+    GET_PROFILE: '/profile'
+  }
 } as const;
 
 export const APP_CONSTANTS = {
