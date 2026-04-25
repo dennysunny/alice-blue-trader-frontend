@@ -25,12 +25,13 @@ export enum ProductType {
   LONGTERM = 'LONGTERM',
   COVER_ORDER = 'CO',
   BRACKET_ORDER = 'BO',
+  MTF = 'MTF',
 }
 
 export enum HoldingsProductType {
   LONGTERM = 'cnc',
   MTF = 'mtf',
-  INTRADAY = 'mis'
+  INTRADAY = 'mis',
 }
 
 export enum OrderComplexity {

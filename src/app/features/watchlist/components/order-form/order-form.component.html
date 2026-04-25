@@ -33,16 +33,16 @@
         <div class="form-group">
           <label class="form-label">Product</label>
           <select class="form-control" formControlName="product">
-            @for (p of productOptions; track $index) {
-              <option [value]="p.value">{{ p.label }}</option>
+            @for (proudct of productOptions; track $index) {
+              <option [value]="proudct.value">{{ proudct.label }}</option>
             }
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Order Type</label>
           <select class="form-control" formControlName="orderType">
-            @for (o of orderTypeOptions; track $index) {
-              <option [value]="o.value">{{ o.label }}</option>
+            @for (orderType of orderTypeOptions; track $index) {
+              <option [value]="orderType.value">{{ orderType.label }}</option>
             }
           </select>
         </div>

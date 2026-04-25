@@ -3,18 +3,18 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { TransactionType } from '../../../core/enums/api.enums';
-import { SearchResult } from '../../../core/models/instrument.models';
-import { WatchlistItem } from '../../../core/models/watchlist.models';
-import { MarketService } from '../../../core/services/market.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { WatchlistService } from '../../../core/services/watchlist.service';
-import { WebSocketService } from '../../../core/services/websocket.service';
-import { SearchBarComponent } from '../../../shared/components/search-bar/search-bar.component';
-import { AbbrevNumPipe } from '../../../shared/pipes/abbrev-num.pipe';
-import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
-import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-import { OrderFormComponent } from './order-form.component';
+import { TransactionType } from '../../../../core/enums/api.enums';
+import { SearchResult } from '../../../../core/models/instrument.models';
+import { WatchlistItem } from '../../../../core/models/watchlist.models';
+import { MarketService } from '../../../../core/services/market.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { WatchlistService } from '../../../../core/services/watchlist.service';
+import { WebSocketService } from '../../../../core/services/websocket.service';
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
+import { AbbrevNumPipe } from '../../../../shared/pipes/abbrev-num.pipe';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { OrderFormComponent } from '../order-form/order-form.component';
 
 interface WatchlistRow extends WatchlistItem {
   ltp: number | null;

@@ -5,13 +5,22 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'inr',
 })
 export class InrPipe implements PipeTransform {
-  transform(value: number | null | undefined, decimals = 2): string {
+  transform(value: number | null | undefined, decimals = 2, showSign = false): string {
     if (value == null) return '—';
-    return new Intl.NumberFormat('en-IN', {
+
+    const abs = Math.abs(value);
+
+    const formatted = new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
-    }).format(value);
+    }).format(abs);
+
+    if (!showSign) return formatted;
+
+    if (value > 0) return `+${formatted}`;
+    if (value < 0) return `-${formatted}`;
+    return formatted;
   }
 }

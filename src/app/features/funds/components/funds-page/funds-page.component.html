@@ -8,12 +8,12 @@
   } @else {
     @if (fundsGroups.length) {
       <div class="funds-grid">
-        @for (group of fundsGroups; track $index) {
+        @for (group of fundsGroups; track group.segment) {
           <div class="card funds-card">
             <div class="funds-card__segment">{{ group.segment }}</div>
             <table class="data-table">
               <tbody>
-                @for (row of group.rows; track $index) {
+                @for (row of group.rows; track row.key) {
                   <tr [class.funds-row--highlight]="row.highlight">
                     <td class="funds-row__label">{{ row.label }}</td>
                     <td class="text-right font-mono funds-row__value">

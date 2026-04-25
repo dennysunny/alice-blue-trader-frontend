@@ -16,3 +16,8 @@ export interface SelectOption {
   label: string;
   value: string | number;
 }
+
+export interface SelectionConfig {
+  id: string;
+  text: string;
+}

@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   private themeService = inject(ThemeService);
 
   ngOnInit(): void {
-    // ThemeService constructor already applies the saved theme — no-op here but
-    // keeping for future global init logic.
+    // ThemeService constructor applies the saved theme
+    //but it should be from here. //todo
   }
 }

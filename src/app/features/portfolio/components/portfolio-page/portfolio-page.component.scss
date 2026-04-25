@@ -7,7 +7,11 @@
   }
 }
 
-.page-title { font-size: 22px; font-weight: 700; color: var(--color-text); }
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+}
 
 .portfolio-summary {
   display: grid;
@@ -15,7 +19,13 @@
   gap: 16px;
   margin-bottom: 20px;
 
-  @media (max-width: 640px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tab-section {
+  margin-bottom: 20px;
 }
 
 .summary-card {
@@ -45,14 +55,28 @@
     margin-top: 4px;
   }
 
-  &--up   { border-left: 3px solid var(--color-up); }
-  &--down { border-left: 3px solid var(--color-down); }
+  &--up {
+    border-left: 3px solid var(--color-up);
+  }
+
+  &--down {
+    border-left: 3px solid var(--color-down);
+  }
 }
 
-.table-wrap { overflow-x: auto; }
-.text-right { text-align: right; }
+.table-wrap {
+  overflow-x: auto;
+}
 
-.symbol-name { font-weight: 600; font-size: 13px; }
+.text-right {
+  text-align: right;
+}
+
+.symbol-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
 .isin-tag {
   display: block;
   font-size: 10px;
@@ -61,5 +85,14 @@
   font-family: monospace;
 }
 
-.hide-sm { @media (max-width: 640px) { display: none; } }
-.hide-md { @media (max-width: 900px) { display: none; } }
+.hide-sm {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.hide-md {
+  @media (max-width: 900px) {
+    display: none;
+  }
+}

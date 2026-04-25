@@ -2,16 +2,15 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angula
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { OrderType, TransactionType } from '../../../core/enums/api.enums';
-import { Position } from '../../../core/models/portfolio.models';
-import { NotificationService } from '../../../core/services/notification.service';
-import { PortfolioService } from '../../../core/services/portfolio.service';
-import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
-import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { OrderType, TransactionType } from '../../../../core/enums/api.enums';
+import { Position } from '../../../../core/models/portfolio.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { PortfolioService } from '../../../../core/services/portfolio.service';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { CommonModule } from '@angular/common';
-import { InrPipe } from '../../../shared/pipes/inr.pipe';
-
-type PosTab = 'day' | 'net';
+import { InrPipe } from '../../../../shared/pipes/inr.pipe';
+import { PositionTabs } from '../../../../shared/types/shared-types';
 
 @Component({
   standalone: true,
@@ -21,7 +20,7 @@ type PosTab = 'day' | 'net';
   imports: [SpinnerComponent, EmptyStateComponent, CommonModule, InrPipe],
 })
 export class PositionsPageComponent implements OnInit, OnDestroy {
-  activeTab: PosTab = 'day';
+  activeTab: PositionTabs = 'day';
   dayPositions: Position[] = [];
   netPositions: Position[] = [];
   loading = true;
@@ -49,7 +48,7 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
     this.loadDay();
   }
 
-  setTab(tab: PosTab): void {
+  setTab(tab: PositionTabs): void {
     this.activeTab = tab;
     //if (tab === 'net' && this.netPositions.length === 0) this.loadNet();
   }

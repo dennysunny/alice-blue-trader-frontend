@@ -3,24 +3,15 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angula
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { OrderStatus, TransactionType } from '../../../core/enums/api.enums';
-import { Order, Trade } from '../../../core/models/order.models';
-import { NotificationService } from '../../../core/services/notification.service';
-import { OrderService } from '../../../core/services/order.service';
-import { BadgeVariant } from '../../../shared/enums/ui.enums';
-import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
-
-type ActiveTab = 'orders' | 'trades';
-
-const STATUS_VARIANT_MAP: Record<string, BadgeVariant> = {
-  [OrderStatus.COMPLETE]: BadgeVariant.SUCCESS,
-  [OrderStatus.OPEN]: BadgeVariant.INFO,
-  [OrderStatus.CANCELLED]: BadgeVariant.NEUTRAL,
-  [OrderStatus.REJECTED]: BadgeVariant.DANGER,
-  [OrderStatus.TRIGGER_PENDING]: BadgeVariant.WARNING,
-  [OrderStatus.MODIFIED]: BadgeVariant.INFO,
-};
+import { OrderStatus, TransactionType } from '../../../../core/enums/api.enums';
+import { Order, Trade } from '../../../../core/models/order.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { OrderService } from '../../../../core/services/order.service';
+import { BadgeVariant } from '../../../../shared/enums/ui.enums';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { ActiveTab } from '../../../../shared/types/shared-types';
+import { StatusVarientConfig } from '../../config/order.config';
 
 @Component({
   standalone: true,
@@ -106,7 +97,7 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
   }
 
   getStatusVariant(status: string): BadgeVariant {
-    return STATUS_VARIANT_MAP[status?.toLowerCase()] ?? BadgeVariant.NEUTRAL;
+    return StatusVarientConfig[status?.toLowerCase()] ?? BadgeVariant.NEUTRAL;
   }
 
   ngOnDestroy(): void {

@@ -9,19 +9,19 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { APP_CONSTANTS } from '../../../core/configs/api.config';
+import { APP_CONSTANTS } from '../../../../core/configs/api.config';
 import {
   OrderComplexity,
   OrderType,
   ProductType,
   TransactionType,
   Validity,
-} from '../../../core/enums/api.enums';
-import { PlaceOrderRequest } from '../../../core/models/order.models';
-import { WatchlistItem } from '../../../core/models/watchlist.models';
-import { NotificationService } from '../../../core/services/notification.service';
-import { OrderService } from '../../../core/services/order.service';
-import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
+} from '../../../../core/enums/api.enums';
+import { PlaceOrderRequest } from '../../../../core/models/order.models';
+import { WatchlistItem } from '../../../../core/models/watchlist.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { OrderService } from '../../../../core/services/order.service';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 
 @Component({
   standalone: true,

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-type TickDirection = 'up' | 'down' | 'neutral';
+import { TickDirection } from '../../types/shared-types';
 
 @Component({
   standalone: true,

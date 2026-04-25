@@ -1,14 +1,25 @@
+import { Segments } from '../../shared/types/shared-types';
+
 export interface FundsLimits {
-  adhocMargin: number;
-  blockedForPayout: number;
-  collateralMargin: number;
-  creditForSell: number;
-  intradayPayin: number;
-  openingCashLimit: number;
+  // Core balances
   tradingLimit: number;
-  utilizedExposureMargin: number;
+  openingCashLimit: number;
+
+  // Credits & inflows
+  intradayPayin: number;
+  creditForSell: number;
+
+  // Margins
+  collateralMargin: number;
+  adhocMargin: number;
+
+  // Utilization
   utilizedMargin: number;
   utilizedSpanMargin: number;
+  utilizedExposureMargin: number;
+
+  // Blocks
+  blockedForPayout: number;
 }
 
 export interface FundsSummary {
@@ -19,4 +30,16 @@ export interface FundsSummary {
   collateral: number;
   marginUtilized: number;
   openingBalance: number;
+}
+
+export interface FundsRow {
+  label: string;
+  key: keyof FundsLimits;
+  value?: number;
+  highlight?: boolean;
+}
+
+export interface FundGroups {
+  segment: Segments;
+  rows: FundsRow[];
 }

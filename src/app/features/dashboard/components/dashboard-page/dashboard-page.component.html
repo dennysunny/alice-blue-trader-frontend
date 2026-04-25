@@ -5,13 +5,13 @@
   </div>
 
   <!-- Stat Cards -->
-  @if (loading) {
+  @if (loading()) {
     <div class="loading-overlay">
       <app-spinner size="lg"></app-spinner>
     </div>
   } @else {
     <div class="stat-grid">
-      @for (card of statCards; track $index) {
+      @for (card of statCards(); track $index) {
         <div
           class="stat-card"
           [class.stat-card--positive]="card.isPositive"
@@ -27,7 +27,7 @@
     </div>
   }
 
-  @if (!loading) {
+  @if (!loading()) {
     <div class="dashboard__grid">
       <!-- Recent Orders -->
       <div class="card">
@@ -35,7 +35,7 @@
           <h3 class="section-title">Recent Orders</h3>
           <a routerLink="/orders" class="dashboard__view-all">View all →</a>
         </div>
-        @if (recentOrders.length > 0) {
+        @if (recentOrders().length > 0) {
           <table class="data-table">
             <thead>
               <tr>
@@ -47,7 +47,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (order of recentOrders; track order.brokerOrderId) {
+              @for (order of recentOrders(); track order.brokerOrderId) {
                 <tr>
                   <td>
                     <span class="symbol-name">{{ order.formattedInstrumentName }}</span>
@@ -84,7 +84,7 @@
           <a routerLink="/portfolio" class="dashboard__view-all">View all →</a>
         </div>
 
-        @if (holdings.length) {
+        @if (holdings().length) {
           <table class="data-table">
             <thead>
               <tr>
@@ -95,7 +95,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (h of holdings; track h.isin) {
+              @for (h of holdings(); track h.isin) {
                 <tr>
                   <td>
                     <span class="symbol-name">{{ h.formattedInstrumentName }}</span>

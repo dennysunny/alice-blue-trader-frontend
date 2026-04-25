@@ -9,9 +9,7 @@ export class ThemeService {
   private readonly themeSubject: BehaviorSubject<Theme>;
   readonly theme$;
 
-  constructor(
-    private storage: StorageService,
-  ) {
+  constructor(private storage: StorageService) {
     const initialTheme = this.getInitialTheme();
     this.themeSubject = new BehaviorSubject<Theme>(initialTheme);
     this.theme$ = this.themeSubject.asObservable();
@@ -26,6 +24,8 @@ export class ThemeService {
   get isDark(): boolean {
     return this.themeSubject.value === Theme.DARK;
   }
+
+  initializeTheme(): void {}
 
   toggle(): void {
     const next = this.isDark ? Theme.LIGHT : Theme.DARK;
