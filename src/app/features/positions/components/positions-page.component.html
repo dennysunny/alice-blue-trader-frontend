@@ -4,75 +4,97 @@
   </div>
 
   <!-- P&L Summary -->
-  <div class="pnl-summary" *ngIf="!loading && positions.length > 0">
-    <div class="pnl-card" [class]="totalUnrealizedPnl >= 0 ? 'pnl-card--up' : 'pnl-card--down'">
-      <div class="pnl-card__label">Unrealized P&amp;L</div>
-      <div class="pnl-card__value">{{ totalUnrealizedPnl | inr }}</div>
+  @if (!loading && positions.length) {
+    <div class="pnl-summary">
+      <div class="pnl-card" [class]="totalUnrealizedPnl >= 0 ? 'pnl-card--up' : 'pnl-card--down'">
+        <div class="pnl-card__label">Unrealized P&amp;L</div>
+        <div class="pnl-card__value">{{ totalUnrealizedPnl | inr }}</div>
+      </div>
+      <div class="pnl-card" [class]="totalRealizedPnl >= 0 ? 'pnl-card--up' : 'pnl-card--down'">
+        <div class="pnl-card__label">Realized P&amp;L</div>
+        <div class="pnl-card__value">{{ totalRealizedPnl | inr }}</div>
+      </div>
     </div>
-    <div class="pnl-card" [class]="totalRealizedPnl >= 0 ? 'pnl-card--up' : 'pnl-card--down'">
-      <div class="pnl-card__label">Realized P&amp;L</div>
-      <div class="pnl-card__value">{{ totalRealizedPnl | inr }}</div>
-    </div>
-  </div>
+  }
 
   <div class="tabs">
-    <button class="tab-btn" [class.active]="activeTab === 'day'" (click)="setTab('day')">Day Positions</button>
-    <button class="tab-btn" [class.active]="activeTab === 'net'" (click)="setTab('net')">Net Positions</button>
+    <button class="tab-btn" [class.active]="activeTab === 'day'" (click)="setTab('day')">
+      Day Positions
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'net'" (click)="setTab('net')">
+      Net Positions
+    </button>
   </div>
 
   <div class="card tab-content">
-    <div class="loading-overlay" *ngIf="loading"><app-spinner size="lg"></app-spinner></div>
-
-    <ng-container *ngIf="!loading">
-      <app-empty-state *ngIf="positions.length === 0" icon="◈" title="No open positions"></app-empty-state>
-      <div class="table-wrap" *ngIf="positions.length > 0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th class="text-right">Net Qty</th>
-              <th class="text-right">Buy Avg</th>
-              <th class="text-right hide-sm">Sell Avg</th>
-              <th class="text-right">LTP</th>
-              <th class="text-right">Unrealized P&amp;L</th>
-              <th class="text-right hide-sm">Realized P&amp;L</th>
-              <th class="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let pos of positions">
-              <td>
-                <div class="symbol-cell">
-                  <span class="symbol-name">{{ pos.formattedInstrumentName }}</span>
-                  <span class="exchange-tag">{{ pos.exchange }}</span>
-                </div>
-                <span class="product-tag">{{ pos.product }}</span>
-              </td>
-              <td class="text-right font-mono" [class]="pos.netQuantity > 0 ? 'text-up' : pos.netQuantity < 0 ? 'text-down' : ''">
-                {{ pos.netQuantity > 0 ? '+' : '' }}{{ pos.netQuantity }}
-              </td>
-              <td class="text-right font-mono">{{ pos.buyPrice | number: '1.2-2' }}</td>
-              <td class="text-right font-mono hide-sm">{{ pos.sellPrice | number: '1.2-2' }}</td>
-              <td class="text-right font-mono">
-                <app-price-ticker [price]="pos.ltp ?? null"></app-price-ticker>
-              </td>
-              <td class="text-right font-mono" [class]="pos.unrealizedPnl >= 0 ? 'text-up' : 'text-down'">
-                {{ pos.unrealizedPnl | inr }}
-              </td>
-              <td class="text-right font-mono hide-sm" [class]="pos.realizedPnl >= 0 ? 'text-up' : 'text-down'">
-                {{ pos.realizedPnl | inr }}
-              </td>
-              <td class="text-right">
-                <button
-                  *ngIf="pos.netQuantity !== 0"
-                  class="squareoff-btn"
-                  (click)="squareOff(pos)"
-                >Exit</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </ng-container>
+    @if (loading) {
+      <div class="loading-overlay"><app-spinner size="lg"></app-spinner></div>
+    } @else {
+      @if (positions.lenght) {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th class="text-right">Net Qty</th>
+                <th class="text-right">Buy Avg</th>
+                <th class="text-right hide-sm">Sell Avg</th>
+                <th class="text-right">LTP</th>
+                <th class="text-right">Unrealized P&amp;L</th>
+                <th class="text-right hide-sm">Realized P&amp;L</th>
+                <th class="text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pos of positions; track pos.instrumentId) {
+                <tr>
+                  <td>
+                    <div class="symbol-cell">
+                      <span class="symbol-name">{{ pos.formattedInstrumentName }}</span>
+                      <span class="exchange-tag">{{ pos.exchange }}</span>
+                    </div>
+                    <span class="product-tag">{{ pos.product }}</span>
+                  </td>
+                  <td
+                    class="text-right font-mono"
+                    [class]="
+                      pos.netQuantity > 0 ? 'text-up' : pos.netQuantity < 0 ? 'text-down' : ''
+                    "
+                  >
+                    {{ pos.netQuantity > 0 ? '+' : '' }}{{ pos.netQuantity }}
+                  </td>
+                  <td class="text-right font-mono">{{ pos.buyPrice | number: '1.2-2' }}</td>
+                  <td class="text-right font-mono hide-sm">
+                    {{ pos.sellPrice | number: '1.2-2' }}
+                  </td>
+                  <td class="text-right font-mono">
+                    <app-price-ticker [price]="pos.ltp ?? null"></app-price-ticker>
+                  </td>
+                  <td
+                    class="text-right font-mono"
+                    [class]="pos.unrealizedPnl >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ pos.unrealizedPnl | inr }}
+                  </td>
+                  <td
+                    class="text-right font-mono hide-sm"
+                    [class]="pos.realizedPnl >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ pos.realizedPnl | inr }}
+                  </td>
+                  <td class="text-right">
+                    @if (pos.netQuantity !== 0) {
+                      <button class="squareoff-btn" (click)="squareOff(pos)">Exit</button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-empty-state icon="◈" title="No open positions"></app-empty-state>
+      }
+    }
   </div>
 </div>

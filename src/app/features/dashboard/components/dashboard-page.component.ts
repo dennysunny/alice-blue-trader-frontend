@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
-import { PortfolioService } from '../../../core/services/portfolio.service';
-import { OrderService } from '../../../core/services/order.service';
-import { FundsService } from '../../../core/services/funds.service';
-import { Holding } from '../../../core/models/portfolio.models';
-import { Order } from '../../../core/models/order.models';
-import { FundsLimits } from '../../../core/models/funds.models';
+
 import { HoldingsProductType, OrderStatus } from '../../../core/enums/api.enums';
+import { FundsLimits } from '../../../core/models/funds.models';
+import { Order } from '../../../core/models/order.models';
+import { Holding } from '../../../core/models/portfolio.models';
+import { FundsService } from '../../../core/services/funds.service';
+import { OrderService } from '../../../core/services/order.service';
+import { PortfolioService } from '../../../core/services/portfolio.service';
 
 interface StatCard {
   label: string;
@@ -34,7 +35,8 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   constructor(
     private portfolioService: PortfolioService,
     private orderService: OrderService,
-    private fundsService: FundsService
+    private fundsService: FundsService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   readonly today = new Date();
@@ -74,9 +76,12 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
           this.fundsData = funds.result?.[0] ?? null;
           this.buildStatCards();
           this.loading = false;
+          console.log(this.loading)
+          this.cdr.markForCheck();
         },
         error: () => {
           this.loading = false;
+          this.cdr.markForCheck();
           this.buildMockStatCards();
         },
       });
@@ -124,4 +129,3 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   }
 }
 
-// Add missing properties and method to class

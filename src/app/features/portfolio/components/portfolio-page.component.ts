@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PortfolioService } from '../../../core/services/portfolio.service';
-import { Holding } from '../../../core/models/portfolio.models';
+
 import { HoldingsProductType } from '../../../core/enums/api.enums';
+import { Holding } from '../../../core/models/portfolio.models';
+import { PortfolioService } from '../../../core/services/portfolio.service';
 
 @Component({
   standalone: false,
@@ -29,16 +30,26 @@ export class PortfolioPageComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private portfolioService: PortfolioService) {}
+  private readonly portfolioService = inject(PortfolioService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
-    this.portfolioService.getHoldings(HoldingsProductType.INTRADAY)
+    this.portfolioService
+      .getHoldings(HoldingsProductType.INTRADAY)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res) => { this.holdings = res.result ?? []; this.loading = false; },
-        error: () => { this.loading = false; },
+        next: (res) => {
+          this.holdings = res.result ?? [];
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+        },
       });
   }
 
-  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

@@ -1,21 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { OrderService } from '../../../core/services/order.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { Order, Trade } from '../../../core/models/order.models';
+
 import { OrderStatus, TransactionType } from '../../../core/enums/api.enums';
+import { Order, Trade } from '../../../core/models/order.models';
+import { NotificationService } from '../../../core/services/notification.service';
+import { OrderService } from '../../../core/services/order.service';
 import { BadgeVariant } from '../../../shared/enums/ui.enums';
 
 type ActiveTab = 'orders' | 'trades';
 
 const STATUS_VARIANT_MAP: Record<string, BadgeVariant> = {
-  [OrderStatus.COMPLETE]:        BadgeVariant.SUCCESS,
-  [OrderStatus.OPEN]:            BadgeVariant.INFO,
-  [OrderStatus.CANCELLED]:       BadgeVariant.NEUTRAL,
-  [OrderStatus.REJECTED]:        BadgeVariant.DANGER,
+  [OrderStatus.COMPLETE]: BadgeVariant.SUCCESS,
+  [OrderStatus.OPEN]: BadgeVariant.INFO,
+  [OrderStatus.CANCELLED]: BadgeVariant.NEUTRAL,
+  [OrderStatus.REJECTED]: BadgeVariant.DANGER,
   [OrderStatus.TRIGGER_PENDING]: BadgeVariant.WARNING,
-  [OrderStatus.MODIFIED]:        BadgeVariant.INFO,
+  [OrderStatus.MODIFIED]: BadgeVariant.INFO,
 };
 
 @Component({
@@ -34,10 +35,9 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
   readonly BadgeVariant = BadgeVariant;
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private orderService: OrderService,
-    private notifications: NotificationService
-  ) {}
+  private readonly orderService = inject(OrderService);
+  private readonly notifications = inject(NotificationService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.loadOrders();
@@ -50,26 +50,43 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
 
   loadOrders(): void {
     this.loading = true;
-    this.orderService.getOrderBook()
+    this.orderService
+      .getOrderBook()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res) => { this.orders = res.result ?? []; this.loading = false; },
-        error: () => { this.loading = false; },
+        next: (res) => {
+          this.orders = res.result ?? [];
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
       });
   }
 
   loadTrades(): void {
     this.loading = true;
-    this.orderService.getTradeBook()
+    this.orderService
+      .getTradeBook()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res) => { this.trades = res.result ?? []; this.loading = false; },
-        error: () => { this.loading = false; },
+        next: (res) => {
+          this.trades = res.result ?? [];
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
       });
   }
 
   cancelOrder(order: Order): void {
-    this.orderService.cancelOrder(order.brokerOrderId)
+    this.orderService
+      .cancelOrder(order.brokerOrderId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -88,5 +105,8 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
     return STATUS_VARIANT_MAP[status?.toLowerCase()] ?? BadgeVariant.NEUTRAL;
   }
 
-  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

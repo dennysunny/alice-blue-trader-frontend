@@ -6,109 +6,145 @@
 
   <div class="tabs">
     <button class="tab-btn" [class.active]="activeTab === 'orders'" (click)="setTab('orders')">
-      Order Book <span class="tab-count" *ngIf="orders.length">{{ orders.length }}</span>
+      Order Book
+      @if (orders.length) {
+        <span class="tab-count">{{ orders.length }}</span>
+      }
     </button>
     <button class="tab-btn" [class.active]="activeTab === 'trades'" (click)="setTab('trades')">
-      Trade Book <span class="tab-count" *ngIf="trades.length">{{ trades.length }}</span>
+      Trade Book
+      @if (trades.length) {
+        <span class="tab-count">{{ trades.length }}</span>
+      }
     </button>
   </div>
 
   <div class="card tab-content">
-    <div class="loading-overlay" *ngIf="loading">
-      <app-spinner size="lg"></app-spinner>
-    </div>
-
-    <!-- Order Book Tab -->
-    <ng-container *ngIf="!loading && activeTab === 'orders'">
-      <app-empty-state *ngIf="orders.length === 0" icon="↕" title="No orders today" subtitle="Orders placed today will appear here"></app-empty-state>
-      <div class="table-wrap" *ngIf="orders.length > 0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Type</th>
-              <th>Product</th>
-              <th class="text-right">Qty</th>
-              <th class="text-right">Price</th>
-              <th class="text-right hide-sm">Avg Price</th>
-              <th>Status</th>
-              <th class="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let order of orders">
-              <td>
-                <div class="symbol-cell">
-                  <span class="symbol-name">{{ order.formattedInstrumentName }}</span>
-                  <span class="exchange-tag">{{ order.exchange }}</span>
-                </div>
-              </td>
-              <td>
-                <span [class]="order.transactionType === TransactionType.BUY ? 'text-up font-bold' : 'text-down font-bold'">
-                  {{ order.transactionType }}
-                </span>
-                <span class="order-type-tag">{{ order.orderType }}</span>
-              </td>
-              <td><span class="product-tag">{{ order.product }}</span></td>
-              <td class="text-right font-mono">
-                {{ order.filledQuantity }}<span class="text-muted">/{{ order.quantity }}</span>
-              </td>
-              <td class="text-right font-mono">{{ order.price | number: '1.2-2' }}</td>
-              <td class="text-right font-mono hide-sm">
-                {{ (order.averageTradedPrice  ?? 0) | number: '1.2-2' }}
-              </td>
-              <td>
-                <app-badge [variant]="getStatusVariant(order.orderStatus)">{{ order.orderStatus }}</app-badge>
-              </td>
-              <td class="text-right">
-                <button
-                  *ngIf="canCancel(order)"
-                  class="cancel-btn"
-                  (click)="cancelOrder(order)"
-                >Cancel</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    @if (loading) {
+      <div class="loading-overlay">
+        <app-spinner size="lg"></app-spinner>
       </div>
-    </ng-container>
+    } @else if (activeTab === 'orders') {
+      <!-- Order Book Tab -->
+      @if (orders.length) {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Type</th>
+                <th>Product</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Price</th>
+                <th class="text-right hide-sm">Avg Price</th>
+                <th>Status</th>
+                <th class="text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of orders; track order.brokerOrderId) {
+                <tr>
+                  <td>
+                    <div class="symbol-cell">
+                      <span class="symbol-name">{{ order.formattedInstrumentName }}</span>
+                      <span class="exchange-tag">{{ order.exchange }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      [class]="
+                        order.transactionType === TransactionType.BUY
+                          ? 'text-up font-bold'
+                          : 'text-down font-bold'
+                      "
+                    >
+                      {{ order.transactionType }}
+                    </span>
+                    <span class="order-type-tag">{{ order.orderType }}</span>
+                  </td>
+                  <td>
+                    <span class="product-tag">{{ order.product }}</span>
+                  </td>
+                  <td class="text-right font-mono">
+                    {{ order.filledQuantity }}<span class="text-muted">/{{ order.quantity }}</span>
+                  </td>
+                  <td class="text-right font-mono">{{ order.price | number: '1.2-2' }}</td>
+                  <td class="text-right font-mono hide-sm">
+                    {{ order.averageTradedPrice ?? 0 | number: '1.2-2' }}
+                  </td>
+                  <td>
+                    <app-badge [variant]="getStatusVariant(order.orderStatus)">{{
+                      order.orderStatus
+                    }}</app-badge>
+                  </td>
+                  <td class="text-right">
+                    @if (canCancel(order)) {
+                      <button class="cancel-btn" (click)="cancelOrder(order)">Cancel</button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-empty-state
+          icon="↕"
+          title="No orders today"
+          subtitle="Orders placed today will appear here"
+        ></app-empty-state>
+      }
+    }
 
     <!-- Trade Book Tab -->
-    <ng-container *ngIf="!loading && activeTab === 'trades'">
-      <app-empty-state *ngIf="trades.length === 0" icon="📋" title="No trades today"></app-empty-state>
-      <div class="table-wrap" *ngIf="trades.length > 0">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Type</th>
-              <th>Product</th>
-              <th class="text-right">Qty</th>
-              <th class="text-right">Trade Price</th>
-              <th class="hide-sm">Fill Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let trade of trades">
-              <td>
-                <div class="symbol-cell">
-                  <span class="symbol-name">{{ trade.formattedInstrumentName }}</span>
-                  <span class="exchange-tag">{{ trade.exchange }}</span>
-                </div>
-              </td>
-              <td>
-                <span [class]="trade.transactionType === TransactionType.BUY ? 'text-up font-bold' : 'text-down font-bold'">
-                  {{ trade.transactionType }}
-                </span>
-              </td>
-              <td><span class="product-tag">{{ trade.product }}</span></td>
-              <td class="text-right font-mono">{{ trade.filledQuantity }}</td>
-              <td class="text-right font-mono">₹{{ trade.tradedPrice | number: '1.2-2' }}</td>
-              <td class="hide-sm text-secondary">{{ trade.fillTimestamp }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </ng-container>
+    @if (!loading && activeTab === 'trades') {
+      @if (trades.length) {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Type</th>
+                <th>Product</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Trade Price</th>
+                <th class="hide-sm">Fill Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (trade of trades; track trade.brokerOrderId) {
+                <tr>
+                  <td>
+                    <div class="symbol-cell">
+                      <span class="symbol-name">{{ trade.formattedInstrumentName }}</span>
+                      <span class="exchange-tag">{{ trade.exchange }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span
+                      [class]="
+                        trade.transactionType === TransactionType.BUY
+                          ? 'text-up font-bold'
+                          : 'text-down font-bold'
+                      "
+                    >
+                      {{ trade.transactionType }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="product-tag">{{ trade.product }}</span>
+                  </td>
+                  <td class="text-right font-mono">{{ trade.filledQuantity }}</td>
+                  <td class="text-right font-mono">₹{{ trade.tradedPrice | number: '1.2-2' }}</td>
+                  <td class="hide-sm text-secondary">{{ trade.fillTimestamp }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-empty-state icon="📋" title="No trades today"></app-empty-state>
+      }
+    }
   </div>
 </div>

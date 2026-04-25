@@ -48,6 +48,9 @@ export const API_ENDPOINTS = {
   },
   PROFILE: {
     GET_PROFILE: '/profile'
+  },
+  HISTORY: {
+    CHART_HISTORY: '/chart/history'
   }
 } as const;
 

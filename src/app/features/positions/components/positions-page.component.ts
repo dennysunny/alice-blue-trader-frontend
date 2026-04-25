@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PortfolioService } from '../../../core/services/portfolio.service';
-import { NotificationService } from '../../../core/services/notification.service';
+
+import { OrderType, TransactionType } from '../../../core/enums/api.enums';
 import { Position } from '../../../core/models/portfolio.models';
-import { TransactionType, OrderType } from '../../../core/enums/api.enums';
+import { NotificationService } from '../../../core/services/notification.service';
+import { PortfolioService } from '../../../core/services/portfolio.service';
 
 type PosTab = 'day' | 'net';
 
@@ -35,12 +36,13 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private portfolioService: PortfolioService,
-    private notifications: NotificationService
-  ) {}
+  private readonly portfolioService = inject(PortfolioService);
+  private readonly notifications = inject(NotificationService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  ngOnInit(): void { this.loadDay(); }
+  ngOnInit(): void {
+    this.loadDay();
+  }
 
   setTab(tab: PosTab): void {
     this.activeTab = tab;
@@ -49,34 +51,34 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
 
   private loadDay(): void {
     this.loading = true;
-    this.portfolioService.getDayPositions()
+    this.portfolioService
+      .getDayPositions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res) => { this.dayPositions = res.result ?? []; this.loading = false; },
-        error: () => { this.loading = false; },
+        next: (res) => {
+          this.dayPositions = res.result ?? [];
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
       });
   }
 
-  // private loadNet(): void {
-  //   this.loading = true;
-  //   this.portfolioService.getNetPositions()
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe({
-  //       next: (res) => { this.netPositions = res.result ?? []; this.loading = false; },
-  //       error: () => { this.loading = false; },
-  //     });
-  // }
-
   squareOff(position: Position): void {
     const side = position.netQuantity > 0 ? TransactionType.SELL : TransactionType.BUY;
-    this.portfolioService.squareOff({
-      exchange: position.exchange,
-      instrumentId: position.instrumentId,
-      product: position.product,
-      quantity: Math.abs(position.netQuantity),
-      transactionType: side,
-      orderType: OrderType.MARKET,
-    }).pipe(takeUntil(this.destroy$))
+    this.portfolioService
+      .squareOff({
+        exchange: position.exchange,
+        instrumentId: position.instrumentId,
+        product: position.product,
+        quantity: Math.abs(position.netQuantity),
+        transactionType: side,
+        orderType: OrderType.MARKET,
+      })
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.notifications.success(`Square off placed for ${position.formattedInstrumentName}`);
@@ -86,5 +88,8 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { WatchlistService } from '../../../core/services/watchlist.service';
-import { MarketService } from '../../../core/services/market.service';
-import { WebSocketService } from '../../../core/services/websocket.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { WatchlistItem } from '../../../core/models/watchlist.models';
+
+import { TransactionType } from '../../../core/enums/api.enums';
 import { SearchResult } from '../../../core/models/instrument.models';
-import { Exchange, TransactionType } from '../../../core/enums/api.enums';
+import { WatchlistItem } from '../../../core/models/watchlist.models';
+import { MarketService } from '../../../core/services/market.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { WatchlistService } from '../../../core/services/watchlist.service';
+import { WebSocketService } from '../../../core/services/websocket.service';
 
 interface WatchlistRow extends WatchlistItem {
   ltp: number | null;
@@ -39,51 +40,68 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
     public watchlistService: WatchlistService,
     private marketService: MarketService,
     private wsService: WebSocketService,
-    private notifications: NotificationService
+    private notifications: NotificationService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.watchlistService.watchlist$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((wl) => {
-        this.rows = wl.items.map((item) => ({
-          ...item,
-          ltp: null, change: null, changePct: null, volume: null, prevLtp: null,
-        }));
-        this.subscribeToFeeds();
-      });
+    this.trackWatchListData();
+  }
+
+  trackWatchListData(): void {
+    this.watchlistService.watchlist$.pipe(takeUntil(this.destroy$)).subscribe((wl) => {
+      this.rows = wl.items.map((item) => ({
+        ...item,
+        ltp: null,
+        change: null,
+        changePct: null,
+        volume: null,
+        prevLtp: null,
+      }));
+      this.subscribeToFeeds();
+    });
 
     this.wsService.connect();
-    this.wsService.feed$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((msg) => {
-        if (msg.t === 'tf' || msg.t === 'tk') {
-          const row = this.rows.find((r) => r.instrumentId === msg.tk);
-          if (row && msg.lp) {
-            row.prevLtp = row.ltp;
-            row.ltp = parseFloat(msg.lp);
-            if (msg.pc) row.changePct = parseFloat(msg.pc);
-            if (msg.v)  row.volume = parseFloat(msg.v);
-            row.change = row.ltp - (row.ltp / (1 + (row.changePct ?? 0) / 100));
-          }
+    this.wsService.feed$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
+      if (msg.t === 'tf' || msg.t === 'tk') {
+        const row = this.rows.find((r) => r.instrumentId === msg.tk);
+        if (row && msg.lp) {
+          row.prevLtp = row.ltp;
+          row.ltp = parseFloat(msg.lp);
+          if (msg.pc) row.changePct = parseFloat(msg.pc);
+          if (msg.v) row.volume = parseFloat(msg.v);
+          row.change = row.ltp - row.ltp / (1 + (row.changePct ?? 0) / 100);
         }
-      });
+      }
+    });
   }
 
   private subscribeToFeeds(): void {
-    const instruments = this.rows.map((r) => ({ instrumentId: r.instrumentId, exchange: r.exchange }));
+    const instruments = this.rows.map((r) => ({
+      instrumentId: r.instrumentId,
+      exchange: r.exchange,
+    }));
     if (instruments.length > 0) this.wsService.subscribe(instruments);
   }
 
   onSearch(query: string): void {
     this.searching = true;
     this.marketService.search(query).subscribe({
-      next: (res) => { this.searchResults = res.result ?? []; this.searching = false; },
-      error: () => { this.searching = false; },
+      next: (res) => {
+        this.searchResults = res.result ?? [];
+        this.searching = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.searching = false;
+        this.cdr.markForCheck();
+      },
     });
   }
 
-  onSearchCleared(): void { this.searchResults = []; }
+  onSearchCleared(): void {
+    this.searchResults = [];
+  }
 
   addToWatchlist(result: SearchResult): void {
     const added = this.watchlistService.addItem({
@@ -92,9 +110,13 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
       formattedName: result.formattedName,
       exchange: result.exchange,
     });
-    if (added) this.notifications.success(`${result.formattedName} added to watchlist`);
-    else this.notifications.warning(`${result.formattedName} already in watchlist`);
+    if (added) {
+      this.notifications.success(`${result.formattedName} added to watchlist`);
+    } else {
+      this.notifications.warning(`${result.formattedName} already in watchlist`);
+    }
     this.searchResults = [];
+    this.cdr.markForCheck();
   }
 
   removeFromWatchlist(row: WatchlistRow): void {
@@ -108,5 +130,8 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
     this.orderFormVisible = true;
   }
 
-  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

@@ -7,10 +7,7 @@
     autocomplete="off"
     spellcheck="false"
   />
-  <button
-    *ngIf="control.value"
-    class="search-bar__clear"
-    (click)="clear()"
-    type="button"
-  >✕</button>
+  @if (control.value) {
+    <button class="search-bar__clear" (click)="clear()" type="button">✕</button>
+  }
 </div>

@@ -7,7 +7,9 @@ import { Component, Input } from '@angular/core';
     <div class="empty-state">
       <div class="empty-state__icon">{{ icon }}</div>
       <div class="empty-state__title">{{ title }}</div>
-      <div *ngIf="subtitle" class="empty-state__subtitle">{{ subtitle }}</div>
+      @if (subtitle) {
+        <div class="empty-state__subtitle">{{ subtitle }}</div>
+      }
       <ng-content></ng-content>
     </div>
   `,

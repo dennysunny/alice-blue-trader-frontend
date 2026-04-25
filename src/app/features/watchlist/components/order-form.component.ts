@@ -1,13 +1,26 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { OrderService } from '../../../core/services/order.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { WatchlistItem } from '../../../core/models/watchlist.models';
-import { PlaceOrderRequest } from '../../../core/models/order.models';
 import {
-  Exchange, TransactionType, OrderType, ProductType, OrderComplexity, Validity,
-} from '../../../core/enums/api.enums';
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  inject,
+} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { APP_CONSTANTS } from '../../../core/configs/api.config';
+import {
+  OrderComplexity,
+  OrderType,
+  ProductType,
+  TransactionType,
+  Validity,
+} from '../../../core/enums/api.enums';
+import { PlaceOrderRequest } from '../../../core/models/order.models';
+import { WatchlistItem } from '../../../core/models/watchlist.models';
+import { NotificationService } from '../../../core/services/notification.service';
+import { OrderService } from '../../../core/services/order.service';
 
 @Component({
   standalone: false,
@@ -46,9 +59,33 @@ export class OrderFormComponent implements OnInit {
     { label: 'IOC', value: Validity.IOC },
   ];
 
-  constructor(private fb: FormBuilder, private orderService: OrderService, private notifications: NotificationService) {}
+  private readonly orderService = inject(OrderService);
+  private readonly notifications = inject(NotificationService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
+    this.buildForm();
+    this.trackOrderTypeChange();
+  }
+
+  get isBuy(): boolean {
+    return this.form.get('transactionType')?.value === TransactionType.BUY;
+  }
+  get isMarket(): boolean {
+    return this.form.get('orderType')?.value === OrderType.MARKET;
+  }
+  get showPrice(): boolean {
+    const ot = this.form.get('orderType')?.value;
+    return ot === OrderType.LIMIT || ot === OrderType.STOP_LOSS;
+  }
+  get showTrigger(): boolean {
+    const ot = this.form.get('orderType')?.value;
+    return ot === OrderType.STOP_LOSS || ot === OrderType.STOP_LOSS_MARKET;
+  }
+
+  buildForm(): void {
     this.form = this.fb.group({
       transactionType: [this.side],
       orderType: [OrderType.MARKET],
@@ -58,37 +95,36 @@ export class OrderFormComponent implements OnInit {
       triggerPrice: [{ value: '', disabled: true }],
       validity: [Validity.DAY],
     });
+  }
 
+  trackOrderTypeChange(): void {
     this.form.get('orderType')?.valueChanges.subscribe((ot: OrderType) => {
-      const priceCtrl   = this.form.get('price');
+      const priceCtrl = this.form.get('price');
       const triggerCtrl = this.form.get('triggerPrice');
       if (ot === OrderType.LIMIT) {
-        priceCtrl?.enable(); priceCtrl?.setValidators(Validators.required);
-        triggerCtrl?.disable(); triggerCtrl?.clearValidators();
+        priceCtrl?.enable();
+        priceCtrl?.setValidators(Validators.required);
+        triggerCtrl?.disable();
+        triggerCtrl?.clearValidators();
       } else if (ot === OrderType.STOP_LOSS) {
-        priceCtrl?.enable(); priceCtrl?.setValidators(Validators.required);
-        triggerCtrl?.enable(); triggerCtrl?.setValidators(Validators.required);
+        priceCtrl?.enable();
+        priceCtrl?.setValidators(Validators.required);
+        triggerCtrl?.enable();
+        triggerCtrl?.setValidators(Validators.required);
       } else if (ot === OrderType.STOP_LOSS_MARKET) {
-        priceCtrl?.disable(); priceCtrl?.clearValidators();
-        triggerCtrl?.enable(); triggerCtrl?.setValidators(Validators.required);
+        priceCtrl?.disable();
+        priceCtrl?.clearValidators();
+        triggerCtrl?.enable();
+        triggerCtrl?.setValidators(Validators.required);
       } else {
-        priceCtrl?.disable(); priceCtrl?.clearValidators();
-        triggerCtrl?.disable(); triggerCtrl?.clearValidators();
+        priceCtrl?.disable();
+        priceCtrl?.clearValidators();
+        triggerCtrl?.disable();
+        triggerCtrl?.clearValidators();
       }
       priceCtrl?.updateValueAndValidity();
       triggerCtrl?.updateValueAndValidity();
     });
-  }
-
-  get isBuy(): boolean { return this.form.get('transactionType')?.value === TransactionType.BUY; }
-  get isMarket(): boolean { return this.form.get('orderType')?.value === OrderType.MARKET; }
-  get showPrice(): boolean {
-    const ot = this.form.get('orderType')?.value;
-    return ot === OrderType.LIMIT || ot === OrderType.STOP_LOSS;
-  }
-  get showTrigger(): boolean {
-    const ot = this.form.get('orderType')?.value;
-    return ot === OrderType.STOP_LOSS || ot === OrderType.STOP_LOSS_MARKET;
   }
 
   setSide(side: TransactionType): void {
@@ -125,14 +161,16 @@ export class OrderFormComponent implements OnInit {
       next: () => {
         this.notifications.success(
           `${v.transactionType} order placed for ${this.item.formattedName}`,
-          'Order Placed'
+          'Order Placed',
         );
         this.submitting = false;
+        this.cdr.markForCheck();
         this.closed.emit();
       },
       error: (err) => {
         this.notifications.error(err?.error?.message ?? 'Order failed. Please try again.');
         this.submitting = false;
+        this.cdr.markForCheck();
       },
     });
   }

@@ -9,94 +9,105 @@
       ></app-search-bar>
 
       <!-- Search dropdown -->
-      <div class="search-dropdown" *ngIf="searchResults.length > 0 || searching">
-        <div class="loading-overlay" *ngIf="searching">
-          <app-spinner size="sm"></app-spinner>
+      @if (searchResults.length > 0 || searching) {
+        <div class="search-dropdown">
+          @if (searching) {
+            <div class="loading-overlay">
+              <app-spinner size="sm"></app-spinner>
+            </div>
+          }
+          @for (result of searchResults; track result.instrumentId) {
+            <div class="search-result-item">
+              <div class="search-result-item__info">
+                <span class="search-result-item__name">{{ result.formattedName }}</span>
+                <span class="search-result-item__symbol">{{ result.tradingSymbol }}</span>
+                <span class="exchange-tag">{{ result.exchange }}</span>
+              </div>
+              <button class="search-result-item__add" (click)="addToWatchlist(result)">
+                + Add
+              </button>
+            </div>
+          }
         </div>
-        <div
-          class="search-result-item"
-          *ngFor="let result of searchResults"
-        >
-          <div class="search-result-item__info">
-            <span class="search-result-item__name">{{ result.formattedName }}</span>
-            <span class="search-result-item__symbol">{{ result.tradingSymbol }}</span>
-            <span class="exchange-tag">{{ result.exchange }}</span>
-          </div>
-          <button class="search-result-item__add" (click)="addToWatchlist(result)">+ Add</button>
-        </div>
-      </div>
+      }
     </div>
   </div>
 
   <!-- Watchlist table -->
   <div class="card watchlist-card">
-    <app-empty-state
-      *ngIf="rows.length === 0"
-      icon="★"
-      title="Your watchlist is empty"
-      subtitle="Search for symbols above to add them"
-    ></app-empty-state>
-
-    <table class="data-table watchlist-table" *ngIf="rows.length > 0">
-      <thead>
-        <tr>
-          <th>Symbol</th>
-          <th class="text-right">LTP</th>
-          <th class="text-right">Change</th>
-          <th class="text-right hidden-mobile">Volume</th>
-          <th class="text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of rows" class="watchlist-row">
-          <td>
-            <div class="symbol-cell">
-              <span class="symbol-cell__name">{{ row.formattedName }}</span>
-              <span class="exchange-tag">{{ row.exchange }}</span>
-            </div>
-          </td>
-          <td class="text-right">
-            <app-price-ticker [price]="row.ltp" [prevPrice]="row.prevLtp"></app-price-ticker>
-          </td>
-          <td class="text-right">
-            <span
-              *ngIf="row.changePct !== null"
-              [class]="row.changePct! >= 0 ? 'text-up' : 'text-down'"
-              class="font-mono"
-            >
-              {{ row.changePct! >= 0 ? '+' : '' }}{{ row.changePct | number: '1.2-2' }}%
-            </span>
-            <span *ngIf="row.changePct === null" class="text-muted">—</span>
-          </td>
-          <td class="text-right hidden-mobile">
-            <span class="font-mono text-secondary">{{ row.volume | abbrevNum }}</span>
-          </td>
-          <td class="text-right">
-            <div class="action-btns">
-              <button
-                class="action-btn action-btn--buy"
-                (click)="openOrderForm(row, TransactionType.BUY)"
-              >B</button>
-              <button
-                class="action-btn action-btn--sell"
-                (click)="openOrderForm(row, TransactionType.SELL)"
-              >S</button>
-              <button
-                class="action-btn action-btn--remove"
-                (click)="removeFromWatchlist(row)"
-              >✕</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    @if (rows.length) {
+      <table class="data-table watchlist-table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th class="text-right">LTP</th>
+            <th class="text-right">Change</th>
+            <th class="text-right hidden-mobile">Volume</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows; track $index) {
+            <tr class="watchlist-row">
+              <td>
+                <div class="symbol-cell">
+                  <span class="symbol-cell__name">{{ row.formattedName }}</span>
+                  <span class="exchange-tag">{{ row.exchange }}</span>
+                </div>
+              </td>
+              <td class="text-right">
+                <app-price-ticker [price]="row.ltp" [prevPrice]="row.prevLtp"></app-price-ticker>
+              </td>
+              <td class="text-right">
+                @if (row.changePct === null) {
+                  <span class="text-muted">—</span>
+                } @else {
+                  <span [class]="row.changePct! >= 0 ? 'text-up' : 'text-down'" class="font-mono">
+                    {{ row.changePct! >= 0 ? '+' : '' }}{{ row.changePct | number: '1.2-2' }}%
+                  </span>
+                }
+              </td>
+              <td class="text-right hidden-mobile">
+                <span class="font-mono text-secondary">{{ row.volume | abbrevNum }}</span>
+              </td>
+              <td class="text-right">
+                <div class="action-btns">
+                  <button
+                    class="action-btn action-btn--buy"
+                    (click)="openOrderForm(row, TransactionType.BUY)"
+                  >
+                    B
+                  </button>
+                  <button
+                    class="action-btn action-btn--sell"
+                    (click)="openOrderForm(row, TransactionType.SELL)"
+                  >
+                    S
+                  </button>
+                  <button class="action-btn action-btn--remove" (click)="removeFromWatchlist(row)">
+                    ✕
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <app-empty-state
+        icon="★"
+        title="Your watchlist is empty"
+        subtitle="Search for symbols above to add them"
+      ></app-empty-state>
+    }
   </div>
 </div>
 
 <!-- Order form modal -->
-<app-order-form
-  *ngIf="orderFormVisible && selectedItem"
-  [item]="selectedItem"
-  [side]="selectedSide"
-  (closed)="orderFormVisible = false"
-></app-order-form>
+@if (orderFormVisible && selectedItem) {
+  <app-order-form
+    [item]="selectedItem"
+    [side]="selectedSide"
+    (closed)="orderFormVisible = false"
+  ></app-order-form>
+}

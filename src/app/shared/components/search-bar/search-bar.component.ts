@@ -1,8 +1,7 @@
-import {
-  Component, Input, Output, EventEmitter, OnInit, OnDestroy
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
+
 import { takeUntil, debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { APP_CONSTANTS } from '../../../core/configs/api.config';
 
@@ -15,6 +14,7 @@ import { APP_CONSTANTS } from '../../../core/configs/api.config';
 export class SearchBarComponent implements OnInit, OnDestroy {
   @Input() placeholder = 'Search symbols…';
   @Input() minLength = 2;
+
   @Output() searched = new EventEmitter<string>();
   @Output() cleared = new EventEmitter<void>();
 
@@ -22,15 +22,21 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.control.valueChanges.pipe(
-      debounceTime(APP_CONSTANTS.DEBOUNCE_SEARCH_MS),
-      distinctUntilChanged(),
-      filter((v) => !v || v.trim().length >= this.minLength),
-      takeUntil(this.destroy$)
-    ).subscribe((v) => {
-      if (v?.trim()) this.searched.emit(v.trim());
-      else this.cleared.emit();
-    });
+    this.trackControlValueChanges();
+  }
+
+  trackControlValueChanges(): void {
+    this.control.valueChanges
+      .pipe(
+        debounceTime(APP_CONSTANTS.DEBOUNCE_SEARCH_MS),
+        distinctUntilChanged(),
+        filter((v) => !v || v.trim().length >= this.minLength),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((v) => {
+        if (v?.trim()) this.searched.emit(v.trim());
+        else this.cleared.emit();
+      });
   }
 
   clear(): void {

@@ -10,6 +10,7 @@ export class ModalComponent {
   @Input() title = '';
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
   @Input() visible = false;
+
   @Output() closed = new EventEmitter<void>();
 
   onBackdropClick(event: MouseEvent): void {

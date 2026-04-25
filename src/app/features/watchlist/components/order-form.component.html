@@ -1,6 +1,5 @@
 <div class="order-form-backdrop" (click)="$event.target === $event.currentTarget && closed.emit()">
   <div class="order-form" [class.order-form--buy]="isBuy" [class.order-form--sell]="!isBuy">
-
     <!-- Header -->
     <div class="order-form__header">
       <div class="order-form__symbol">
@@ -16,12 +15,16 @@
         class="side-tab"
         [class.side-tab--buy-active]="isBuy"
         (click)="setSide(TransactionType.BUY)"
-      >BUY</button>
+      >
+        BUY
+      </button>
       <button
         class="side-tab"
         [class.side-tab--sell-active]="!isBuy"
         (click)="setSide(TransactionType.SELL)"
-      >SELL</button>
+      >
+        SELL
+      </button>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="order-form__body">
@@ -30,13 +33,17 @@
         <div class="form-group">
           <label class="form-label">Product</label>
           <select class="form-control" formControlName="product">
-            <option *ngFor="let p of productOptions" [value]="p.value">{{ p.label }}</option>
+            @for (p of productOptions; track $index) {
+              <option [value]="p.value">{{ p.label }}</option>
+            }
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Order Type</label>
           <select class="form-control" formControlName="orderType">
-            <option *ngFor="let o of orderTypeOptions" [value]="o.value">{{ o.label }}</option>
+            @for (o of orderTypeOptions; track $index) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
           </select>
         </div>
       </div>
@@ -44,26 +51,50 @@
       <!-- Quantity -->
       <div class="form-group">
         <label class="form-label">Quantity</label>
-        <input class="form-control" type="number" formControlName="quantity" min="1" placeholder="0" />
+        <input
+          class="form-control"
+          type="number"
+          formControlName="quantity"
+          min="1"
+          placeholder="0"
+        />
       </div>
 
       <!-- Price -->
-      <div class="form-group" *ngIf="showPrice">
-        <label class="form-label">Price (₹)</label>
-        <input class="form-control" type="number" formControlName="price" step="0.05" placeholder="0.00" />
-      </div>
+      @if (showPrice) {
+        <div class="form-group">
+          <label class="form-label">Price (₹)</label>
+          <input
+            class="form-control"
+            type="number"
+            formControlName="price"
+            step="0.05"
+            placeholder="0.00"
+          />
+        </div>
+      }
 
       <!-- Trigger Price -->
-      <div class="form-group" *ngIf="showTrigger">
-        <label class="form-label">Trigger Price (₹)</label>
-        <input class="form-control" type="number" formControlName="triggerPrice" step="0.05" placeholder="0.00" />
-      </div>
+      @if (showTrigger) {
+        <div class="form-group">
+          <label class="form-label">Trigger Price (₹)</label>
+          <input
+            class="form-control"
+            type="number"
+            formControlName="triggerPrice"
+            step="0.05"
+            placeholder="0.00"
+          />
+        </div>
+      }
 
       <!-- Validity -->
       <div class="form-group">
         <label class="form-label">Validity</label>
         <select class="form-control" formControlName="validity">
-          <option *ngFor="let v of validityOptions" [value]="v.value">{{ v.label }}</option>
+          @for (validity of validityOptions; track $index) {
+            <option [value]="validity.value">{{ validity.label }}</option>
+          }
         </select>
       </div>
 
@@ -75,10 +106,11 @@
         [class.order-form__submit--sell]="!isBuy"
         [disabled]="form.invalid || submitting"
       >
-        <app-spinner *ngIf="submitting" size="sm"></app-spinner>
-        <span *ngIf="!submitting">
-          {{ isBuy ? 'BUY' : 'SELL' }} {{ item.formattedName }}
-        </span>
+        @if (submitting) {
+          <app-spinner size="sm"></app-spinner>
+        } @else {
+          <span> {{ isBuy ? 'BUY' : 'SELL' }} {{ item.formattedName }} </span>
+        }
       </button>
     </form>
   </div>

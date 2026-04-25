@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
+
 import { NotificationService, Notification } from '../../../core/services/notification.service';
 import { NotificationType } from '../../../core/enums/app.enums';
 
@@ -13,7 +14,7 @@ export class ToastContainerComponent implements OnInit, OnDestroy {
   toasts: Notification[] = [];
   private sub!: Subscription;
 
-  constructor(private notificationService: NotificationService) {}
+  private readonly notificationService = inject(NotificationService);
 
   ngOnInit(): void {
     this.sub = this.notificationService.notification$.subscribe((n) => {

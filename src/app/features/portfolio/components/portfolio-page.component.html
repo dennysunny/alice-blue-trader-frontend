@@ -4,68 +4,91 @@
   </div>
 
   <!-- Summary Cards -->
-  <div class="portfolio-summary" *ngIf="!loading && holdings.length > 0">
-    <div class="summary-card">
-      <div class="summary-card__label">Total Invested</div>
-      <div class="summary-card__value">{{ totalInvested | inr }}</div>
-    </div>
-    <div class="summary-card" [class.summary-card--up]="totalPnl >= 0" [class.summary-card--down]="totalPnl < 0">
-      <div class="summary-card__label">Total P&amp;L</div>
-      <div class="summary-card__value">{{ totalPnl | inr }}</div>
-      <div class="summary-card__sub" [class]="totalPnlPercent >= 0 ? 'text-up' : 'text-down'">
-        {{ totalPnlPercent >= 0 ? '+' : '' }}{{ totalPnlPercent | number: '1.2-2' }}%
+  @if (!loading && holdings.length) {
+    <div class="portfolio-summary">
+      <div class="summary-card">
+        <div class="summary-card__label">Total Invested</div>
+        <div class="summary-card__value">{{ totalInvested | inr }}</div>
+      </div>
+      <div
+        class="summary-card"
+        [class.summary-card--up]="totalPnl >= 0"
+        [class.summary-card--down]="totalPnl < 0"
+      >
+        <div class="summary-card__label">Total P&amp;L</div>
+        <div class="summary-card__value">{{ totalPnl | inr }}</div>
+        <div class="summary-card__sub" [class]="totalPnlPercent >= 0 ? 'text-up' : 'text-down'">
+          {{ totalPnlPercent >= 0 ? '+' : '' }}{{ totalPnlPercent | number: '1.2-2' }}%
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card__label">Holdings</div>
+        <div class="summary-card__value">{{ holdings.length }}</div>
+        <div class="summary-card__sub text-muted">Instruments</div>
       </div>
     </div>
-    <div class="summary-card">
-      <div class="summary-card__label">Holdings</div>
-      <div class="summary-card__value">{{ holdings.length }}</div>
-      <div class="summary-card__sub text-muted">Instruments</div>
+  }
+
+  @if (loading) {
+    <div class="loading-overlay">
+      <app-spinner size="lg"></app-spinner>
     </div>
-  </div>
-
-  <div class="loading-overlay" *ngIf="loading">
-    <app-spinner size="lg"></app-spinner>
-  </div>
-
-  <div class="card" *ngIf="!loading">
-    <app-empty-state *ngIf="holdings.length === 0" icon="◉" title="No holdings found" subtitle="Delivered positions will appear here"></app-empty-state>
-
-    <div class="table-wrap" *ngIf="holdings.length > 0">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th class="text-right">Qty</th>
-            <th class="text-right">Avg Price</th>
-            <th class="text-right hide-sm">Current</th>
-            <th class="text-right">P&amp;L</th>
-            <th class="text-right hide-md">P&amp;L %</th>
-            <th class="text-right hide-md">Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let h of holdings">
-            <td>
-              <span class="symbol-name">{{ h.formattedInstrumentName }}</span>
-              <span class="isin-tag hide-sm">{{ h.isin }}</span>
-            </td>
-            <td class="text-right font-mono">{{ h.dpQuantity }}</td>
-            <td class="text-right font-mono">{{ h.averageTradedPrice | inr }}</td>
-            <td class="text-right font-mono hide-sm">
-              <app-price-ticker [price]="h.currentPrice ?? null"></app-price-ticker>
-            </td>
-            <td class="text-right font-mono" [class]="(h.pnl ?? 0) >= 0 ? 'text-up' : 'text-down'">
-              {{ h.pnl ?? 0 | inr }}
-            </td>
-            <td class="text-right font-mono hide-md" [class]="(h.pnlPercent ?? 0) >= 0 ? 'text-up' : 'text-down'">
-              {{ (h.pnlPercent ?? 0) >= 0 ? '+' : '' }}{{ h.pnlPercent ?? 0 | number: '1.2-2' }}%
-            </td>
-            <td class="text-right font-mono hide-md">
-              {{ (h.currentValue ?? h.averageTradedPrice * h.dpQuantity) | inr }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  } @else {
+    <div class="card">
+      @if (holdings.length) {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Avg Price</th>
+                <th class="text-right hide-sm">Current</th>
+                <th class="text-right">P&amp;L</th>
+                <th class="text-right hide-md">P&amp;L %</th>
+                <th class="text-right hide-md">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (h of holdings; track h.isin) {
+                <tr>
+                  <td>
+                    <span class="symbol-name">{{ h.formattedInstrumentName }}</span>
+                    <span class="isin-tag hide-sm">{{ h.isin }}</span>
+                  </td>
+                  <td class="text-right font-mono">{{ h.dpQuantity }}</td>
+                  <td class="text-right font-mono">{{ h.averageTradedPrice | inr }}</td>
+                  <td class="text-right font-mono hide-sm">
+                    <app-price-ticker [price]="h.currentPrice ?? null"></app-price-ticker>
+                  </td>
+                  <td
+                    class="text-right font-mono"
+                    [class]="(h.pnl ?? 0) >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ h.pnl ?? 0 | inr }}
+                  </td>
+                  <td
+                    class="text-right font-mono hide-md"
+                    [class]="(h.pnlPercent ?? 0) >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ (h.pnlPercent ?? 0) >= 0 ? '+' : ''
+                    }}{{ h.pnlPercent ?? 0 | number: '1.2-2' }}%
+                  </td>
+                  <td class="text-right font-mono hide-md">
+                    {{ h.currentValue ?? h.averageTradedPrice * h.dpQuantity | inr }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-empty-state
+          icon="◉"
+          title="No holdings found"
+          subtitle="Delivered positions will appear here"
+        ></app-empty-state>
+      }
     </div>
-  </div>
+  }
 </div>
