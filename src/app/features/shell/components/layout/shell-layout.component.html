@@ -1,8 +1,5 @@
 <div class="shell" [class.shell--collapsed]="!sidebarOpen">
-  <app-sidebar
-    [open]="sidebarOpen"
-    (toggleSidebar)="toggleSidebar()"
-  ></app-sidebar>
+  <app-sidebar [open]="sidebarOpen" (toggleSidebar)="toggleSidebar()"></app-sidebar>
 
   <div class="shell__main">
     <app-navbar (menuToggle)="toggleSidebar()"></app-navbar>

@@ -1,13 +1,16 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
 import { AuthService } from '../../../../core/services/auth.service';
 import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  imports: [CommonModule, ReactiveFormsModule],
 })
 export class LoginComponent {
   readonly form: FormGroup;
@@ -16,14 +19,16 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     public authService: AuthService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
   ) {
     this.form = this.fb.group({
       appCode: ['', [Validators.required, Validators.minLength(4)]],
     });
   }
 
-  get isDark(): boolean { return this.themeService.isDark; }
+  get isDark(): boolean {
+    return this.themeService.isDark;
+  }
 
   login(): void {
     if (this.form.invalid) return;
@@ -31,5 +36,7 @@ export class LoginComponent {
     this.authService.initiateLogin(appCode.trim());
   }
 
-  toggleTheme(): void { this.themeService.toggle(); }
+  toggleTheme(): void {
+    this.themeService.toggle();
+  }
 }

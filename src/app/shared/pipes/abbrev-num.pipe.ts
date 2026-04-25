@@ -5,7 +5,9 @@ const LAKH = 100_000;
 const THOUSAND = 1_000;
 
 @Pipe({
-  standalone: false, name: 'abbrevNum' })
+  standalone: true,
+  name: 'abbrevNum',
+})
 export class AbbrevNumPipe implements PipeTransform {
   transform(value: number | null | undefined): string {
     if (value == null) return '—';

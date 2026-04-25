@@ -2,9 +2,9 @@ import { Component, Input } from '@angular/core';
 import { SpinnerSize } from '../../enums/ui.enums';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-spinner',
-  template: `<div class="spinner spinner--{{size}}"></div>`,
+  template: `<div class="spinner spinner--{{ size }}"></div>`,
   styleUrls: ['./spinner.component.scss'],
 })
 export class SpinnerComponent {

@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ButtonVariant, ButtonSize } from '../../enums/ui.enums';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-button',
   template: `
     <button

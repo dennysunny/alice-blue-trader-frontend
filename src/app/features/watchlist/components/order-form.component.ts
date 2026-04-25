@@ -7,7 +7,7 @@ import {
   Output,
   inject,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { APP_CONSTANTS } from '../../../core/configs/api.config';
 import {
@@ -23,10 +23,11 @@ import { NotificationService } from '../../../core/services/notification.service
 import { OrderService } from '../../../core/services/order.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-order-form',
   templateUrl: './order-form.component.html',
   styleUrls: ['./order-form.component.scss'],
+  imports: [ReactiveFormsModule],
 })
 export class OrderFormComponent implements OnInit {
   @Input() item!: WatchlistItem;

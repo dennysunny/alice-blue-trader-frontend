@@ -1,15 +1,16 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 
-import { takeUntil, debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { APP_CONSTANTS } from '../../../core/configs/api.config';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-search-bar',
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
+  imports: [ReactiveFormsModule],
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
   @Input() placeholder = 'Search symbols…';

@@ -10,7 +10,7 @@ import { PortfolioService } from '../../../core/services/portfolio.service';
 type PosTab = 'day' | 'net';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-positions-page',
   templateUrl: './positions-page.component.html',
   styleUrls: ['./positions-page.component.scss'],

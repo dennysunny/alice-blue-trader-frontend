@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-empty-state',
   template: `
     <div class="empty-state">

@@ -1,8 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
+
 import { APP_CONSTANTS } from '../../core/configs/api.config';
 
 @Pipe({
-  standalone: false, name: 'priceChange' })
+  standalone: true,
+  name: 'priceChange',
+})
 export class PriceChangePipe implements PipeTransform {
   transform(value: number | null | undefined): string {
     if (value == null) return '—';

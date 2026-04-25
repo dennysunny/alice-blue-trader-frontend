@@ -9,6 +9,7 @@ import { MarketService } from '../../../core/services/market.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { WatchlistService } from '../../../core/services/watchlist.service';
 import { WebSocketService } from '../../../core/services/websocket.service';
+import { SearchBarComponent } from '../../../shared/components/search-bar/search-bar.component';
 
 interface WatchlistRow extends WatchlistItem {
   ltp: number | null;
@@ -19,10 +20,11 @@ interface WatchlistRow extends WatchlistItem {
 }
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-watchlist-page',
   templateUrl: './watchlist-page.component.html',
   styleUrls: ['./watchlist-page.component.scss'],
+  imports: [SearchBarComponent],
 })
 export class WatchlistPageComponent implements OnInit, OnDestroy {
   rows: WatchlistRow[] = [];

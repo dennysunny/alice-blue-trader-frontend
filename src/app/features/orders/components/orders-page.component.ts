@@ -20,7 +20,7 @@ const STATUS_VARIANT_MAP: Record<string, BadgeVariant> = {
 };
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-orders-page',
   templateUrl: './orders-page.component.html',
   styleUrls: ['./orders-page.component.scss'],

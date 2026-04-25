@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ThemeService } from './core/services/theme.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
 })

@@ -5,7 +5,7 @@ import { NotificationService, Notification } from '../../../core/services/notifi
 import { NotificationType } from '../../../core/enums/app.enums';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-toast-container',
   templateUrl: './toast-container.component.html',
   styleUrls: ['./toast-container.component.scss'],

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
@@ -18,10 +19,11 @@ interface StatCard {
 }
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-dashboard-page',
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.scss'],
+  imports: [CommonModule],
 })
 export class DashboardPageComponent implements OnInit, OnDestroy {
   loading = true;
@@ -36,17 +38,17 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     private portfolioService: PortfolioService,
     private orderService: OrderService,
     private fundsService: FundsService,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   readonly today = new Date();
 
   getOrderStatusVariant(status: string): string {
     const map: Record<string, string> = {
-      'complete': 'success',
-      'open': 'info',
-      'cancelled': 'neutral',
-      'rejected': 'danger',
+      complete: 'success',
+      open: 'info',
+      cancelled: 'neutral',
+      rejected: 'danger',
       'trigger pending': 'warning',
     };
     return map[status?.toLowerCase()] ?? 'neutral';
@@ -58,15 +60,11 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
 
   private loadData(): void {
     forkJoin({
-      holdings: this.portfolioService.getHoldings(HoldingsProductType.MTF).pipe(
-        catchError(() => of({ result: [] }))
-      ),
-      orders: this.orderService.getOrderBook().pipe(
-        catchError(() => of({ result: [] }))
-      ),
-      funds: this.fundsService.getFundsLimits().pipe(
-        catchError(() => of({ result: [] }))
-      ),
+      holdings: this.portfolioService
+        .getHoldings(HoldingsProductType.MTF)
+        .pipe(catchError(() => of({ result: [] }))),
+      orders: this.orderService.getOrderBook().pipe(catchError(() => of({ result: [] }))),
+      funds: this.fundsService.getFundsLimits().pipe(catchError(() => of({ result: [] }))),
     })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -76,7 +74,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
           this.fundsData = funds.result?.[0] ?? null;
           this.buildStatCards();
           this.loading = false;
-          console.log(this.loading)
+          console.log(this.loading);
           this.cdr.markForCheck();
         },
         error: () => {
@@ -128,4 +126,3 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 }
-

@@ -12,7 +12,7 @@ interface FundsRow {
 }
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-funds-page',
   templateUrl: './funds-page.component.html',
   styleUrls: ['./funds-page.component.scss'],
@@ -31,7 +31,8 @@ export class FundsPageComponent implements OnInit, OnDestroy {
   }
 
   getFundLimits(): void {
-    this.fundsService.getFundsLimits()
+    this.fundsService
+      .getFundsLimits()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
@@ -41,7 +42,7 @@ export class FundsPageComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.loading = false;
-          this.cdr.markForCheck()
+          this.cdr.markForCheck();
         },
       });
   }
@@ -53,32 +54,32 @@ export class FundsPageComponent implements OnInit, OnDestroy {
         {
           label: 'Available Margin',
           value: l.tradingLimit,
-          highlight: true
+          highlight: true,
         },
         {
           label: 'Opening Balance',
-          value: l.openingCashLimit
+          value: l.openingCashLimit,
         },
         {
           label: 'Utilized Margin',
-          value: l.utilizedMargin
+          value: l.utilizedMargin,
         },
         {
           label: 'SPAN Margin',
-          value: l.utilizedSpanMargin
+          value: l.utilizedSpanMargin,
         },
         {
           label: 'Exposure Margin',
-          value: l.utilizedExposureMargin
+          value: l.utilizedExposureMargin,
         },
         {
           label: 'Collateral',
-          value: l.collateralMargin
+          value: l.collateralMargin,
         },
         {
           label: 'Adhoc Margin',
-          value: l.adhocMargin
-        }
+          value: l.adhocMargin,
+        },
       ],
     }));
   }

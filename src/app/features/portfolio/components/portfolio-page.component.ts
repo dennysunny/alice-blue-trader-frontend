@@ -7,7 +7,7 @@ import { Holding } from '../../../core/models/portfolio.models';
 import { PortfolioService } from '../../../core/services/portfolio.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-portfolio-page',
   templateUrl: './portfolio-page.component.html',
   styleUrls: ['./portfolio-page.component.scss'],
