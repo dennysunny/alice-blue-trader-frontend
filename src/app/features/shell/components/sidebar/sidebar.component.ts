@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { RouteSegment } from '../../../../core/enums/app.enums';
 
@@ -22,6 +23,7 @@ const NAV_LINKS: NavLink[] = [
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
+  imports: [RouterLink, RouterLinkActive],
 })
 export class SidebarComponent {
   @Input() open = true;

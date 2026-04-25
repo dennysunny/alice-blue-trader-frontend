@@ -10,6 +10,8 @@ import { Holding } from '../../../core/models/portfolio.models';
 import { FundsService } from '../../../core/services/funds.service';
 import { OrderService } from '../../../core/services/order.service';
 import { PortfolioService } from '../../../core/services/portfolio.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 interface StatCard {
   label: string;
@@ -23,7 +25,7 @@ interface StatCard {
   selector: 'app-dashboard-page',
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.scss'],
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent, SpinnerComponent],
 })
 export class DashboardPageComponent implements OnInit, OnDestroy {
   loading = true;
@@ -74,7 +76,6 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
           this.fundsData = funds.result?.[0] ?? null;
           this.buildStatCards();
           this.loading = false;
-          console.log(this.loading);
           this.cdr.markForCheck();
         },
         error: () => {

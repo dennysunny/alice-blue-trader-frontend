@@ -2,112 +2,117 @@
   <div class="dashboard__header">
     <h1 class="dashboard__title">Dashboard</h1>
     <span class="dashboard__date">{{ today | date: 'EEEE, d MMMM y' }}</span>
-    <span>{{loading}}</span>
   </div>
 
   <!-- Stat Cards -->
-  @if(loading) {
-  <div class="loading-overlay">
-    <app-spinner size="lg"></app-spinner>
-  </div>
+  @if (loading) {
+    <div class="loading-overlay">
+      <app-spinner size="lg"></app-spinner>
+    </div>
   } @else {
-  <div class="stat-grid">
-    @for (card of statCards; track $index) {
-    <div class="stat-card" [class.stat-card--positive]="card.isPositive === true"
-      [class.stat-card--negative]="card.isPositive === false">
-      <div class="stat-card__label">{{ card.label }}</div>
-      <div class="stat-card__value">{{ card.value }}</div>
-      @if(card.subValue) {
-      <div class="stat-card__sub">{{ card.subValue }}</div>
+    <div class="stat-grid">
+      @for (card of statCards; track $index) {
+        <div
+          class="stat-card"
+          [class.stat-card--positive]="card.isPositive"
+          [class.stat-card--negative]="card.isPositive === false"
+        >
+          <div class="stat-card__label">{{ card.label }}</div>
+          <div class="stat-card__value">{{ card.value }}</div>
+          @if (card.subValue) {
+            <div class="stat-card__sub">{{ card.subValue }}</div>
+          }
+        </div>
       }
     </div>
-    }
-  </div>
   }
 
-  @if(!loading) {
-  <div class="dashboard__grid">
-    <!-- Recent Orders -->
-    <div class="card">
-      <div class="dashboard__section-header">
-        <h3 class="section-title">Recent Orders</h3>
-        <a routerLink="/orders" class="dashboard__view-all">View all →</a>
-      </div>
-      @if(recentOrders.length === 0) {
-      <app-empty-state icon="↕" title="No orders today"></app-empty-state>
-
-      }
-      @if(recentOrders.length > 0){
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Type</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for(order of recentOrders; track order.brokerOrderId){
-          <tr>
-            <td>
-              <span class="symbol-name">{{ order.formattedInstrumentName }}</span>
-              <span class="exchange-tag">{{ order.exchange }}</span>
-            </td>
-            <td>
-              <span [class]="order.transactionType === 'BUY' ? 'text-up' : 'text-down'" class="font-bold">
-                {{ order.transactionType }}
-              </span>
-            </td>
-            <td class="font-mono">{{ order.quantity }}</td>
-            <td class="font-mono">{{ order.price | number: '1.2-2' }}</td>
-            <td>
-              <app-badge [variant]="getOrderStatusVariant(order.status)">{{ order.status }}</app-badge>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-      }
-    </div>
-
-    <!-- Top Holdings -->
-    <div class="card">
-      <div class="dashboard__section-header">
-        <h3 class="section-title">Top Holdings</h3>
-        <a routerLink="/portfolio" class="dashboard__view-all">View all →</a>
+  @if (!loading) {
+    <div class="dashboard__grid">
+      <!-- Recent Orders -->
+      <div class="card">
+        <div class="dashboard__section-header">
+          <h3 class="section-title">Recent Orders</h3>
+          <a routerLink="/orders" class="dashboard__view-all">View all →</a>
+        </div>
+        @if (recentOrders.length > 0) {
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Type</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of recentOrders; track order.brokerOrderId) {
+                <tr>
+                  <td>
+                    <span class="symbol-name">{{ order.formattedInstrumentName }}</span>
+                    <span class="exchange-tag">{{ order.exchange }}</span>
+                  </td>
+                  <td>
+                    <span
+                      [class]="order.transactionType === 'BUY' ? 'text-up' : 'text-down'"
+                      class="font-bold"
+                    >
+                      {{ order.transactionType }}
+                    </span>
+                  </td>
+                  <td class="font-mono">{{ order.quantity }}</td>
+                  <td class="font-mono">{{ order.price | number: '1.2-2' }}</td>
+                  <td>
+                    <app-badge [variant]="getOrderStatusVariant(order.status)">{{
+                      order.status
+                    }}</app-badge>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <app-empty-state icon="↕" title="No orders today"></app-empty-state>
+        }
       </div>
 
-      @if(holdings.length) {
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Qty</th>
-            <th>Avg Price</th>
-            <th>P&L</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for(h of holdings; track h.isin){
-          <tr>
-            <td>
-              <span class="symbol-name">{{ h.formattedInstrumentName }}</span>
-            </td>
-            <td class="font-mono">{{ h.dpQuantity }}</td>
-            <td class="font-mono">₹{{ h.averageTradedPrice | number: '1.2-2' }}</td>
-            <td [class]="(h.pnl ?? 0) >= 0 ? 'text-up font-mono' : 'text-down font-mono'">
-              {{ (h.pnl ?? 0) >= 0 ? '+' : '' }}{{ h.pnl ?? 0 | number: '1.2-2' }}
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-      } @else {
-      <app-empty-state icon="◉" title="No holdings found"></app-empty-state>
-      }
+      <!-- Top Holdings -->
+      <div class="card">
+        <div class="dashboard__section-header">
+          <h3 class="section-title">Top Holdings</h3>
+          <a routerLink="/portfolio" class="dashboard__view-all">View all →</a>
+        </div>
+
+        @if (holdings.length) {
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Qty</th>
+                <th>Avg Price</th>
+                <th>P&L</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (h of holdings; track h.isin) {
+                <tr>
+                  <td>
+                    <span class="symbol-name">{{ h.formattedInstrumentName }}</span>
+                  </td>
+                  <td class="font-mono">{{ h.dpQuantity }}</td>
+                  <td class="font-mono">₹{{ h.averageTradedPrice | number: '1.2-2' }}</td>
+                  <td [class]="(h.pnl ?? 0) >= 0 ? 'text-up font-mono' : 'text-down font-mono'">
+                    {{ (h.pnl ?? 0) >= 0 ? '+' : '' }}{{ h.pnl ?? 0 | number: '1.2-2' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <app-empty-state icon="◉" title="No holdings found"></app-empty-state>
+        }
+      </div>
     </div>
-  </div>
   }
 </div>

@@ -5,12 +5,17 @@ import { takeUntil } from 'rxjs/operators';
 import { HoldingsProductType } from '../../../core/enums/api.enums';
 import { Holding } from '../../../core/models/portfolio.models';
 import { PortfolioService } from '../../../core/services/portfolio.service';
+import { InrPipe } from '../../../shared/pipes/inr.pipe';
+import { CommonModule } from '@angular/common';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 @Component({
   standalone: true,
   selector: 'app-portfolio-page',
   templateUrl: './portfolio-page.component.html',
   styleUrls: ['./portfolio-page.component.scss'],
+  imports: [InrPipe, CommonModule, EmptyStateComponent, SpinnerComponent],
 })
 export class PortfolioPageComponent implements OnInit, OnDestroy {
   holdings: Holding[] = [];
@@ -41,9 +46,11 @@ export class PortfolioPageComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.holdings = res.result ?? [];
           this.loading = false;
+          this.cdr.markForCheck();
         },
         error: () => {
           this.loading = false;
+          this.cdr.markForCheck();
         },
       });
   }

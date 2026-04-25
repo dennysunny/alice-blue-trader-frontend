@@ -4,6 +4,9 @@ import { takeUntil } from 'rxjs/operators';
 
 import { FundsService } from '../../../core/services/funds.service';
 import { FundsLimits } from '../../../core/models/funds.models';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { InrPipe } from '../../../shared/pipes/inr.pipe';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 interface FundsRow {
   label: string;
@@ -16,6 +19,7 @@ interface FundsRow {
   selector: 'app-funds-page',
   templateUrl: './funds-page.component.html',
   styleUrls: ['./funds-page.component.scss'],
+  imports: [EmptyStateComponent, InrPipe, SpinnerComponent],
 })
 export class FundsPageComponent implements OnInit, OnDestroy {
   loading = true;

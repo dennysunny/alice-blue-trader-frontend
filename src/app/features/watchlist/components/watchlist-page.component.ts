@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -10,6 +11,10 @@ import { NotificationService } from '../../../core/services/notification.service
 import { WatchlistService } from '../../../core/services/watchlist.service';
 import { WebSocketService } from '../../../core/services/websocket.service';
 import { SearchBarComponent } from '../../../shared/components/search-bar/search-bar.component';
+import { AbbrevNumPipe } from '../../../shared/pipes/abbrev-num.pipe';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { OrderFormComponent } from './order-form.component';
 
 interface WatchlistRow extends WatchlistItem {
   ltp: number | null;
@@ -24,7 +29,14 @@ interface WatchlistRow extends WatchlistItem {
   selector: 'app-watchlist-page',
   templateUrl: './watchlist-page.component.html',
   styleUrls: ['./watchlist-page.component.scss'],
-  imports: [SearchBarComponent],
+  imports: [
+    SearchBarComponent,
+    AbbrevNumPipe,
+    CommonModule,
+    SpinnerComponent,
+    EmptyStateComponent,
+    OrderFormComponent,
+  ],
 })
 export class WatchlistPageComponent implements OnInit, OnDestroy {
   rows: WatchlistRow[] = [];

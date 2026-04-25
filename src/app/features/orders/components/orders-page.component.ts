@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,6 +8,8 @@ import { Order, Trade } from '../../../core/models/order.models';
 import { NotificationService } from '../../../core/services/notification.service';
 import { OrderService } from '../../../core/services/order.service';
 import { BadgeVariant } from '../../../shared/enums/ui.enums';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 type ActiveTab = 'orders' | 'trades';
 
@@ -24,6 +27,7 @@ const STATUS_VARIANT_MAP: Record<string, BadgeVariant> = {
   selector: 'app-orders-page',
   templateUrl: './orders-page.component.html',
   styleUrls: ['./orders-page.component.scss'],
+  imports: [CommonModule, EmptyStateComponent, SpinnerComponent],
 })
 export class OrdersPageComponent implements OnInit, OnDestroy {
   activeTab: ActiveTab = 'orders';

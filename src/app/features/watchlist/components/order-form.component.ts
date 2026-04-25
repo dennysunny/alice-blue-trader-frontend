@@ -21,13 +21,14 @@ import { PlaceOrderRequest } from '../../../core/models/order.models';
 import { WatchlistItem } from '../../../core/models/watchlist.models';
 import { NotificationService } from '../../../core/services/notification.service';
 import { OrderService } from '../../../core/services/order.service';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 @Component({
   standalone: true,
   selector: 'app-order-form',
   templateUrl: './order-form.component.html',
   styleUrls: ['./order-form.component.scss'],
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, SpinnerComponent],
 })
 export class OrderFormComponent implements OnInit {
   @Input() item!: WatchlistItem;

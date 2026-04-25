@@ -6,6 +6,10 @@ import { OrderType, TransactionType } from '../../../core/enums/api.enums';
 import { Position } from '../../../core/models/portfolio.models';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PortfolioService } from '../../../core/services/portfolio.service';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { CommonModule } from '@angular/common';
+import { InrPipe } from '../../../shared/pipes/inr.pipe';
 
 type PosTab = 'day' | 'net';
 
@@ -14,6 +18,7 @@ type PosTab = 'day' | 'net';
   selector: 'app-positions-page',
   templateUrl: './positions-page.component.html',
   styleUrls: ['./positions-page.component.scss'],
+  imports: [SpinnerComponent, EmptyStateComponent, CommonModule, InrPipe],
 })
 export class PositionsPageComponent implements OnInit, OnDestroy {
   activeTab: PosTab = 'day';
