@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, inject } from '@angular/core';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { ThemeService } from '../../../../core/services/theme.service';
@@ -14,10 +14,8 @@ export class NavbarComponent {
 
   readonly marketTime = new Date();
 
-  constructor(
-    public authService: AuthService,
-    public themeService: ThemeService,
-  ) {}
+  protected readonly themeService = inject(ThemeService);
+  protected readonly authService = inject(AuthService);
 
   get userName(): string {
     return (
@@ -25,16 +23,7 @@ export class NavbarComponent {
     );
   }
 
-  get isDark(): boolean {
-    return this.themeService.isDark;
-  }
-
-  toggleTheme(): void {
-    this.themeService.toggle();
-  }
-
   goToProfile(): void {
-    console.log('get profile');
     this.authService.getUserInfo();
   }
 

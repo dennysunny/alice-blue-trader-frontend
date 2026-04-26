@@ -6,12 +6,14 @@ export enum Theme {
 export enum RouteSegment {
   AUTH = 'auth',
   LOGIN = 'login',
+  CALLBACK = 'callback',
   DASHBOARD = 'dashboard',
   WATCHLIST = 'watchlist',
   ORDERS = 'orders',
   PORTFOLIO = 'portfolio',
   POSITIONS = 'positions',
   FUNDS = 'funds',
+  STOCK = 'stock',
 }
 
 export enum StorageKey {
@@ -42,4 +44,18 @@ export enum MarketStatus {
   CLOSED = 'CLOSED',
   PRE_MARKET = 'PRE_MARKET',
   POST_MARKET = 'POST_MARKET',
+}
+
+export enum ChartResolution {
+  ONE_MIN = '1',
+  FIVE_MIN = '5',
+  FIFTEEN_MIN = '15',
+  THIRTY_MIN = '30',
+  ONE_HOUR = '60',
+  ONE_DAY = 'D',
+}
+
+export enum OptionType {
+  CE = 'CE',
+  PE = 'PE',
 }

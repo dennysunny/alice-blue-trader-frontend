@@ -1,3 +1,4 @@
+import { HistoryResponseTypes } from '../../shared/types/shared-types';
 import { Exchange } from '../enums/api.enums';
 
 export interface Instrument {
@@ -48,6 +49,57 @@ export interface MarketDepth {
   exchange: Exchange;
   buy: MarketDepthEntry[];
   sell: MarketDepthEntry[];
+}
+
+export interface Candle {
+  time: number; // Unix seconds
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface HistoryRequest {
+  token: string;
+  resolution: string;
+  from: string; // epoch ms as string
+  to: string;
+  exchange: string;
+}
+
+export interface HistoryResponse {
+  s: HistoryResponseTypes;
+  t?: number[]; // timestamps (epoch seconds)
+  o?: number[];
+  h?: number[];
+  l?: number[];
+  c?: number[];
+  v?: number[];
+}
+
+export interface OptionStrike {
+  strikePrice: number;
+  CE?: OptionContract;
+  PE?: OptionContract;
+}
+
+export interface OptionContract {
+  instrumentId: string;
+  tradingSymbol: string;
+  ltp: number;
+  change: number;
+  changePercent: number;
+  oi: number;
+  oiChange: number;
+  volume: number;
+  iv: number;
+  delta?: number;
+  theta?: number;
+  vega?: number;
+  gamma?: number;
+  bidPrice: number;
+  askPrice: number;
 }
 
 export interface WebSocketFeed {

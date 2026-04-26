@@ -1,6 +1,6 @@
 <div class="login-page">
-  <button class="theme-toggle" (click)="toggleTheme()" title="Toggle theme">
-    {{ isDark ? '☀️' : '🌙' }}
+  <button class="theme-toggle" (click)="themeService.toggle()" title="Toggle theme">
+    {{ themeService.themeConfig().icon }}
   </button>
 
   <div class="login-card">
@@ -15,10 +15,12 @@
     <h2 class="login-card__title">Sign in to trade</h2>
     <p class="login-card__subtitle">
       Enter your App Code from the
-      <a href="https://a3.aliceblueonline.com" target="_blank" rel="noopener">AliceBlue Developer Console</a>
+      <a href="https://a3.aliceblueonline.com" target="_blank" rel="noopener"
+        >AliceBlue Developer Console</a
+      >
     </p>
 
-    <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
       <div class="form-group">
         <label class="form-label">App Code</label>
         <div class="input-wrapper">
@@ -29,19 +31,13 @@
             placeholder="Your AliceBlue App Code"
             autocomplete="off"
           />
-          <button
-            type="button"
-            class="input-toggle"
-            (click)="showApiKey = !showApiKey"
-          >{{ showApiKey ? '🙈' : '👁️' }}</button>
+          <button type="button" class="input-toggle" (click)="showApiKey = !showApiKey">
+            {{ showApiKey ? '🙈' : '👁️' }}
+          </button>
         </div>
       </div>
 
-      <button
-        class="login-btn"
-        type="submit"
-        [disabled]="form.invalid"
-      >
+      <button class="login-btn" type="submit" [disabled]="loginForm.invalid">
         <span>Connect to AliceBlue →</span>
       </button>
     </form>

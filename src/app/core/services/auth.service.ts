@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
-
 import { API_CONFIG, API_ENDPOINTS, API_METHODS } from '../configs/api.config';
 import { ApiStatus } from '../enums/api.enums';
 import { RouteSegment, StorageKey } from '../enums/app.enums';
@@ -29,7 +28,7 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private storage: StorageService,
-    private apiService: ApiService
+    private apiService: ApiService,
   ) {
     this.rehydrateSession();
   }
@@ -50,8 +49,12 @@ export class AuthService {
     window.location.href = `${API_CONFIG.AUTH_URL}${API_ENDPOINTS.AUTH.LOGIN_REDIRECT}${appCode}`;
   }
 
-  createSession(userId: string, authCode: string, apiSecret: string): Observable<UserSessionApiResponse> {
-    const url = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.AUTH.BE_GET_USER_DETAILS}`
+  createSession(
+    userId: string,
+    authCode: string,
+    apiSecret: string,
+  ): Observable<UserSessionApiResponse> {
+    const url = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.AUTH.BE_GET_USER_DETAILS}`;
 
     this.setLoading(true);
 
@@ -64,10 +67,10 @@ export class AuthService {
         }
       }),
       catchError((err) => {
-        console.log('err', err)
+        console.log('err', err);
         this.setError(err.message ?? 'Authentication failed');
         return throwError(() => err);
-      })
+      }),
     );
   }
 
@@ -109,30 +112,34 @@ export class AuthService {
   }
 
   getUserInfo(): void {
-    this.apiService.post(API_CONFIG.PROXY_URL, {
-      method: API_METHODS.GET,
-      endpoint: API_ENDPOINTS.PROFILE.GET_PROFILE,
-      session: this.sessionId
-    }).subscribe({
-      next: (response: any) => {
-        const { clientId, clientName, accountStatus, exchanges, products, } = response.result[0];
-        const user = {
-          userId: clientId,
-          sessionId: this.sessionId!,
-          userName: clientName,
-          accountStatus,
-          enabledExchanges: exchanges,
-          enabledProducts: products
-        }
-        console.log('user', user)
-        // this.authState.next({
-        //   ...this.authState.value,
-        //   user: user as UserSession
-        // })
-      },
-      error: (err) => {
-        console.error(err)
-      }
-    })
+    this.apiService
+      .post(API_CONFIG.PROXY_URL, {
+        method: API_METHODS.GET,
+        endpoint: API_ENDPOINTS.PROFILE.GET_PROFILE,
+        session: this.sessionId,
+      })
+      .subscribe({
+        next: (response: any) => {
+          if (response.result.length) {
+            const { clientId, clientName, accountStatus, exchanges, products } = response.result[0];
+            const user = {
+              userId: clientId,
+              sessionId: this.sessionId!,
+              userName: clientName,
+              accountStatus,
+              enabledExchanges: exchanges,
+              enabledProducts: products,
+            };
+            console.log('user', user);
+            // this.authState.next({
+            //   ...this.authState.value,
+            //   user: user as UserSession
+            // })
+          }
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
   }
 }

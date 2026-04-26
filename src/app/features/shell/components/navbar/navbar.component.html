@@ -1,8 +1,6 @@
 <nav class="navbar">
   <div class="navbar__left">
-    <button class="navbar__menu-btn" (click)="menuToggle.emit()" title="Toggle sidebar">
-      ☰
-    </button>
+    <button class="navbar__menu-btn" (click)="menuToggle.emit()" title="Toggle sidebar">☰</button>
     <div class="navbar__brand">
       <span class="navbar__brand-mark">ANT</span>
       <span class="navbar__brand-name">AliceBlue</span>
@@ -17,16 +15,19 @@
   </div>
 
   <div class="navbar__right">
-    <button class="navbar__icon-btn" (click)="toggleTheme()" [title]="isDark ? 'Light mode' : 'Dark mode'">
-      {{ isDark ? '☀️' : '🌙' }}
+    @let isDark = themeService.isDark();
+    <button
+      class="navbar__icon-btn"
+      (click)="themeService.toggle()"
+      [title]="themeService.themeConfig().label"
+    >
+      {{ themeService.themeConfig().icon }}
     </button>
 
     <div class="navbar__user">
-      <button class="navbar__avatar" (click)="goToProfile()" >{{ userName.slice(0,3) }}</button>
+      <button class="navbar__avatar" (click)="goToProfile()">{{ userName.slice(0, 3) }}</button>
     </div>
 
-    <button class="navbar__logout_btn navbar__logout" (click)="logout()" title="Logout">
-      ➜]
-    </button>
+    <button class="navbar__logout_btn navbar__logout" (click)="logout()" title="Logout">➜]</button>
   </div>
 </nav>

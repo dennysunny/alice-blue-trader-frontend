@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { HoldingsProductType, OrderStatus } from '../../../../core/enums/api.enums';
+import { StatContext } from '../../../../core/models/dashboard.model';
 import { FundsLimits } from '../../../../core/models/funds.models';
 import { Order } from '../../../../core/models/order.models';
 import { Holding } from '../../../../core/models/portfolio.models';
@@ -14,8 +16,6 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { BadgeVariant } from '../../../../shared/enums/ui.enums';
 import { statusCardConfig, statusTypes } from '../../configs/dashboard.confg';
-import { StatContext } from '../../../../core/models/dashboard.model';
-import { RouterLink } from '@angular/router';
 
 @Component({
   standalone: true,

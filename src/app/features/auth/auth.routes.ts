@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
 
-import { LoginComponent } from './components/login/login.component';
+import { RouteSegment } from '../../core/enums/app.enums';
 import { CallbackComponent } from './components/callback/callback.component';
+import { LoginComponent } from './components/login/login.component';
 
 export const authRoutes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'callback', component: CallbackComponent },
+  { path: RouteSegment.LOGIN, component: LoginComponent },
+  { path: RouteSegment.CALLBACK, component: CallbackComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];

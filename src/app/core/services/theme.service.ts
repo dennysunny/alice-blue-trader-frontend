@@ -1,49 +1,29 @@
-import { ChangeDetectorRef, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-
-import { StorageKey, Theme } from '../enums/app.enums';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
+import { Theme, StorageKey } from '../enums/app.enums';
 import { StorageService } from './storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  private readonly themeSubject: BehaviorSubject<Theme>;
-  readonly theme$;
+  private readonly storage = inject(StorageService);
 
-  constructor(private storage: StorageService) {
-    const initialTheme = this.getInitialTheme();
-    this.themeSubject = new BehaviorSubject<Theme>(initialTheme);
-    this.theme$ = this.themeSubject.asObservable();
+  readonly theme = signal<Theme>(this.storage.get<Theme>(StorageKey.THEME) ?? Theme.DARK);
+  readonly isDark = computed(() => this.theme() === Theme.DARK);
+  readonly themeConfig = computed(() => {
+    const isDark = this.theme() === Theme.DARK;
+    return {
+      icon: isDark ? '☀️' : '🌙',
+      label: isDark ? 'Light mode' : 'Dark mode',
+    };
+  });
 
-    this.applyTheme(this.themeSubject.value);
+  constructor() {
+    effect(() => {
+      document.documentElement.setAttribute('data-theme', this.theme());
+      this.storage.set(StorageKey.THEME, this.theme());
+    });
   }
-
-  get currentTheme(): Theme {
-    return this.themeSubject.value;
-  }
-
-  get isDark(): boolean {
-    return this.themeSubject.value === Theme.DARK;
-  }
-
-  initializeTheme(): void {}
 
   toggle(): void {
-    const next = this.isDark ? Theme.LIGHT : Theme.DARK;
-    this.setTheme(next);
-  }
-
-  setTheme(theme: Theme): void {
-    this.themeSubject.next(theme);
-    this.storage.set(StorageKey.THEME, theme);
-    this.applyTheme(theme);
-  }
-
-  private applyTheme(theme: Theme): void {
-    const root = document.documentElement;
-    root.setAttribute('data-theme', theme);
-  }
-
-  private getInitialTheme(): Theme {
-    return this.storage.get<Theme>(StorageKey.THEME) ?? Theme.DARK;
+    this.theme.set(this.isDark() ? Theme.LIGHT : Theme.DARK);
   }
 }

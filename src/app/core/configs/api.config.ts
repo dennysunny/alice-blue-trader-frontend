@@ -1,3 +1,5 @@
+import { ErrorCode } from '../enums/api.enums';
+
 export const API_CONFIG = {
   REST_BASE_URL: 'https://ant.aliceblueonline.com/rest/AliceBlueAPIService/api',
   WEBSOCKET_URL: 'wss://ws1.aliceblueonline.com/NorenWS/',
@@ -7,7 +9,7 @@ export const API_CONFIG = {
   CLOUD_API_BASE_URL: 'https://alice-blue-backend.onrender.com',
   BASE_URL: 'http://localhost:3000',
   //BASE_URL: 'https://a3.aliceblueonline.com',
-  PROXY_URL: '/api/shell'
+  PROXY_URL: '/api/shell',
 } as const;
 
 export const API_ENDPOINTS = {
@@ -33,7 +35,7 @@ export const API_ENDPOINTS = {
     CONVERSION: '/conversion',
   },
   FUNDS: {
-    GET_FUNDS: '/limits'
+    GET_FUNDS: '/limits',
   },
   MARKET: {
     SEARCH_SYMBOL: '/market/search',
@@ -47,11 +49,11 @@ export const API_ENDPOINTS = {
     DELETE_SCRIP: '/marketWatch/deleteMWScrip',
   },
   PROFILE: {
-    GET_PROFILE: '/profile'
+    GET_PROFILE: '/profile',
   },
   HISTORY: {
-    CHART_HISTORY: '/chart/history'
-  }
+    CHART_HISTORY: '/chart/history',
+  },
 } as const;
 
 export const APP_CONSTANTS = {
@@ -71,7 +73,35 @@ export const APP_CONSTANTS = {
 } as const;
 
 export const API_METHODS = {
-  GET: "GET",
-  POST: "POST",
-  PUT: "PUT"
-}
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+};
+
+export const ERRORS = {
+  HTTP_UNAUTHORIZED: 401,
+  HTTP_FORBIDDEN: 403,
+  UNAUTHORIZED: 'Unauthorized',
+};
+
+export const ERROR_MESSAGES: Record<ErrorCode, string> = {
+  [ErrorCode.GENERIC]: 'An error occurred. Please try again later.',
+  [ErrorCode.INVALID_EXCHANGE_EMPTY]: "'exchange' cannot be empty or null.",
+  [ErrorCode.INVALID_EXCHANGE_VALUE]:
+    "'exchange' should be one of the following values: NSE, BSE, MCX, NFO, BFO, CDS, BCD.",
+  [ErrorCode.TRADING_SYMBOL_EMPTY]: "'tradingSymbol' cannot be empty or null.",
+  [ErrorCode.QUANTITY_EMPTY]: "'quantity' cannot be empty or null.",
+  [ErrorCode.QUANTITY_INVALID]: "'quantity' should be a positive number.",
+  [ErrorCode.PRODUCT_EMPTY]: "'product' cannot be empty or null.",
+  [ErrorCode.TRANSACTION_TYPE_EMPTY]: "'transactionType' cannot be empty or null.",
+  [ErrorCode.TOKEN_EMPTY]: "'token' cannot be empty or null.",
+  [ErrorCode.DISCLOSED_QTY_EMPTY]: "'disclosedQty' cannot be empty or null.",
+  [ErrorCode.PRICE_EMPTY]: "'price' cannot be empty or null.",
+  [ErrorCode.TRIGGER_PRICE_EMPTY]: "'triggerPrice' cannot be empty or null.",
+  [ErrorCode.ORDER_FAILED]: 'Failed to place the order.',
+  [ErrorCode.USER_DETAILS_FAILED]: 'Failed to retrieve user details.',
+  [ErrorCode.REQUEST_PARAM_EMPTY]: "'Request parameter' cannot be empty or null.",
+  [ErrorCode.ORDER_BOOK_FAILED]: 'Failed to retrieve the order book.',
+  [ErrorCode.NO_ORDERS]: 'No orders found for this user.',
+  [ErrorCode.SESSION_EXPIRED]: 'Session Expired',
+};
