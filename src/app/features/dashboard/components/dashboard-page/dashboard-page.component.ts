@@ -15,6 +15,7 @@ import { PortfolioService } from '../../../../core/services/portfolio.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { BadgeVariant } from '../../../../shared/enums/ui.enums';
+import { InrPipe } from '../../../../shared/pipes/inr.pipe';
 import { statusCardConfig, statusTypes } from '../../configs/dashboard.confg';
 
 @Component({
@@ -22,7 +23,7 @@ import { statusCardConfig, statusTypes } from '../../configs/dashboard.confg';
   selector: 'app-dashboard-page',
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.scss'],
-  imports: [CommonModule, EmptyStateComponent, SpinnerComponent, RouterLink],
+  imports: [CommonModule, EmptyStateComponent, SpinnerComponent, RouterLink, InrPipe],
 })
 export class DashboardPageComponent implements OnInit {
   readonly today = new Date();

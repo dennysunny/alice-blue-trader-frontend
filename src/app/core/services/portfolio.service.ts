@@ -15,7 +15,10 @@ import { HoldingsProductType } from '../enums/api.enums';
 
 @Injectable({ providedIn: 'root' })
 export class PortfolioService {
-  constructor(private api: ApiService, private authService: AuthService) { }
+  constructor(
+    private api: ApiService,
+    private authService: AuthService,
+  ) {}
 
   getHoldings(holdingType: HoldingsProductType): Observable<ApiResponse<Holding[]>> {
     return this.api.post(API_CONFIG.PROXY_URL, {
@@ -38,7 +41,7 @@ export class PortfolioService {
       method: API_METHODS.POST,
       endpoint: API_ENDPOINTS.PORTFOLIO.CLOSE_OPEN_POSITION,
       session: this.authService.sessionId,
-      data: request
+      data: request,
     });
   }
 
@@ -47,7 +50,7 @@ export class PortfolioService {
       method: API_METHODS.POST,
       endpoint: API_ENDPOINTS.PORTFOLIO.CONVERSION,
       session: this.authService.sessionId,
-      data: request
+      data: request,
     });
   }
 }

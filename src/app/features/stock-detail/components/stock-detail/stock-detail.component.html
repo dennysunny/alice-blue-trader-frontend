@@ -1,0 +1,127 @@
+<div class="stock-detail">
+
+  <!-- ── Top Bar ───────────────────────────────────────────────── -->
+  <header class="stock-detail__header">
+    <div class="stock-detail__nav">
+      <button class="back-btn" (click)="goBack()">← Back</button>
+      <div class="stock-detail__identity">
+        <span class="stock-detail__name">{{ name() }}</span>
+        <span class="stock-detail__exchange">{{ exchange() }}</span>
+      </div>
+    </div>
+
+    @if (quote(); as q) {
+      <div class="stock-detail__ltp-block">
+        <span class="ltp" [class.ltp--up]="q.change >= 0" [class.ltp--down]="q.change < 0">
+          ₹{{ q.ltp | number:'1.2-2' }}
+        </span>
+        <span class="ltp-change" [class.text-up]="q.change >= 0" [class.text-down]="q.change < 0">
+          {{ q.change >= 0 ? '+' : '' }}{{ q.change | number:'1.2-2' }}
+          ({{ q.changePercent >= 0 ? '+' : '' }}{{ q.changePercent | number:'1.2-2' }}%)
+        </span>
+      </div>
+    }
+
+    <div class="stock-detail__actions">
+      <button class="order-btn order-btn--buy"  (click)="openBuy()">BUY</button>
+      <button class="order-btn order-btn--sell" (click)="openSell()">SELL</button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-center"><app-spinner size="lg" /></div>
+  } @else {
+    <div class="stock-detail__body">
+
+      <!-- ── Left Column ──────────────────────────────────────── -->
+      <section class="stock-detail__left">
+
+        <!-- Quote Card -->
+        @if (quote(); as q) {
+          <app-quote-card [quote]="q" />
+        }
+
+        <!-- My Positions for this stock -->
+        @if (myPositions().length > 0) {
+          <app-detail-positions [positions]="myPositions()" />
+        }
+
+        <!-- My Orders for this stock -->
+        @if (myOrders().length > 0) {
+          <app-detail-orders [orders]="myOrders()" />
+        }
+
+      </section>
+
+      <!-- ── Right Column ─────────────────────────────────────── -->
+      <section class="stock-detail__right">
+
+        <!-- Tab Bar -->
+        <div class="tabs">
+          <button class="tab-btn" [class.active]="activeTab() === 'chart'"
+            (click)="setTab('chart')">Chart</button>
+          <button class="tab-btn" [class.active]="activeTab() === 'depth'"
+            (click)="setTab('depth')">Depth</button>
+          @if (isFno()) {
+            <button class="tab-btn" [class.active]="activeTab() === 'options'"
+              (click)="setTab('options')">Option Chain</button>
+          }
+        </div>
+
+        <!-- Chart Tab -->
+        @if (activeTab() === 'chart') {
+          <div class="tab-panel">
+            <div class="resolution-bar">
+              @for (r of resolutions; track r.value) {
+                <button
+                  class="res-btn"
+                  [class.active]="resolution() === r.value"
+                  (click)="setResolution(r.value)"
+                >{{ r.label }}</button>
+              }
+            </div>
+            <app-candle-chart [candles]="candles()" [resolution]="resolution()" />
+          </div>
+        }
+
+        <!-- Depth Tab -->
+        @if (activeTab() === 'depth') {
+          <div class="tab-panel">
+            @if (depth(); as d) {
+              <app-depth-chart [depth]="d" [ltp]="quote()?.ltp ?? 0" />
+            } @else {
+              <div class="empty">No depth data</div>
+            }
+          </div>
+        }
+
+        <!-- Option Chain Tab -->
+        @if (activeTab() === 'options') {
+          <div class="tab-panel">
+            @if (optionStrikes().length > 0) {
+              <app-option-chain
+                [strikes]="optionStrikes()"
+                [spotPrice]="quote()?.ltp ?? 0"
+              />
+            } @else {
+              <div class="empty">Loading option chain…</div>
+            }
+          </div>
+        }
+
+      </section>
+    </div>
+  }
+
+  <!-- Order Form overlay -->
+  @if (orderFormVisible()) {
+    <app-order-form
+      [instrumentId]="instrumentId()"
+      [exchange]="exchange()"
+      [name]="name()"
+      [ltp]="quote()?.ltp ?? 0"
+      [side]="orderSide()"
+      (closed)="orderFormVisible.set(false)"
+    />
+  }
+</div>

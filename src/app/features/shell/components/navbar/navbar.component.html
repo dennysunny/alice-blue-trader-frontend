@@ -25,7 +25,8 @@
     </button>
 
     <div class="navbar__user">
-      <button class="navbar__avatar" (click)="goToProfile()">{{ userName.slice(0, 3) }}</button>
+      @let userName = authService.loggedInUser()?.userName ?? 'Trader';
+      <button class="navbar__avatar">{{ userName.slice(0, 3) }}</button>
     </div>
 
     <button class="navbar__logout_btn navbar__logout" (click)="logout()" title="Logout">➜]</button>

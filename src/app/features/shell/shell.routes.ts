@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
+
 import { ShellLayoutComponent } from './components/layout/shell-layout.component';
 import { authGuard } from '../../core/guards/auth.guard';
+import { RouteSegment } from '../../core/enums/app.enums';
 
 export const shellRoutes: Routes = [
   {
@@ -9,28 +11,40 @@ export const shellRoutes: Routes = [
     canActivate: [authGuard],
     children: [
       {
-        path: 'dashboard',
+        path: RouteSegment.DASHBOARD,
         loadChildren: () => import('../dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
       },
       {
-        path: 'watchlist',
+        path: RouteSegment.WATCHLIST,
         loadChildren: () => import('../watchlist/watchlist.routes').then((m) => m.watchlistRoutes),
       },
       {
-        path: 'orders',
+        path: RouteSegment.ORDERS,
         loadChildren: () => import('../orders/orders.routes').then((m) => m.ordersRoutes),
       },
       {
-        path: 'portfolio',
+        path: RouteSegment.PORTFOLIO,
         loadChildren: () => import('../portfolio/portfolio.routes').then((m) => m.portfolioRoutes),
       },
       {
-        path: 'positions',
+        path: RouteSegment.POSITIONS,
         loadChildren: () => import('../positions/positions.routes').then((m) => m.positionsRoutes),
       },
       {
-        path: 'funds',
+        path: RouteSegment.FUNDS,
         loadChildren: () => import('../funds/funds.routes').then((m) => m.fundsRoutes),
+      },
+      {
+        path: RouteSegment.STOCK_DETAIL,
+        loadChildren: () =>
+          import('../stock-detail/stock-detail.routes').then((m) => m.stockDetailRoutes),
+      },
+      {
+        path: RouteSegment.OPTION_CHAIN,
+        loadComponent: () =>
+          import('../stock-detail/components/option-chain/option-chain.component').then(
+            (m) => m.OptionChainComponent,
+          ),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],

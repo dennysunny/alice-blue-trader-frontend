@@ -4,7 +4,7 @@
   </div>
 
   <!-- P&L Summary -->
-  @if (!loading && positions.length) {
+  @if (!loading() && positions.length) {
     <div class="pnl-summary">
       <div class="pnl-card" [class]="totalUnrealizedPnl >= 0 ? 'pnl-card--up' : 'pnl-card--down'">
         <div class="pnl-card__label">Unrealized P&amp;L</div>
@@ -18,28 +18,33 @@
   }
 
   <div class="tabs">
-    <button class="tab-btn" [class.active]="activeTab === 'day'" (click)="setTab('day')">
+    <button class="tab-btn" [class.active]="activeTab() === 'day'" (click)="setTab('day')">
       Day Positions
     </button>
-    <button class="tab-btn" [class.active]="activeTab === 'net'" (click)="setTab('net')">
+    <button class="tab-btn" [class.active]="activeTab() === 'net'" (click)="setTab('net')">
       Net Positions
     </button>
   </div>
 
   <div class="card tab-content">
-    @if (loading) {
+    @if (loading()) {
       <div class="loading-overlay"><app-spinner size="lg"></app-spinner></div>
     } @else {
-      @if (positions.lenght) {
+      @if (positions.length) {
         <div class="table-wrap">
           <table class="data-table">
             <thead>
               <tr>
                 <th>Symbol</th>
-                <th class="text-right">Net Qty</th>
+                <th class="text-right">Buy Qty</th>
                 <th class="text-right">Buy Avg</th>
+                <th class="text-right">Buy Value</th>
+                <th class="text-right">Sell Qty</th>
                 <th class="text-right hide-sm">Sell Avg</th>
+                <th class="text-right">Sell Value</th>
+
                 <th class="text-right">LTP</th>
+                <th class="text-right">Tick Size</th>
                 <th class="text-right">Unrealized P&amp;L</th>
                 <th class="text-right hide-sm">Realized P&amp;L</th>
                 <th class="text-right">Action</th>
@@ -47,7 +52,11 @@
             </thead>
             <tbody>
               @for (pos of positions; track pos.instrumentId) {
-                <tr>
+                <tr
+                  class="clickable-row"
+                  (click)="goToStock(pos)"
+                  title="View {{ pos.formattedInstrumentName }}"
+                >
                   <td>
                     <div class="symbol-cell">
                       <span class="symbol-name">{{ pos.formattedInstrumentName }}</span>
@@ -58,17 +67,37 @@
                   <td
                     class="text-right font-mono"
                     [class]="
-                      pos.netQuantity > 0 ? 'text-up' : pos.netQuantity < 0 ? 'text-down' : ''
+                      pos.dayBuyQuantity > 0 ? 'text-up' : pos.dayBuyQuantity < 0 ? 'text-down' : ''
                     "
                   >
-                    {{ pos.netQuantity > 0 ? '+' : '' }}{{ pos.netQuantity }}
+                    {{ pos.dayBuyQuantity > 0 ? '+' : '' }}{{ pos.dayBuyQuantity }}
                   </td>
-                  <td class="text-right font-mono">{{ pos.buyPrice | number: '1.2-2' }}</td>
+                  <td class="text-right font-mono">{{ pos.dayBuyPrice | number: '1.2-2' }}</td>
                   <td class="text-right font-mono hide-sm">
-                    {{ pos.sellPrice | number: '1.2-2' }}
+                    {{ pos.dayBuyValue | number: '1.2-2' }}
                   </td>
+
+                  <td class="text-right font-mono" [class]="'text-down'">
+                    {{ pos.daySellQuantity > 0 ? '-' : '' }}{{ pos.daySellQuantity }}
+                  </td>
+                  <td class="text-right font-mono hide-sm">
+                    {{ pos.daySellPrice | number: '1.2-2' }}
+                  </td>
+                  <td
+                    class="text-right font-mono hide-sm"
+                    [class]="pos.daySellValue - pos.dayBuyValue >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ pos.daySellValue | number: '1.2-2' }}
+                  </td>
+
                   <td class="text-right font-mono">
-                    <app-price-ticker [price]="pos.ltp ?? null"></app-price-ticker>
+                    <app-price-ticker
+                      [price]="pos.ltp"
+                      [prevPrice]="pos.previousDayClose"
+                    ></app-price-ticker>
+                  </td>
+                  <td class="text-right font-mono hide-sm">
+                    {{ pos.ticksize }}
                   </td>
                   <td
                     class="text-right font-mono"
@@ -84,7 +113,7 @@
                   </td>
                   <td class="text-right">
                     @if (pos.netQuantity !== 0) {
-                      <button class="squareoff-btn" (click)="squareOff(pos)">Exit</button>
+                      <button class="squareoff-btn" (click)="squareOff(pos, $event)">Exit</button>
                     }
                   </td>
                 </tr>

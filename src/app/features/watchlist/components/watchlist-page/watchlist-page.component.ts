@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -15,6 +15,7 @@ import { AbbrevNumPipe } from '../../../../shared/pipes/abbrev-num.pipe';
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { OrderFormComponent } from '../order-form/order-form.component';
+import { NavigationService } from '../../../../core/services/navigation.service';
 
 interface WatchlistRow extends WatchlistItem {
   ltp: number | null;
@@ -50,13 +51,12 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
   readonly TransactionType = TransactionType;
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    public watchlistService: WatchlistService,
-    private marketService: MarketService,
-    private wsService: WebSocketService,
-    private notifications: NotificationService,
-    private cdr: ChangeDetectorRef,
-  ) {}
+  private readonly navigationService = inject(NavigationService);
+  public watchlistService = inject(WatchlistService);
+  private marketService = inject(MarketService);
+  private wsService = inject(WebSocketService);
+  private notifications = inject(NotificationService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.trackWatchListData();
@@ -133,15 +133,25 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  removeFromWatchlist(row: WatchlistRow): void {
+  removeFromWatchlist(row: WatchlistRow, event: MouseEvent): void {
+    event.stopPropagation();
     this.watchlistService.removeItem(row.instrumentId, row.exchange);
     this.notifications.info(`${row.formattedName} removed`);
   }
 
-  openOrderForm(item: WatchlistItem, side: TransactionType): void {
+  openOrderForm(item: WatchlistItem, side: TransactionType, event: MouseEvent): void {
+    event.stopPropagation();
     this.selectedItem = item;
     this.selectedSide = side;
     this.orderFormVisible = true;
+  }
+
+  goToStock(p: WatchlistRow): void {
+    this.navigationService.toStock({
+      instrumentId: p.instrumentId,
+      exchange: p.exchange,
+      name: p.formattedName,
+    });
   }
 
   ngOnDestroy(): void {

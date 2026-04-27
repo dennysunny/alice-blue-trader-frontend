@@ -1,0 +1,88 @@
+<div class="of-backdrop" (click)="$event.target === $event.currentTarget && closed.emit()">
+  <div class="of" [class.of--buy]="isBuy" [class.of--sell]="!isBuy">
+
+    <div class="of__header">
+      <div class="of__identity">
+        <span class="of__name">{{ name }}</span>
+        <span class="of__exchange">{{ exchange }}</span>
+        <span class="of__ltp">₹{{ ltp | number:'1.2-2' }}</span>
+      </div>
+      <button class="of__close" (click)="closed.emit()">✕</button>
+    </div>
+
+    <!-- Buy / Sell toggle -->
+    <div class="of__side-tabs">
+      <button class="of__side-btn"
+        [class.of__side-btn--buy-active]="isBuy"
+        (click)="setSide(TransactionType.BUY)">BUY</button>
+      <button class="of__side-btn"
+        [class.of__side-btn--sell-active]="!isBuy"
+        (click)="setSide(TransactionType.SELL)">SELL</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="of__body">
+
+      <div class="of__row">
+        <div class="fg">
+          <label class="fl">Product</label>
+          <select class="fc" formControlName="product">
+            @for (o of productOpts; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Order Type</label>
+          <select class="fc" formControlName="orderType">
+            @for (o of orderTypeOpts; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Quantity</label>
+        <input class="fc" type="number" formControlName="quantity" min="1" placeholder="0" />
+      </div>
+
+      @if (showPrice) {
+        <div class="fg">
+          <label class="fl">Price (₹)</label>
+          <input class="fc" type="number" formControlName="price" step="0.05" placeholder="0.00" />
+        </div>
+      }
+
+      @if (showTrigger) {
+        <div class="fg">
+          <label class="fl">Trigger Price (₹)</label>
+          <input class="fc" type="number" formControlName="triggerPrice" step="0.05" placeholder="0.00" />
+        </div>
+      }
+
+      <div class="fg">
+        <label class="fl">Validity</label>
+        <select class="fc" formControlName="validity">
+          @for (o of validityOpts; track o.value) {
+            <option [value]="o.value">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="of__submit"
+        [class.of__submit--buy]="isBuy"
+        [class.of__submit--sell]="!isBuy"
+        [disabled]="form.invalid || submitting()"
+      >
+        @if (submitting()) {
+          <span class="of__spinner"></span>
+        } @else {
+          {{ isBuy ? 'BUY' : 'SELL' }} {{ name }}
+        }
+      </button>
+
+    </form>
+  </div>
+</div>

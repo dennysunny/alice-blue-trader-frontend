@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
@@ -23,6 +23,8 @@ const INITIAL_AUTH_STATE: AuthState = {
 export class AuthService {
   private readonly authState = new BehaviorSubject<AuthState>(INITIAL_AUTH_STATE);
   readonly authState$ = this.authState.asObservable();
+
+  loggedInUser = signal<UserSession | null>(null);
 
   constructor(
     private http: HttpClient,
@@ -62,6 +64,7 @@ export class AuthService {
       tap((res) => {
         if (res.stat === ApiStatus.OK) {
           this.setAuthSuccess({ userId: res.clientId }, res.clientId);
+          this.loggedInUser.set({ userId: res.clientId } as UserSession);
           this.storage.set(StorageKey.AUTH_TOKEN, res.userSession);
           this.storage.set(StorageKey.USER_ID, res.clientId);
         }
@@ -124,17 +127,16 @@ export class AuthService {
             const { clientId, clientName, accountStatus, exchanges, products } = response.result[0];
             const user = {
               userId: clientId,
-              sessionId: this.sessionId!,
               userName: clientName,
               accountStatus,
               enabledExchanges: exchanges,
               enabledProducts: products,
             };
-            console.log('user', user);
-            // this.authState.next({
-            //   ...this.authState.value,
-            //   user: user as UserSession
-            // })
+            this.loggedInUser.set(user as UserSession);
+            this.authState.next({
+              ...this.authState.value,
+              user: user as UserSession,
+            });
           }
         },
         error: (err) => {

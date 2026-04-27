@@ -54,6 +54,11 @@ export const API_ENDPOINTS = {
   HISTORY: {
     CHART_HISTORY: '/chart/history',
   },
+  OPTION_CHAIN: {
+    UNDERLYING: '/getUnderlying',
+    UNDERLYING_EXPIRIES: '/getUnderlyingExp',
+    OPTION_CHAIN: '/getOptionChain',
+  },
 } as const;
 
 export const APP_CONSTANTS = {
@@ -70,6 +75,8 @@ export const APP_CONSTANTS = {
   MAX_WATCHLIST_SYMBOLS: 50,
   PRICE_DECIMAL_PLACES: 2,
   PERCENTAGE_DECIMAL_PLACES: 2,
+  CHART_CANDLE_LIMIT: 500,
+  MAX_DEPTH_ROWS: 5,
 } as const;
 
 export const API_METHODS = {

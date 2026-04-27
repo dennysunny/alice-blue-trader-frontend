@@ -1,3 +1,4 @@
+import { Time } from 'lightweight-charts';
 import { Exchange, ProductType, TransactionType } from '../enums/api.enums';
 
 export interface Holding {

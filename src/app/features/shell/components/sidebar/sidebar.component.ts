@@ -16,6 +16,7 @@ const NAV_LINKS: NavLink[] = [
   { label: 'Positions', icon: '◈', route: RouteSegment.POSITIONS },
   { label: 'Portfolio', icon: '◉', route: RouteSegment.PORTFOLIO },
   { label: 'Funds', icon: '₹', route: RouteSegment.FUNDS },
+  { label: 'Option Chain', icon: '☰', route: RouteSegment.OPTION_CHAIN },
 ];
 
 @Component({

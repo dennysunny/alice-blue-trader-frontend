@@ -18,7 +18,13 @@
           [class.stat-card--negative]="card.isPositive === false"
         >
           <div class="stat-card__label">{{ card.label }}</div>
-          <div class="stat-card__value">{{ card.value }}</div>
+          @if (card.type === 'currency') {
+            <div class="stat-card__value">{{ card.value | inr }}</div>
+          } @else if (card.type === 'number') {
+            <div class="stat-card__value">{{ card.value | number }}</div>
+          } @else {
+            <div class="stat-card__value">{{ card.value }}</div>
+          }
           @if (card.subValue) {
             <div class="stat-card__sub">{{ card.subValue }}</div>
           }

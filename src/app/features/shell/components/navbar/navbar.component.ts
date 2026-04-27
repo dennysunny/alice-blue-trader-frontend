@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Output, EventEmitter, inject, OnInit } from '@angular/core';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { ThemeService } from '../../../../core/services/theme.service';
@@ -9,7 +9,7 @@ import { ThemeService } from '../../../../core/services/theme.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   @Output() menuToggle = new EventEmitter<void>();
 
   readonly marketTime = new Date();
@@ -17,13 +17,11 @@ export class NavbarComponent {
   protected readonly themeService = inject(ThemeService);
   protected readonly authService = inject(AuthService);
 
-  get userName(): string {
-    return (
-      this.authService.currentUser?.userName ?? this.authService.currentUser?.userId ?? 'Trader'
-    );
+  ngOnInit(): void {
+    this.getUserInfo();
   }
 
-  goToProfile(): void {
+  getUserInfo(): void {
     this.authService.getUserInfo();
   }
 

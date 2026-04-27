@@ -48,7 +48,7 @@
         </thead>
         <tbody>
           @for (row of rows; track $index) {
-            <tr class="watchlist-row">
+            <tr class="watchlist-row clickable-row" (click)="goToStock(row)">
               <td>
                 <div class="symbol-cell">
                   <span class="symbol-cell__name">{{ row.formattedName }}</span>
@@ -74,17 +74,20 @@
                 <div class="action-btns">
                   <button
                     class="action-btn action-btn--buy"
-                    (click)="openOrderForm(row, TransactionType.BUY)"
+                    (click)="openOrderForm(row, TransactionType.BUY, $event)"
                   >
                     B
                   </button>
                   <button
                     class="action-btn action-btn--sell"
-                    (click)="openOrderForm(row, TransactionType.SELL)"
+                    (click)="openOrderForm(row, TransactionType.SELL, $event)"
                   >
                     S
                   </button>
-                  <button class="action-btn action-btn--remove" (click)="removeFromWatchlist(row)">
+                  <button
+                    class="action-btn action-btn--remove"
+                    (click)="removeFromWatchlist(row, $event)"
+                  >
                     ✕
                   </button>
                 </div>

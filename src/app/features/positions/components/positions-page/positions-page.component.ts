@@ -1,33 +1,35 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { OrderType, TransactionType } from '../../../../core/enums/api.enums';
 import { Position } from '../../../../core/models/portfolio.models';
+import { NavigationService } from '../../../../core/services/navigation.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PortfolioService } from '../../../../core/services/portfolio.service';
-import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
-import { CommonModule } from '@angular/common';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { InrPipe } from '../../../../shared/pipes/inr.pipe';
 import { PositionTabs } from '../../../../shared/types/shared-types';
+import { PriceTickerComponent } from '../../../../shared/components/price-ticker/price-ticker.component';
 
 @Component({
   standalone: true,
   selector: 'app-positions-page',
   templateUrl: './positions-page.component.html',
   styleUrls: ['./positions-page.component.scss'],
-  imports: [SpinnerComponent, EmptyStateComponent, CommonModule, InrPipe],
+  imports: [SpinnerComponent, EmptyStateComponent, CommonModule, InrPipe, PriceTickerComponent],
 })
 export class PositionsPageComponent implements OnInit, OnDestroy {
-  activeTab: PositionTabs = 'day';
-  dayPositions: Position[] = [];
-  netPositions: Position[] = [];
-  loading = true;
-  squaringOff = false;
+  activeTab = signal<PositionTabs>('day');
+  dayPositions = signal<Position[]>([]);
+  netPositions = signal<Position[]>([]);
+  loading = signal(true);
+  squaringOff = signal(false);
 
   get positions(): Position[] {
-    return this.activeTab === 'day' ? this.dayPositions : this.netPositions;
+    return this.activeTab() === 'day' ? this.dayPositions() : this.netPositions();
   }
 
   get totalUnrealizedPnl(): number {
@@ -42,36 +44,35 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
 
   private readonly portfolioService = inject(PortfolioService);
   private readonly notifications = inject(NotificationService);
-  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly navigationService = inject(NavigationService);
 
   ngOnInit(): void {
     this.loadDay();
   }
 
   setTab(tab: PositionTabs): void {
-    this.activeTab = tab;
+    this.activeTab.set(tab);
     //if (tab === 'net' && this.netPositions.length === 0) this.loadNet();
   }
 
   private loadDay(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.portfolioService
       .getDayPositions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          this.dayPositions = res.result ?? [];
-          this.loading = false;
-          this.cdr.markForCheck();
+          this.dayPositions.set(res.result ?? []);
+          this.loading.set(false);
         },
         error: () => {
-          this.loading = false;
-          this.cdr.markForCheck();
+          this.loading.set(false);
         },
       });
   }
 
-  squareOff(position: Position): void {
+  squareOff(position: Position, event: MouseEvent): void {
+    event.stopPropagation();
     const side = position.netQuantity > 0 ? TransactionType.SELL : TransactionType.BUY;
     this.portfolioService
       .squareOff({
@@ -90,6 +91,14 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
         },
         error: (err) => this.notifications.error(err?.error?.message ?? 'Square off failed'),
       });
+  }
+
+  goToStock(p: Position): void {
+    this.navigationService.toStock({
+      instrumentId: p.instrumentId,
+      exchange: p.exchange,
+      name: p.formattedInstrumentName,
+    });
   }
 
   ngOnDestroy(): void {

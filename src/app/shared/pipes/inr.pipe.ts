@@ -17,7 +17,7 @@ export class InrPipe implements PipeTransform {
       maximumFractionDigits: decimals,
     }).format(abs);
 
-    if (!showSign) return formatted;
+    if (!showSign) return (value < 0 ? '-' : '') + formatted;
 
     if (value > 0) return `+${formatted}`;
     if (value < 0) return `-${formatted}`;

@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, computed, inject } from '@angular/core';
 
-import { NotificationService, Notification } from '../../../core/services/notification.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationType } from '../../../core/enums/app.enums';
 
 @Component({
@@ -10,21 +9,11 @@ import { NotificationType } from '../../../core/enums/app.enums';
   templateUrl: './toast-container.component.html',
   styleUrls: ['./toast-container.component.scss'],
 })
-export class ToastContainerComponent implements OnInit, OnDestroy {
-  toasts: Notification[] = [];
-  private sub!: Subscription;
-
-  private readonly notificationService = inject(NotificationService);
-
-  ngOnInit(): void {
-    this.sub = this.notificationService.notification$.subscribe((n) => {
-      this.toasts.push(n);
-      setTimeout(() => this.dismiss(n.id), n.duration ?? 4000);
-    });
-  }
+export class ToastContainerComponent {
+  protected readonly notificationService = inject(NotificationService);
 
   dismiss(id: string): void {
-    this.toasts = this.toasts.filter((t) => t.id !== id);
+    this.notificationService.dismiss(id);
   }
 
   iconFor(type: NotificationType): string {
@@ -35,9 +24,5 @@ export class ToastContainerComponent implements OnInit, OnDestroy {
       [NotificationType.INFO]: 'ℹ',
     };
     return icons[type];
-  }
-
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
   }
 }

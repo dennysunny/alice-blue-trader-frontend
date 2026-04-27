@@ -1,44 +1,33 @@
-import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+
 import { NotificationType } from '../enums/app.enums';
 import { APP_CONSTANTS } from '../configs/api.config';
-
-export interface Notification {
-  id: string;
-  type: NotificationType;
-  message: string;
-  title?: string;
-  duration?: number;
-}
+import { Notification } from '../models/notification.model';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly notificationSubject = new Subject<Notification>();
-  readonly notification$ = this.notificationSubject.asObservable();
+  readonly toasts = signal<Notification[]>([]);
 
   success(message: string, title?: string): void {
-    this.emit(NotificationType.SUCCESS, message, title);
+    this.push(NotificationType.SUCCESS, message, title);
   }
-
   error(message: string, title?: string): void {
-    this.emit(NotificationType.ERROR, message, title);
+    this.push(NotificationType.ERROR, message, title);
   }
-
   warning(message: string, title?: string): void {
-    this.emit(NotificationType.WARNING, message, title);
+    this.push(NotificationType.WARNING, message, title);
   }
-
   info(message: string, title?: string): void {
-    this.emit(NotificationType.INFO, message, title);
+    this.push(NotificationType.INFO, message, title);
   }
 
-  private emit(type: NotificationType, message: string, title?: string): void {
-    this.notificationSubject.next({
-      id: `${Date.now()}-${Math.random()}`,
-      type,
-      message,
-      title,
-      duration: APP_CONSTANTS.TOAST_DURATION_MS,
-    });
+  dismiss(id: string): void {
+    this.toasts.update((ts) => ts.filter((t) => t.id !== id));
+  }
+
+  private push(type: NotificationType, message: string, title?: string): void {
+    const id = `${Date.now()}-${Math.random()}`;
+    this.toasts.update((ts) => [...ts, { id, type, message, title }]);
+    setTimeout(() => this.dismiss(id), APP_CONSTANTS.TOAST_DURATION_MS);
   }
 }

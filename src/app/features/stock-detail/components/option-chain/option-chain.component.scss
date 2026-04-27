@@ -1,0 +1,382 @@
+.oc-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ── Controls ──────────────────────────────────────────────────────
+.oc-controls {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.oc-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.oc-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+}
+
+// ── Segmented buttons ─────────────────────────────────────────────
+.seg-btns {
+  display: flex;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.seg-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--color-surface-3);
+    color: var(--color-text);
+  }
+
+  &.active {
+    background: var(--color-primary);
+    color: #fff;
+  }
+}
+
+// ── Chip list (underlyings / expiries) ────────────────────────────
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-surface-2);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &.active {
+    background: rgba(var(--color-primary-rgb), 0.12);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+}
+
+// ── Stats bar ─────────────────────────────────────────────────────
+.oc-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 12px 20px;
+  flex-wrap: wrap;
+}
+
+.oc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  &__label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--color-text-muted);
+  }
+
+  &__value {
+    font-size: 15px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text);
+
+    &.up {
+      color: var(--color-up);
+    }
+
+    &.down {
+      color: var(--color-down);
+    }
+  }
+}
+
+.refresh-btn {
+  margin-left: auto;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: var(--color-surface-3);
+    color: var(--color-text);
+  }
+}
+
+// ── Loading / empty ───────────────────────────────────────────────
+.oc-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 60px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.oc-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+// ── Table ─────────────────────────────────────────────────────────
+.oc-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.oc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  // ── Header rows ─────────────────────────────────────────────
+  .oc-header-row th {
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .oc-th-ce {
+    background: rgba(var(--color-down-rgb), 0.07);
+    color: var(--color-down);
+    border-right: 2px solid var(--color-border);
+  }
+
+  .oc-th-pe {
+    background: rgba(var(--color-up-rgb), 0.07);
+    color: var(--color-up);
+    border-left: 2px solid var(--color-border);
+  }
+
+  .oc-th-strike {
+    background: var(--color-surface-3);
+    color: var(--color-text-secondary);
+    font-size: 10px;
+    text-align: center;
+    border-left: 2px solid var(--color-border);
+    border-right: 2px solid var(--color-border);
+  }
+
+  // ── Sub-header ──────────────────────────────────────────────
+  .oc-subheader {
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .oc-sub {
+    padding: 7px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--color-text-muted);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .oc-strike-sub {
+    border-left: 2px solid var(--color-border);
+    border-right: 2px solid var(--color-border);
+  }
+
+  // ── Data rows ───────────────────────────────────────────────
+  .oc-row {
+    border-bottom: 1px solid var(--color-border-subtle);
+    transition: background 0.08s;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: var(--color-surface-2);
+    }
+
+    td {
+      padding: 7px 10px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+  }
+
+  // ATM row highlight
+  .oc-row--atm {
+    background: rgba(var(--color-primary-rgb), 0.05) !important;
+    position: relative;
+
+    &:hover {
+      background: rgba(var(--color-primary-rgb), 0.09) !important;
+    }
+  }
+}
+
+// ── Strike cell ───────────────────────────────────────────────────
+.oc-strike-cell {
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-2);
+  border-left: 2px solid var(--color-border);
+  border-right: 2px solid var(--color-border);
+  position: relative;
+  min-width: 90px;
+
+  &--atm {
+    background: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-primary);
+    font-weight: 800;
+  }
+}
+
+.atm-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 5px;
+  vertical-align: middle;
+  letter-spacing: 0.3px;
+}
+
+// ── LTP cells (clickable) ─────────────────────────────────────────
+.oc-ltp-cell {
+  min-width: 70px;
+}
+
+.clickable {
+  cursor: pointer;
+
+  &:hover .ltp {
+    text-decoration: underline;
+  }
+}
+
+// ── OI bar ────────────────────────────────────────────────────────
+.oi-cell {
+  min-width: 100px;
+}
+
+.oi-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+
+  &--ce {
+    flex-direction: row-reverse;
+  }
+
+  &--pe {
+    flex-direction: row;
+  }
+}
+
+.oi-bar {
+  height: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  min-width: 2px;
+  transition: width 0.3s ease;
+
+  &--ce {
+    background: rgba(var(--color-down-rgb), 0.55);
+  }
+
+  &--pe {
+    background: rgba(var(--color-up-rgb), 0.55);
+  }
+}
+
+// ── Inline text styles ────────────────────────────────────────────
+.ltp {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.tr {
+  text-align: right;
+}
+
+.up {
+  color: var(--color-up);
+}
+
+.down {
+  color: var(--color-down);
+}

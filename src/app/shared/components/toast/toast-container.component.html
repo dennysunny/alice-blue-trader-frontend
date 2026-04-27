@@ -1,10 +1,6 @@
 <div class="toast-container">
-  @for (toast of toasts; track toast.id) {
-    <div
-      *ngFor="let toast of toasts"
-      class="toast toast--{{ toast.type }}"
-      (click)="dismiss(toast.id)"
-    >
+  @for (toast of notificationService.toasts(); track toast.id) {
+    <div class="toast toast--{{ toast.type }}" (click)="dismiss(toast.id)">
       <span class="toast__icon">{{ iconFor(toast.type) }}</span>
       <div class="toast__content">
         @if (toast.title) {
