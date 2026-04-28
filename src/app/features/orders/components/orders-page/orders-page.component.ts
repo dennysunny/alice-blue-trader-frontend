@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -15,15 +23,24 @@ import { StatusVarientConfig } from '../../config/order.config';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { Position } from '../../../../core/models/portfolio.models';
 import { NavigationService } from '../../../../core/services/navigation.service';
+import { PullToRefreshDirective } from '../../../../shared/directives/app-pull-to-refresh';
 
 @Component({
   standalone: true,
   selector: 'app-orders-page',
   templateUrl: './orders-page.component.html',
   styleUrls: ['./orders-page.component.scss'],
-  imports: [CommonModule, EmptyStateComponent, SpinnerComponent, BadgeComponent],
+  imports: [
+    CommonModule,
+    EmptyStateComponent,
+    SpinnerComponent,
+    BadgeComponent,
+    PullToRefreshDirective,
+  ],
 })
 export class OrdersPageComponent implements OnInit, OnDestroy {
+  @ViewChild('ptr') ptr!: PullToRefreshDirective;
+
   activeTab: ActiveTab = 'orders';
   orders: Order[] = [];
   trades: Trade[] = [];
@@ -55,9 +72,11 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.orders = res.result ?? [];
           this.loading.set(false);
+          this.ptr.complete();
         },
         error: () => {
           this.loading.set(false);
+          this.ptr.complete();
         },
       });
   }
@@ -71,9 +90,11 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.trades = res.result ?? [];
           this.loading.set(false);
+          this.ptr.complete();
         },
         error: () => {
           this.loading.set(false);
+          this.ptr.complete();
         },
       });
   }

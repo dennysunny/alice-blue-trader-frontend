@@ -1,4 +1,4 @@
-<div class="dashboard">
+<div class="dashboard" appPullToRefresh (refresh)="getDashboardData()" #ptr="appPullToRefresh">
   <div class="dashboard__header">
     <h1 class="dashboard__title">Dashboard</h1>
     <span class="dashboard__date">{{ today | date: 'EEEE, d MMMM y' }}</span>

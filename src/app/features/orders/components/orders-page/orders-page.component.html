@@ -1,4 +1,9 @@
-<div class="orders-page">
+<div
+  class="orders-page"
+  appPullToRefresh
+  (refresh)="activeTab === 'orders' ? loadOrders() : loadTrades()"
+  #ptr="appPullToRefresh"
+>
   <div class="orders-page__header">
     <h1 class="page-title">Orders</h1>
     <button class="refresh-btn" (click)="loadOrders()" title="Refresh">↻ Refresh</button>

@@ -2,18 +2,16 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { RouteSegment } from '../../../../core/enums/app.enums';
+import { NavLink } from '../../../../core/models/navigation.model';
 
-interface NavLink {
-  label: string;
-  icon: string;
-  route: string;
-}
-
-const NAV_LINKS: NavLink[] = [
+const PRIMARY_LINKS: NavLink[] = [
   { label: 'Dashboard', icon: '⊞', route: RouteSegment.DASHBOARD },
   { label: 'Watchlist', icon: '★', route: RouteSegment.WATCHLIST },
   { label: 'Orders', icon: '↕', route: RouteSegment.ORDERS },
   { label: 'Positions', icon: '◈', route: RouteSegment.POSITIONS },
+];
+
+const MORE_LINKS: NavLink[] = [
   { label: 'Portfolio', icon: '◉', route: RouteSegment.PORTFOLIO },
   { label: 'Funds', icon: '₹', route: RouteSegment.FUNDS },
   { label: 'Option Chain', icon: '☰', route: RouteSegment.OPTION_CHAIN },
@@ -31,5 +29,16 @@ export class SidebarComponent {
 
   @Output() toggleSidebar = new EventEmitter<void>();
 
-  readonly navLinks = NAV_LINKS;
+  readonly primaryLinks = PRIMARY_LINKS;
+  readonly moreLinks = MORE_LINKS;
+
+  isMoreOpen = false;
+
+  toggleMore() {
+    this.isMoreOpen = !this.isMoreOpen;
+  }
+
+  closeMore() {
+    this.isMoreOpen = false;
+  }
 }

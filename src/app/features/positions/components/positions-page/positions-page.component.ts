@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -14,15 +14,25 @@ import { InrPipe } from '../../../../shared/pipes/inr.pipe';
 import { PositionTabs } from '../../../../shared/types/shared-types';
 import { PriceTickerComponent } from '../../../../shared/components/price-ticker/price-ticker.component';
 import { positionTypesConfig } from '../../configs/positions.config';
+import { PullToRefreshDirective } from '../../../../shared/directives/app-pull-to-refresh';
 
 @Component({
   standalone: true,
   selector: 'app-positions-page',
   templateUrl: './positions-page.component.html',
   styleUrls: ['./positions-page.component.scss'],
-  imports: [SpinnerComponent, EmptyStateComponent, CommonModule, InrPipe, PriceTickerComponent],
+  imports: [
+    SpinnerComponent,
+    EmptyStateComponent,
+    CommonModule,
+    InrPipe,
+    PriceTickerComponent,
+    PullToRefreshDirective,
+  ],
 })
 export class PositionsPageComponent implements OnInit, OnDestroy {
+  @ViewChild('ptr') ptr!: PullToRefreshDirective;
+
   activeTab = signal<PositionTabs>('day');
   dayPositions = signal<Position[]>([]);
   netPositions = signal<Position[]>([]);
@@ -42,7 +52,7 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
     this.loadDay();
   }
 
-  private loadDay(): void {
+  loadDay(): void {
     this.loading.set(true);
     this.portfolioService
       .getDayPositions()
@@ -51,9 +61,11 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.dayPositions.set(res.result ?? []);
           this.loading.set(false);
+          this.ptr.complete();
         },
         error: () => {
           this.loading.set(false);
+          this.ptr.complete();
         },
       });
   }

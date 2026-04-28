@@ -1,6 +1,6 @@
 <aside class="sidebar" [class.sidebar--collapsed]="!open">
   <nav class="sidebar__nav">
-    @for (link of navLinks; track $index) {
+    @for (link of [...primaryLinks, ...moreLinks]; track $index) {
       <a
         class="sidebar__link"
         [routerLink]="link.route"
@@ -13,3 +13,39 @@
     }
   </nav>
 </aside>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bottom-nav">
+  @for (link of primaryLinks; track $index) {
+    <a
+      class="bottom-nav__item"
+      [routerLink]="link.route"
+      routerLinkActive="bottom-nav__item--active"
+    >
+      <span class="bottom-nav__icon">{{ link.icon }}</span>
+      <span class="bottom-nav__label">{{ link.label }}</span>
+    </a>
+  }
+
+  <!-- MORE BUTTON -->
+  <button class="bottom-nav__item" (click)="toggleMore()">
+    <span class="bottom-nav__icon">⋯</span>
+    <span class="bottom-nav__label">More</span>
+  </button>
+</nav>
+
+<!-- ✅ OUTSIDE NAV -->
+@if (isMoreOpen) {
+  <div class="more-overlay" (click)="closeMore()"></div>
+
+  <div class="more-sheet">
+    <div class="more-sheet__header">More</div>
+
+    @for (link of moreLinks; track $index) {
+      <a class="more-sheet__item" [routerLink]="link.route" (click)="closeMore()">
+        <span>{{ link.icon }}</span>
+        <span>{{ link.label }}</span>
+      </a>
+    }
+  </div>
+}

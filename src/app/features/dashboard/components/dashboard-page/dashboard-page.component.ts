@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -20,6 +20,7 @@ import { statusCardConfig, statusTypes } from '../../configs/dashboard.confg';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 import { StatusCardLabel } from '../../configs/dashboard.enum';
+import { PullToRefreshDirective } from '../../../../shared/directives/app-pull-to-refresh';
 
 @Component({
   standalone: true,
@@ -33,9 +34,12 @@ import { StatusCardLabel } from '../../configs/dashboard.enum';
     RouterLink,
     InrPipe,
     BadgeComponent,
+    PullToRefreshDirective,
   ],
 })
 export class DashboardPageComponent implements OnInit {
+  @ViewChild('ptr') ptr!: PullToRefreshDirective;
+
   readonly today = new Date();
   recentOrdersCount = 0;
 
@@ -94,9 +98,11 @@ export class DashboardPageComponent implements OnInit {
         this.dayPositions.set((portfolio.result ?? []).slice(0, 5));
         this.recentOrdersCount = orders.result?.length ?? 0;
         this.loading.set(false);
+        this.ptr.complete();
       },
       error: () => {
         this.loading.set(false);
+        this.ptr.complete();
       },
     });
   }
