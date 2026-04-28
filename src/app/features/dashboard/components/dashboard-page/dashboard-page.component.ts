@@ -8,7 +8,7 @@ import { HoldingsProductType, OrderStatus } from '../../../../core/enums/api.enu
 import { StatContext } from '../../../../core/models/dashboard.model';
 import { FundsLimits } from '../../../../core/models/funds.models';
 import { Order } from '../../../../core/models/order.models';
-import { Holding } from '../../../../core/models/portfolio.models';
+import { Holding, Position } from '../../../../core/models/portfolio.models';
 import { FundsService } from '../../../../core/services/funds.service';
 import { OrderService } from '../../../../core/services/order.service';
 import { PortfolioService } from '../../../../core/services/portfolio.service';
@@ -17,13 +17,22 @@ import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.
 import { BadgeVariant } from '../../../../shared/enums/ui.enums';
 import { InrPipe } from '../../../../shared/pipes/inr.pipe';
 import { statusCardConfig, statusTypes } from '../../configs/dashboard.confg';
+import { NavigationService } from '../../../../core/services/navigation.service';
+import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
 
 @Component({
   standalone: true,
   selector: 'app-dashboard-page',
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.scss'],
-  imports: [CommonModule, EmptyStateComponent, SpinnerComponent, RouterLink, InrPipe],
+  imports: [
+    CommonModule,
+    EmptyStateComponent,
+    SpinnerComponent,
+    RouterLink,
+    InrPipe,
+    BadgeComponent,
+  ],
 })
 export class DashboardPageComponent implements OnInit {
   readonly today = new Date();
@@ -32,17 +41,18 @@ export class DashboardPageComponent implements OnInit {
   holdings = signal<Holding[]>([]);
   recentOrders = signal<Order[]>([]);
   fundsData = signal<FundsLimits | null>(null);
+  dayPositions = signal<Position[]>([]);
 
   readonly statCards = computed(() => {
     const ctx: StatContext = {
       holdings: this.holdings(),
       orders: this.recentOrders(),
       funds: this.fundsData(),
+      positions: this.dayPositions(),
     };
 
     return statusCardConfig.map((config) => {
       const value = config.getValue(ctx);
-
       return {
         label: config.label,
         value,
@@ -57,6 +67,7 @@ export class DashboardPageComponent implements OnInit {
   private readonly portfolioService = inject(PortfolioService);
   private readonly orderService = inject(OrderService);
   private readonly fundsService = inject(FundsService);
+  private readonly navigationService = inject(NavigationService);
 
   ngOnInit(): void {
     this.getDashboardData();
@@ -69,11 +80,13 @@ export class DashboardPageComponent implements OnInit {
         .pipe(catchError(() => of({ result: [] }))),
       orders: this.orderService.getOrderBook().pipe(catchError(() => of({ result: [] }))),
       funds: this.fundsService.getFundsLimits().pipe(catchError(() => of({ result: [] }))),
+      portfolio: this.portfolioService.getDayPositions().pipe(catchError(() => of({ result: [] }))),
     }).subscribe({
-      next: ({ holdings, orders, funds }) => {
+      next: ({ holdings, orders, funds, portfolio }) => {
         this.holdings.set((holdings.result ?? []).slice(0, 5));
         this.recentOrders.set((orders.result ?? []).slice(0, 8));
         this.fundsData.set(funds.result?.[0] ?? null);
+        this.dayPositions.set(portfolio.result ?? []);
         this.loading.set(false);
       },
       error: () => {
@@ -90,5 +103,13 @@ export class DashboardPageComponent implements OnInit {
     }
 
     return BadgeVariant.NEUTRAL;
+  }
+
+  goToStock(p: Position): void {
+    this.navigationService.toStock({
+      instrumentId: p.instrumentId,
+      exchange: p.exchange,
+      name: p.formattedInstrumentName,
+    });
   }
 }

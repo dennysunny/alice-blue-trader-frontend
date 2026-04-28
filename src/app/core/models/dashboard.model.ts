@@ -1,6 +1,6 @@
 import { FundsLimits } from './funds.models';
 import { Order } from './order.models';
-import { Holding } from './portfolio.models';
+import { Holding, Position } from './portfolio.models';
 
 export interface StatusCard {
   label: string;
@@ -15,6 +15,7 @@ export interface StatContext {
   holdings: Holding[];
   orders: Order[];
   funds: FundsLimits | null;
+  positions: Position[];
 }
 export interface StatCardConfig {
   label: string;

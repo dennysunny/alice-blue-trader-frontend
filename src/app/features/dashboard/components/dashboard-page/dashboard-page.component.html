@@ -18,7 +18,7 @@
           [class.stat-card--negative]="card.isPositive === false"
         >
           <div class="stat-card__label">{{ card.label }}</div>
-          @if (card.type === 'currency') {
+          @if (card.type === 'currency' || card.type === 'pnl') {
             <div class="stat-card__value">{{ card.value | inr }}</div>
           } @else if (card.type === 'number') {
             <div class="stat-card__value">{{ card.value | number }}</div>
@@ -35,6 +35,76 @@
 
   @if (!loading()) {
     <div class="dashboard__grid">
+      <!-- Funds Summary -->
+      <div class="card">
+        <div class="dashboard__section-header">
+          <h3 class="section-title">Positions Summary</h3>
+          <a routerLink="/positions" class="dashboard__view-all">View details →</a>
+        </div>
+        @if (dayPositions().length) {
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th class="text-right">Buy Qty</th>
+                <th class="text-right">Buy Avg</th>
+                <th class="text-right">Sell Qty</th>
+                <th class="text-right hide-sm">Sell Avg</th>
+                <th class="text-right">Unrealized P&amp;L</th>
+                <th class="text-right hide-sm">Realized P&amp;L</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pos of dayPositions(); track pos.instrumentId) {
+                <tr
+                  class="clickable-row"
+                  (click)="goToStock(pos)"
+                  title="View {{ pos.formattedInstrumentName }}"
+                >
+                  <td>
+                    <div class="symbol-cell">
+                      <span class="symbol-name">{{ pos.formattedInstrumentName }}</span>
+                      <span class="exchange-tag">{{ pos.exchange }}</span>
+                    </div>
+                    <span class="product-tag">{{ pos.product }}</span>
+                  </td>
+                  <td
+                    class="text-right font-mono"
+                    [class]="
+                      pos.dayBuyQuantity > 0 ? 'text-up' : pos.dayBuyQuantity < 0 ? 'text-down' : ''
+                    "
+                  >
+                    {{ pos.dayBuyQuantity > 0 ? '+' : '' }}{{ pos.dayBuyQuantity }}
+                  </td>
+                  <td class="text-right font-mono">{{ pos.dayBuyPrice | number: '1.2-2' }}</td>
+
+                  <td class="text-right font-mono" [class]="'text-down'">
+                    {{ pos.daySellQuantity > 0 ? '-' : '' }}{{ pos.daySellQuantity }}
+                  </td>
+                  <td class="text-right font-mono hide-sm">
+                    {{ pos.daySellPrice | number: '1.2-2' }}
+                  </td>
+                  <td
+                    class="text-right font-mono"
+                    [class]="pos.unrealizedPnl >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ pos.unrealizedPnl | inr }}
+                  </td>
+                  <td
+                    class="text-right font-mono hide-sm"
+                    [class]="pos.realizedPnl >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ pos.realizedPnl | inr }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <app-empty-state icon="◉" title="No holdings found"></app-empty-state>
+        }
+      </div>
+
       <!-- Recent Orders -->
       <div class="card">
         <div class="dashboard__section-header">
@@ -48,7 +118,7 @@
                 <th>Symbol</th>
                 <th>Type</th>
                 <th>Qty</th>
-                <th>Price</th>
+                <th>Complexity</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -68,10 +138,10 @@
                     </span>
                   </td>
                   <td class="font-mono">{{ order.quantity }}</td>
-                  <td class="font-mono">{{ order.price | number: '1.2-2' }}</td>
+                  <td class="font-mono">{{ order.orderComplexity }}</td>
                   <td>
-                    <app-badge [variant]="getOrderStatusVariant(order.status)">{{
-                      order.status
+                    <app-badge [variant]="getOrderStatusVariant(order.orderStatus)">{{
+                      order.orderStatus
                     }}</app-badge>
                   </td>
                 </tr>

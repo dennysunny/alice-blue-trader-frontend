@@ -27,7 +27,7 @@ export const statusCardConfig: StatCardConfig[] = [
   {
     label: StatusCardLabel.PORTFOLIO_PNL,
     type: 'pnl',
-    getValue: ({ holdings }) => holdings.reduce((sum, h) => sum + (h.pnl ?? 0), 0),
+    getValue: ({ positions }) => positions.reduce((s, p) => s + p.realizedPnl, 0),
   },
   {
     label: StatusCardLabel.OPEN_ORDERS,
