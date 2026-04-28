@@ -23,7 +23,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
-  &:hover { background: var(--color-surface-3); color: var(--color-text); }
+
+  &:hover {
+    background: var(--color-surface-3);
+    color: var(--color-text);
+  }
 }
 
 .tab-count {
@@ -47,13 +51,19 @@
   overflow-x: auto;
 }
 
-.text-right { text-align: right; }
+.text-left {
+  text-align: left;
+}
 
 .symbol-cell {
   display: flex;
   align-items: center;
   gap: 6px;
-  .symbol-name { font-weight: 600; font-size: 13px; }
+
+  .symbol-name {
+    font-weight: 600;
+    font-size: 13px;
+  }
 }
 
 .order-type-tag {
@@ -84,9 +94,25 @@
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
-  &:hover { background: var(--color-down); color: #fff; }
+
+  &:hover {
+    background: var(--color-down);
+    color: #fff;
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:hover td {
+    background: var(--color-surface-2);
+  }
+
 }
 
 .hide-sm {
-  @media (max-width: 640px) { display: none; }
+  @media (max-width: 640px) {
+    display: none;
+  }
 }

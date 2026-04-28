@@ -13,6 +13,7 @@ import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.
 import { InrPipe } from '../../../../shared/pipes/inr.pipe';
 import { PositionTabs } from '../../../../shared/types/shared-types';
 import { PriceTickerComponent } from '../../../../shared/components/price-ticker/price-ticker.component';
+import { positionTypesConfig } from '../../configs/positions.config';
 
 @Component({
   standalone: true,
@@ -25,20 +26,11 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
   activeTab = signal<PositionTabs>('day');
   dayPositions = signal<Position[]>([]);
   netPositions = signal<Position[]>([]);
+
   loading = signal(true);
   squaringOff = signal(false);
 
-  get positions(): Position[] {
-    return this.activeTab() === 'day' ? this.dayPositions() : this.netPositions();
-  }
-
-  get totalUnrealizedPnl(): number {
-    return this.positions.reduce((s, p) => s + p.unrealizedPnl, 0);
-  }
-
-  get totalRealizedPnl(): number {
-    return this.positions.reduce((s, p) => s + p.realizedPnl, 0);
-  }
+  positionTabs = positionTypesConfig;
 
   private readonly destroy$ = new Subject<void>();
 
@@ -48,11 +40,6 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadDay();
-  }
-
-  setTab(tab: PositionTabs): void {
-    this.activeTab.set(tab);
-    //if (tab === 'net' && this.netPositions.length === 0) this.loadNet();
   }
 
   private loadDay(): void {
@@ -69,6 +56,23 @@ export class PositionsPageComponent implements OnInit, OnDestroy {
           this.loading.set(false);
         },
       });
+  }
+
+  setTab(tab: PositionTabs): void {
+    this.activeTab.set(tab);
+    //if (tab === 'net' && this.netPositions.length === 0) this.loadNet();
+  }
+
+  get positions(): Position[] {
+    return this.activeTab() === 'day' ? this.dayPositions() : this.netPositions();
+  }
+
+  get totalUnrealizedPnl(): number {
+    return this.positions.reduce((s, p) => s + p.unrealizedPnl, 0);
+  }
+
+  get totalRealizedPnl(): number {
+    return this.positions.reduce((s, p) => s + p.realizedPnl, 0);
   }
 
   squareOff(position: Position, event: MouseEvent): void {

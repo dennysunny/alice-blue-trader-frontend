@@ -17,14 +17,13 @@
     </div>
   }
 
-  <div class="tabs">
-    <button class="tab-btn" [class.active]="activeTab() === 'day'" (click)="setTab('day')">
-      Day Positions
-    </button>
-    <button class="tab-btn" [class.active]="activeTab() === 'net'" (click)="setTab('net')">
-      Net Positions
-    </button>
-  </div>
+  <!-- <div class="tabs">
+    @for (tabs of positionTabs; track tabs.id) {
+      <button class="tab-btn" [class.active]="activeTab() === tabs.id" (click)="setTab(tabs.id)">
+        {{ tabs.text }}
+      </button>
+    }
+  </div> -->
 
   <div class="card tab-content">
     @if (loading()) {
@@ -119,6 +118,80 @@
               }
             </tbody>
           </table>
+        </div>
+        <!-- MOBILE: Positions Cards -->
+        <div class="positions-cards">
+          @for (pos of positions; track pos.instrumentId) {
+            <div class="position-card" (click)="goToStock(pos)">
+              <!-- HEADER -->
+              <div class="position-card__header">
+                <div>
+                  <span class="symbol-name">{{ pos.formattedInstrumentName }}</span>
+                  <span class="exchange-tag">{{ pos.exchange }}</span>
+                </div>
+
+                <div
+                  class="position-card__pnl"
+                  [class]="pos.unrealizedPnl >= 0 ? 'text-up' : 'text-down'"
+                >
+                  {{ pos.unrealizedPnl | inr }}
+                </div>
+              </div>
+
+              <!-- PRICE -->
+              <div class="position-card__ltp">
+                <app-price-ticker
+                  [price]="pos.ltp"
+                  [prevPrice]="pos.previousDayClose"
+                ></app-price-ticker>
+              </div>
+
+              <!-- GRID -->
+              <div class="position-card__grid">
+                <div>
+                  <span>Buy Qty:</span>
+                  <strong>{{ pos.dayBuyQuantity }}</strong>
+                </div>
+
+                <div>
+                  <span>Sell Qty:</span>
+                  <strong>{{ pos.daySellQuantity }}</strong>
+                </div>
+
+                <div>
+                  <span>Buy Avg:</span>
+                  <strong>{{ pos.dayBuyPrice | inr }}</strong>
+                </div>
+
+                <div>
+                  <span>Sell Avg:</span>
+                  <strong>{{ pos.daySellPrice | inr }}</strong>
+                </div>
+
+                <div>
+                  <span>Buy Value:</span>
+                  <strong>{{ pos.dayBuyValue | inr }}</strong>
+                </div>
+
+                <div>
+                  <span>Sell Value:</span>
+                  <strong>{{ pos.daySellValue | inr }}</strong>
+                </div>
+              </div>
+
+              <!-- FOOTER -->
+              <div class="position-card__footer">
+                <strong>Realized</strong>
+                <strong [class]="pos.realizedPnl >= 0 ? 'text-up' : 'text-down'">
+                  {{ pos.realizedPnl | inr }}
+                </strong>
+
+                @if (pos.netQuantity !== 0) {
+                  <button class="squareoff-btn" (click)="squareOff(pos, $event)">Exit</button>
+                }
+              </div>
+            </div>
+          }
         </div>
       } @else {
         <app-empty-state icon="◈" title="No open positions"></app-empty-state>

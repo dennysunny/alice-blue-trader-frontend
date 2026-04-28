@@ -151,8 +151,92 @@
   }
 }
 
-.hide-sm {
-  @media (max-width: 640px) {
+/* Hide cards on desktop */
+.positions-cards {
+  display: none;
+}
+
+/* =========================
+   POSITION CARD
+========================= */
+.position-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__pnl {
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  &__ltp {
+    margin: 6px 0 10px;
+    font-size: 13px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    span {
+      font-size: 10px;
+      color: var(--color-text-muted);
+      margin-right: 4px;
+    }
+
+    strong {
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+
+  &__footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--color-border);
+    padding-top: 6px;
+
+    span {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      display: block;
+    }
+
+    strong {
+      font-size: 13px;
+    }
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .table-wrap {
     display: none;
+  }
+
+  .card {
+    background: none;
+    border: none;
+  }
+
+  .positions-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 }
