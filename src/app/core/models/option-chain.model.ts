@@ -78,3 +78,12 @@ export interface OptionChainRowView {
   PE?: OptionContractView;
   isAtm: boolean;
 }
+
+export interface ExchOption {
+  label: string;
+  value: OptionChainExchange;
+}
+export interface IntervalOption {
+  label: string;
+  value: OptionChainInterval;
+}

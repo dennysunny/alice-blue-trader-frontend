@@ -30,6 +30,15 @@
   color: var(--color-text-muted);
 }
 
+.oc-spinner-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  padding: 6px 0;
+}
+
 // ── Segmented buttons ─────────────────────────────────────────────
 .seg-btns {
   display: flex;
@@ -52,7 +61,7 @@
   transition: all 0.15s;
   white-space: nowrap;
 
-  &:hover {
+  &:hover:not(.active) {
     background: var(--color-surface-3);
     color: var(--color-text);
   }
@@ -63,11 +72,115 @@
   }
 }
 
-// ── Chip list (underlyings / expiries) ────────────────────────────
+// ── Searchable underlying dropdown ────────────────────────────────
+.search-dropdown-wrap {
+  position: relative;
+  min-width: 220px;
+}
+
+.search-input-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 36px;
+  transition: border-color 0.15s, background 0.15s;
+
+  &.open,
+  &:focus-within {
+    border-color: var(--color-primary);
+    background: var(--color-surface);
+  }
+}
+
+.search-icon {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  min-width: 0;
+  width: 100px;
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+}
+
+.search-selected-badge {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(var(--color-primary-rgb), 0.12);
+  color: var(--color-primary);
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  max-height: 260px;
+  overflow-y: auto;
+
+  &__empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 13px;
+  }
+
+  &__item {
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background 0.1s;
+    border-bottom: 1px solid var(--color-border-subtle);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: var(--color-surface-2);
+    }
+
+    &.active {
+      background: rgba(var(--color-primary-rgb), 0.08);
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+  }
+}
+
+// ── Expiry chips ──────────────────────────────────────────────────
 .chip-list {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  max-width: 500px;
 }
 
 .chip {
@@ -99,18 +212,24 @@
 .oc-stats {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 0;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 10px;
-  padding: 12px 20px;
+  padding: 0 4px;
   flex-wrap: wrap;
+  overflow: hidden;
 }
 
 .oc-stat {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  padding: 10px 16px;
+
+  &--divider {
+    border-left: 1px solid var(--color-border);
+  }
 
   &__label {
     font-size: 10px;
@@ -133,23 +252,30 @@
     &.down {
       color: var(--color-down);
     }
+
+    &.primary {
+      color: var(--color-primary);
+    }
   }
 }
 
 .refresh-btn {
   margin-left: auto;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  background: none;
+  border: none;
+  border-left: 1px solid var(--color-border);
   color: var(--color-text-secondary);
-  padding: 6px 14px;
-  border-radius: 7px;
-  font-size: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
 
   &:hover {
-    background: var(--color-surface-3);
+    background: var(--color-surface-2);
     color: var(--color-text);
   }
 }
@@ -189,7 +315,6 @@
   border-collapse: collapse;
   font-size: 12px;
 
-  // ── Header rows ─────────────────────────────────────────────
   .oc-header-row th {
     padding: 10px 12px;
     font-size: 11px;
@@ -200,13 +325,13 @@
   }
 
   .oc-th-ce {
-    background: rgba(var(--color-down-rgb), 0.07);
+    background: rgba(var(--color-down-rgb), 0.06);
     color: var(--color-down);
     border-right: 2px solid var(--color-border);
   }
 
   .oc-th-pe {
-    background: rgba(var(--color-up-rgb), 0.07);
+    background: rgba(var(--color-up-rgb), 0.06);
     color: var(--color-up);
     border-left: 2px solid var(--color-border);
   }
@@ -214,27 +339,26 @@
   .oc-th-strike {
     background: var(--color-surface-3);
     color: var(--color-text-secondary);
-    font-size: 10px;
     text-align: center;
     border-left: 2px solid var(--color-border);
     border-right: 2px solid var(--color-border);
+    min-width: 90px;
   }
 
-  // ── Sub-header ──────────────────────────────────────────────
   .oc-subheader {
     background: var(--color-surface-2);
     border-bottom: 1px solid var(--color-border);
-  }
 
-  .oc-sub {
-    padding: 7px 10px;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: var(--color-text-muted);
-    text-align: left;
-    white-space: nowrap;
+    th {
+      padding: 7px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--color-text-muted);
+      text-align: left;
+      white-space: nowrap;
+    }
   }
 
   .oc-strike-sub {
@@ -242,7 +366,6 @@
     border-right: 2px solid var(--color-border);
   }
 
-  // ── Data rows ───────────────────────────────────────────────
   .oc-row {
     border-bottom: 1px solid var(--color-border-subtle);
     transition: background 0.08s;
@@ -262,10 +385,8 @@
     }
   }
 
-  // ATM row highlight
   .oc-row--atm {
     background: rgba(var(--color-primary-rgb), 0.05) !important;
-    position: relative;
 
     &:hover {
       background: rgba(var(--color-primary-rgb), 0.09) !important;
@@ -282,7 +403,6 @@
   background: var(--color-surface-2);
   border-left: 2px solid var(--color-border);
   border-right: 2px solid var(--color-border);
-  position: relative;
   min-width: 90px;
 
   &--atm {
@@ -305,7 +425,7 @@
   letter-spacing: 0.3px;
 }
 
-// ── LTP cells (clickable) ─────────────────────────────────────────
+// ── LTP cells ─────────────────────────────────────────────────────
 .oc-ltp-cell {
   min-width: 70px;
 }
@@ -318,43 +438,45 @@
   }
 }
 
-// ── OI bar ────────────────────────────────────────────────────────
+// ── OI bars ───────────────────────────────────────────────────────
 .oi-cell {
-  min-width: 100px;
+  min-width: 110px;
 }
 
-.oi-bar-wrap {
+.oi-bar-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  position: relative;
 
   &--ce {
     flex-direction: row-reverse;
   }
 
+  // bar on left, number on right
   &--pe {
     flex-direction: row;
   }
+
+  // number on left, bar on right
 }
 
 .oi-bar {
   height: 4px;
   border-radius: 2px;
-  flex-shrink: 0;
   min-width: 2px;
+  flex-shrink: 0;
   transition: width 0.3s ease;
 
   &--ce {
-    background: rgba(var(--color-down-rgb), 0.55);
+    background: rgba(var(--color-down-rgb), 0.5);
   }
 
   &--pe {
-    background: rgba(var(--color-up-rgb), 0.55);
+    background: rgba(var(--color-up-rgb), 0.5);
   }
 }
 
-// ── Inline text styles ────────────────────────────────────────────
+// ── Text helpers ──────────────────────────────────────────────────
 .ltp {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -379,4 +501,10 @@
 
 .down {
   color: var(--color-down);
+}
+
+.hide-sm {
+  @media (max-width: 768px) {
+    display: none;
+  }
 }

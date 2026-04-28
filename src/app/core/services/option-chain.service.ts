@@ -123,9 +123,21 @@ export class OptionChainService {
     };
   }
 
-  /** Extract numeric strike price from a trading symbol like NIFTY25APR2425000CE */
+  /**
+   * Extract strike price from NSE/BSE F&O trading symbols.
+   * Monthly: SYMBOL+YYMMMSTRIKE+CE/PE  e.g. NIFTY25APR25000CE
+   * Weekly:  SYMBOL+YY+M+DD+STRIKE+CE/PE  e.g. NIFTY2641924700CE
+   *
+   * The digit block before CE/PE may include an embedded date prefix when > 5 digits.
+   * All NSE index strikes fit in 5 digits (≤99999), so we take the last 5 in that case.
+   */
   private extractStrike(symbol: string): number {
-    const match = symbol.match(/(\d+\.?\d*)[CP]E?$/i);
-    return match ? parseFloat(match[1]) : 0;
+    if (!symbol) return 0;
+    const match = symbol.match(/(\d+(?:\.\d+)?)(CE|PE)$/i);
+    if (!match) return 0;
+    const raw = match[1];
+    if (raw.includes('.')) return parseFloat(raw); // MCX/CDS decimal strikes
+    if (raw.length > 5) return parseFloat(raw.slice(-5)); // strip embedded date prefix
+    return parseFloat(raw);
   }
 }

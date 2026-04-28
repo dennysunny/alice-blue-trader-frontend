@@ -10,34 +10,12 @@ import { NavigationService } from '../../../../core/services/navigation.service'
 import { WebSocketService } from '../../../../core/services/websocket.service';
 import { OptionChainRowView, OptionContractView } from '../../../../core/models/option-chain.model';
 import { Exchange } from '../../../../core/enums/api.enums';
-
-interface ExchOption {
-  label: string;
-  value: OptionChainExchange;
-}
-interface IntervalOption {
-  label: string;
-  value: OptionChainInterval;
-}
-
-const EXCH_OPTIONS: ExchOption[] = [
-  { label: 'NSE F&O', value: OptionChainExchange.NSE_FO },
-  { label: 'BSE F&O', value: OptionChainExchange.BSE_FO },
-  { label: 'MCX F&O', value: OptionChainExchange.MCX_FO },
-];
-
-const INTERVAL_OPTIONS: IntervalOption[] = [
-  { label: '5', value: OptionChainInterval.FIVE },
-  { label: '10', value: OptionChainInterval.TEN },
-  { label: '15', value: OptionChainInterval.FIFTEEN },
-  { label: '20', value: OptionChainInterval.TWENTY },
-  { label: '25', value: OptionChainInterval.TWENTY_FIVE },
-];
+import { ExchangeOptions, IntervalOptions } from '../../configs/stock.config';
 
 @Component({
   selector: 'app-option-chain',
   standalone: true,
-  imports: [DecimalPipe, SpinnerComponent],
+  imports: [DecimalPipe, SpinnerComponent, SpinnerComponent],
   templateUrl: './option-chain.component.html',
   styleUrl: './option-chain.component.scss',
 })
@@ -48,16 +26,27 @@ export class OptionChainComponent implements OnInit, OnDestroy {
   readonly nav = inject(NavigationService);
 
   // ── Selectors ──────────────────────────────────────────────────
-  readonly exchOptions = EXCH_OPTIONS;
-  readonly intervalOptions = INTERVAL_OPTIONS;
+  readonly exchOptions = ExchangeOptions;
+  readonly intervalOptions = IntervalOptions;
 
   selectedExch = signal<OptionChainExchange>(OptionChainExchange.NSE_FO);
   selectedUnderlying = signal<string>('');
   selectedExpiry = signal<string>('');
   selectedInterval = signal<OptionChainInterval>(OptionChainInterval.TEN);
 
-  // ── Data ───────────────────────────────────────────────────────
+  // Underlying search and dropdown
   underlyings = signal<string[]>([]);
+  underlyingSearch = signal<string>('');
+  dropdownOpen = signal(false);
+
+  // Filtered list based on search query
+  filteredUnderlyings = computed(() => {
+    const q = this.underlyingSearch().toLowerCase().trim();
+    const all = this.underlyings();
+    return q ? all.filter((u) => u.toLowerCase().includes(q)) : all;
+  });
+
+  // Data for current option chain
   expiries = signal<string[]>([]);
   rows = signal<OptionChainRowView[]>([]);
   spotPrice = signal<number>(0);
@@ -162,6 +151,35 @@ export class OptionChainComponent implements OnInit, OnDestroy {
           this.notify.error('Failed to load option chain');
         },
       });
+  }
+
+  onSearchInput(value: string): void {
+    this.underlyingSearch.set(value);
+    this.dropdownOpen.set(true);
+  }
+
+  selectUnderlying(u: string): void {
+    this.underlyingSearch.set(u);
+    this.dropdownOpen.set(false);
+    this.loadExpiries(u);
+  }
+
+  onSearchFocus(): void {
+    this.underlyingSearch.set('');
+    this.dropdownOpen.set(true);
+  }
+
+  onSearchBlur(): void {
+    // Delay so click on dropdown item fires first
+    setTimeout(() => {
+      this.dropdownOpen.set(false);
+      // Restore display value if user blurred without selecting
+      if (!this.selectedUnderlying() && this.underlyings().length > 0) {
+        this.underlyingSearch.set('');
+      } else {
+        this.underlyingSearch.set(this.selectedUnderlying());
+      }
+    }, 180);
   }
 
   setInterval(interval: OptionChainInterval): void {
