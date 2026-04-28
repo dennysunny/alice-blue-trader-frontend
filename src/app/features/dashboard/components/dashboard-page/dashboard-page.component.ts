@@ -84,9 +84,9 @@ export class DashboardPageComponent implements OnInit {
     }).subscribe({
       next: ({ holdings, orders, funds, portfolio }) => {
         this.holdings.set((holdings.result ?? []).slice(0, 5));
-        this.recentOrders.set((orders.result ?? []).slice(0, 8));
+        this.recentOrders.set((orders.result ?? []).slice(0, 5));
         this.fundsData.set(funds.result?.[0] ?? null);
-        this.dayPositions.set(portfolio.result ?? []);
+        this.dayPositions.set((portfolio.result ?? []).slice(0, 5));
         this.loading.set(false);
       },
       error: () => {

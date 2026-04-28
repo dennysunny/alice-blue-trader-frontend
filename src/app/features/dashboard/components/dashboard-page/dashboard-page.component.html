@@ -38,7 +38,7 @@
       <!-- Funds Summary -->
       <div class="card">
         <div class="dashboard__section-header">
-          <h3 class="section-title">Positions Summary</h3>
+          <h3 class="section-title">Recent Positions</h3>
           <a routerLink="/positions" class="dashboard__view-all">View details →</a>
         </div>
         @if (dayPositions().length) {
@@ -100,6 +100,54 @@
               }
             </tbody>
           </table>
+          <!-- MOBILE: Positions Cards -->
+          <div class="positions-cards">
+            @for (pos of dayPositions(); track pos.instrumentId) {
+              <div class="position-card" (click)="goToStock(pos)">
+                <!-- Top: Symbol -->
+                <div class="position-card__header">
+                  <div>
+                    <span class="symbol-name">{{ pos.formattedInstrumentName }}</span>
+                    <span class="exchange-tag">{{ pos.exchange }}</span>
+                  </div>
+                  <div
+                    class="position-card__pnl"
+                    [class]="pos.unrealizedPnl >= 0 ? 'text-up' : 'text-down'"
+                  >
+                    {{ pos.unrealizedPnl | inr }}
+                  </div>
+                </div>
+
+                <!-- Grid values -->
+                <div class="position-card__grid">
+                  <div>
+                    <span>Buy Qty</span>
+                    <strong>{{ pos.dayBuyQuantity }}</strong>
+                  </div>
+                  <div>
+                    <span>Buy Avg</span>
+                    <strong>{{ pos.dayBuyPrice | number: '1.2-2' }}</strong>
+                  </div>
+                  <div>
+                    <span>Sell Qty</span>
+                    <strong>{{ pos.daySellQuantity }}</strong>
+                  </div>
+                  <div>
+                    <span>Sell Avg</span>
+                    <strong>{{ pos.daySellPrice | number: '1.2-2' }}</strong>
+                  </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="position-card__footer">
+                  <span>Realized</span>
+                  <span [class]="pos.realizedPnl >= 0 ? 'text-up' : 'text-down'">
+                    {{ pos.realizedPnl | inr }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
         } @else {
           <app-empty-state icon="◉" title="No holdings found"></app-empty-state>
         }
@@ -148,6 +196,46 @@
               }
             </tbody>
           </table>
+          <!-- MOBILE: Recent Orders Cards -->
+          <div class="orders-cards">
+            @for (order of recentOrders(); track order.brokerOrderId) {
+              <div class="order-card">
+                <!-- Header -->
+                <div class="order-card__header">
+                  <div>
+                    <span class="symbol-name">{{ order.formattedInstrumentName }}</span>
+                    <span class="exchange-tag">{{ order.exchange }}</span>
+                  </div>
+
+                  <span
+                    class="order-card__type"
+                    [class]="order.transactionType === 'BUY' ? 'text-up' : 'text-down'"
+                  >
+                    {{ order.transactionType }}
+                  </span>
+                </div>
+
+                <!-- Grid -->
+                <div class="order-card__grid">
+                  <div>
+                    <span>Qty</span>
+                    <strong>{{ order.quantity }}</strong>
+                  </div>
+                  <div>
+                    <span>Type</span>
+                    <strong>{{ order.orderComplexity }}</strong>
+                  </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="order-card__footer">
+                  <app-badge [variant]="getOrderStatusVariant(order.orderStatus)">
+                    {{ order.orderStatus }}
+                  </app-badge>
+                </div>
+              </div>
+            }
+          </div>
         } @else {
           <app-empty-state icon="↕" title="No orders today"></app-empty-state>
         }
@@ -185,6 +273,35 @@
               }
             </tbody>
           </table>
+          <!-- MOBILE: Holdings Cards -->
+          <div class="holdings-cards">
+            @for (h of holdings(); track h.isin) {
+              <div class="holding-card">
+                <!-- Header -->
+                <div class="holding-card__header">
+                  <span class="symbol-name">{{ h.formattedInstrumentName }}</span>
+                  <span
+                    [class]="(h.pnl ?? 0) >= 0 ? 'text-up' : 'text-down'"
+                    class="holding-card__pnl"
+                  >
+                    {{ (h.pnl ?? 0) >= 0 ? '+' : '' }}{{ h.pnl ?? 0 | number: '1.2-2' }}
+                  </span>
+                </div>
+
+                <!-- Grid -->
+                <div class="holding-card__grid">
+                  <div>
+                    <span>Qty</span>
+                    <strong>{{ h.dpQuantity }}</strong>
+                  </div>
+                  <div>
+                    <span>Avg Price</span>
+                    <strong>₹{{ h.averageTradedPrice | number: '1.2-2' }}</strong>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
         } @else {
           <app-empty-state icon="◉" title="No holdings found"></app-empty-state>
         }
