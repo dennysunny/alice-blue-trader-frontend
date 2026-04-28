@@ -19,6 +19,7 @@ import { InrPipe } from '../../../../shared/pipes/inr.pipe';
 import { statusCardConfig, statusTypes } from '../../configs/dashboard.confg';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { BadgeComponent } from '../../../../shared/components/badge/badge.component';
+import { StatusCardLabel } from '../../configs/dashboard.enum';
 
 @Component({
   standalone: true,
@@ -36,6 +37,7 @@ import { BadgeComponent } from '../../../../shared/components/badge/badge.compon
 })
 export class DashboardPageComponent implements OnInit {
   readonly today = new Date();
+  recentOrdersCount = 0;
 
   loading = signal(true);
   holdings = signal<Holding[]>([]);
@@ -53,11 +55,14 @@ export class DashboardPageComponent implements OnInit {
 
     return statusCardConfig.map((config) => {
       const value = config.getValue(ctx);
+      const isOrdersCard = config.label === StatusCardLabel.OPEN_ORDERS;
       return {
         label: config.label,
         value,
         type: config.type,
-        subValue: config.getSubValue?.(ctx),
+        subValue: isOrdersCard
+          ? `Total Orders: ${this.recentOrdersCount}`
+          : config.getSubValue?.(ctx),
         isPositive:
           config.type === 'pnl' ? (value > 0 ? true : value < 0 ? false : null) : undefined,
       };
@@ -87,6 +92,7 @@ export class DashboardPageComponent implements OnInit {
         this.recentOrders.set((orders.result ?? []).slice(0, 5));
         this.fundsData.set(funds.result?.[0] ?? null);
         this.dayPositions.set((portfolio.result ?? []).slice(0, 5));
+        this.recentOrdersCount = orders.result?.length ?? 0;
         this.loading.set(false);
       },
       error: () => {

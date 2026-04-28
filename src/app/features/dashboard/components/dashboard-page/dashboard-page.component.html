@@ -134,16 +134,19 @@
                   </div>
                   <div>
                     <span>Sell Avg</span>
-                    <strong>{{ pos.daySellPrice | number: '1.2-2' }}</strong>
+                    <strong
+                      [class]="pos.daySellPrice > pos.dayBuyPrice ? 'text-up' : 'text-down'"
+                      >{{ pos.daySellPrice | number: '1.2-2' }}</strong
+                    >
                   </div>
                 </div>
 
                 <!-- Footer -->
                 <div class="position-card__footer">
                   <span>Realized</span>
-                  <span [class]="pos.realizedPnl >= 0 ? 'text-up' : 'text-down'">
+                  <strong [class]="pos.realizedPnl >= 0 ? 'text-up' : 'text-down'">
                     {{ pos.realizedPnl | inr }}
-                  </span>
+                  </strong>
                 </div>
               </div>
             }

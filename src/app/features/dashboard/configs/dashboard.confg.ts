@@ -23,11 +23,14 @@ export const statusCardConfig: StatCardConfig[] = [
     label: StatusCardLabel.AVAILABLE_MARGIN,
     type: 'currency',
     getValue: ({ funds }) => funds?.tradingLimit ?? 0,
+    getSubValue: ({ funds }) => `Utilized Margin: ₹${funds ? funds.utilizedMargin : '—'}`,
   },
   {
     label: StatusCardLabel.PORTFOLIO_PNL,
     type: 'pnl',
     getValue: ({ positions }) => positions.reduce((s, p) => s + p.realizedPnl, 0),
+    getSubValue: ({ positions }) =>
+      `Unrealized P&L: ₹${positions.reduce((s, p) => s + p.unrealizedPnl, 0)}`,
   },
   {
     label: StatusCardLabel.OPEN_ORDERS,
