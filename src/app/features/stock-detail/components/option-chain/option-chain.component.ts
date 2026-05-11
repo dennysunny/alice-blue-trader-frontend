@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Subject, takeUntil, switchMap, of } from 'rxjs';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 
-import { OptionChainExchange, OptionChainInterval } from '../../configs/stock.enum';
-import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
-import { OptionChainService } from '../../../../core/services/option-chain.service';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { NavigationService } from '../../../../core/services/navigation.service';
-import { WebSocketService } from '../../../../core/services/websocket.service';
-import { OptionChainRowView, OptionContractView } from '../../../../core/models/option-chain.model';
 import { Exchange } from '../../../../core/enums/api.enums';
+import { OptionChainRowView, OptionContractView } from '../../../../core/models/option-chain.model';
+import { NavigationService } from '../../../../core/services/navigation.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { OptionChainService } from '../../../../core/services/option-chain.service';
+import { WebSocketService } from '../../../../core/services/websocket.service';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { ExchangeOptions, IntervalOptions } from '../../configs/stock.config';
+import { OptionChainExchange, OptionChainInterval } from '../../configs/stock.enum';
 
 @Component({
   selector: 'app-option-chain',
