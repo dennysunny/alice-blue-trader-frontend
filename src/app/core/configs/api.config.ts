@@ -7,8 +7,8 @@ export const API_CONFIG = {
   REDIRECT_URL: 'https://ant.aliceblueonline.com/plugin/callback',
   GET_USER_DETAILS: 'https://ant.aliceblueonline.com/open-api/od/v1/vendor/getUserDetails',
   CLOUD_API_BASE_URL: 'https://alice-blue-backend.onrender.com',
-  //BASE_URL: 'http://localhost:3000',
-  BASE_URL: 'https://aliceblue-trader-backend.onrender.com',
+  BASE_URL: 'http://localhost:3000',
+  //BASE_URL: 'https://aliceblue-trader-backend.onrender.com',
   //BASE_URL: 'https://a3.aliceblueonline.com',
   PROXY_URL: '/api/shell',
 } as const;
@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
     LOGIN_REDIRECT: '/?appcode=',
     GET_USER_DETAILS: '/vendor/getUserDetails',
     BE_GET_USER_DETAILS: '/api/auth/create-session',
+    CREATE_WS_SESSION: '/profile/createWsSess',
     LOGOUT: '/logout',
   },
   ORDERS: {
@@ -28,6 +29,7 @@ export const API_ENDPOINTS = {
     CANCEL_ORDER: '/orders/cancel',
     TRADE_BOOK: '/orders/trades',
     MARGIN_CALCULATOR: '/order/getMarginCalculator',
+    CREATE_ORDER_WS_TOKEN: '/order-notify/ws/createWsToken',
   },
   PORTFOLIO: {
     GET_HOLDINGS: '/holdings',

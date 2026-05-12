@@ -24,6 +24,7 @@ import { BadgeComponent } from '../../../../shared/components/badge/badge.compon
 import { Position } from '../../../../core/models/portfolio.models';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { PullToRefreshDirective } from '../../../../shared/directives/app-pull-to-refresh';
+import { OrderWebSocketService } from '../../../../core/services/order-websocket.service';
 
 @Component({
   standalone: true,
@@ -53,9 +54,11 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
   private readonly orderService = inject(OrderService);
   private readonly notifications = inject(NotificationService);
   private readonly navigationService = inject(NavigationService);
+  private readonly orderWsService = inject(OrderWebSocketService);
 
   ngOnInit(): void {
     this.loadOrders();
+    this.listenToOrderUpdates();
   }
 
   setTab(tab: ActiveTab): void {
@@ -97,6 +100,64 @@ export class OrdersPageComponent implements OnInit, OnDestroy {
           this.ptr.complete();
         },
       });
+  }
+
+  private listenToOrderUpdates(): void {
+    this.orderWsService.orderFeed$.pipe(takeUntil(this.destroy$)).subscribe((update: any) => {
+      console.log('LIVE ORDER UPDATE', update);
+
+      const index = this.orders.findIndex((o) => o.brokerOrderId === update.norenordno);
+
+      /**
+       * Existing order → update it
+       */
+      if (index !== -1) {
+        this.orders[index] = {
+          ...this.orders[index],
+          status: update.status,
+          avgPrice: update.avgprc,
+          filledQuantity: update.fillshares,
+          rejectionReason: update.rejreason,
+          exchangeOrderId: update.exchordid,
+        };
+
+        /**
+         * Trigger Angular UI refresh
+         */
+        this.orders = [...this.orders];
+      } else {
+        /**
+         * New order
+         * Reload orderbook for consistency
+         */
+        this.loadOrders();
+      }
+
+      /**
+       * Optional realtime notifications
+       */
+      this.showOrderNotification(update);
+    });
+  }
+
+  private showOrderNotification(update: any): void {
+    switch (update.status) {
+      case 'COMPLETE':
+        this.notifications.success(`${update.tsym} order completed`);
+        break;
+
+      case 'REJECTED':
+        this.notifications.error(update.rejreason || 'Order rejected');
+        break;
+
+      case 'CANCELED':
+        this.notifications.warning(`${update.tsym} order cancelled`);
+        break;
+
+      case 'OPEN':
+        this.notifications.info(`${update.tsym} order placed`);
+        break;
+    }
   }
 
   cancelOrder(order: Order): void {

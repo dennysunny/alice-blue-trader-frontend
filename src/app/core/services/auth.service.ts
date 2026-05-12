@@ -10,6 +10,7 @@ import { UserSessionApiResponse } from '../models/api-response.models';
 import { AuthState, UserSession } from '../models/auth.models';
 import { StorageService } from './storage.service';
 import { ApiService } from './api.service';
+import { OrderWebSocketService } from './order-websocket.service';
 
 const INITIAL_AUTH_STATE: AuthState = {
   isAuthenticated: false,
@@ -31,6 +32,7 @@ export class AuthService {
     private router: Router,
     private storage: StorageService,
     private apiService: ApiService,
+    private orderWsService: OrderWebSocketService,
   ) {
     this.rehydrateSession();
   }
@@ -63,7 +65,8 @@ export class AuthService {
     return this.http.post<UserSessionApiResponse>(url, { userId, authCode }).pipe(
       tap((res) => {
         if (res.stat === ApiStatus.OK) {
-          this.setAuthSuccess({ userId: res.clientId }, res.clientId);
+          this.setAuthSuccess({ userId: res.clientId }, res.userSession);
+          this.createWebSocketSession();
           this.loggedInUser.set({ userId: res.clientId } as UserSession);
           this.storage.set(StorageKey.AUTH_TOKEN, res.userSession);
           this.storage.set(StorageKey.USER_ID, res.clientId);
@@ -75,6 +78,28 @@ export class AuthService {
         return throwError(() => err);
       }),
     );
+  }
+
+  createWebSocketSession(): void {
+    this.apiService
+      .post(API_CONFIG.PROXY_URL, {
+        method: API_METHODS.POST,
+        endpoint: API_ENDPOINTS.AUTH.CREATE_WS_SESSION,
+        session: this.sessionId,
+        data: {
+          source: 'API',
+          userId: this.currentUser?.userId,
+        },
+      })
+      .subscribe({
+        next: (res) => {
+          console.log('WebSocket session created', res);
+          this.orderWsService.connect(this.sessionId!, this.currentUser!.userId!);
+        },
+        error: (err) => {
+          console.error('Failed to create WebSocket session', err);
+        },
+      });
   }
 
   logout(): void {
