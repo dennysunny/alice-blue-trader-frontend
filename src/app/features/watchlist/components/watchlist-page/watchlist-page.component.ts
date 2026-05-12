@@ -7,15 +7,15 @@ import { TransactionType } from '../../../../core/enums/api.enums';
 import { SearchResult } from '../../../../core/models/instrument.models';
 import { WatchlistItem } from '../../../../core/models/watchlist.models';
 import { MarketService } from '../../../../core/services/market.service';
+import { NavigationService } from '../../../../core/services/navigation.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { WatchlistService } from '../../../../core/services/watchlist.service';
 import { WebSocketService } from '../../../../core/services/websocket.service';
-import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
-import { AbbrevNumPipe } from '../../../../shared/pipes/abbrev-num.pipe';
-import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { AbbrevNumPipe } from '../../../../shared/pipes/abbrev-num.pipe';
 import { OrderFormComponent } from '../order-form/order-form.component';
-import { NavigationService } from '../../../../core/services/navigation.service';
 
 interface WatchlistRow extends WatchlistItem {
   ltp: number | null;
@@ -47,7 +47,6 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
   orderFormVisible = false;
   selectedItem: WatchlistItem | null = null;
   selectedSide: TransactionType = TransactionType.BUY;
-
   readonly TransactionType = TransactionType;
   private readonly destroy$ = new Subject<void>();
 
@@ -58,22 +57,22 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
   private notifications = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
+  readonly watchlists = this.watchlistService.watchlists;
+
   ngOnInit(): void {
     this.trackWatchListData();
   }
 
   trackWatchListData(): void {
-    this.watchlistService.watchlist$.pipe(takeUntil(this.destroy$)).subscribe((wl) => {
-      this.rows = wl.items.map((item) => ({
-        ...item,
-        ltp: null,
-        change: null,
-        changePct: null,
-        volume: null,
-        prevLtp: null,
-      }));
-      this.subscribeToFeeds();
-    });
+    this.rows = this.watchlistService.activeItems().map((item) => ({
+      ...item,
+      ltp: null,
+      change: null,
+      changePct: null,
+      volume: null,
+      prevLtp: null,
+    }));
+    this.subscribeToFeeds();
 
     this.wsService.connect();
     this.wsService.feed$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
@@ -115,6 +114,16 @@ export class WatchlistPageComponent implements OnInit, OnDestroy {
 
   onSearchCleared(): void {
     this.searchResults = [];
+  }
+
+  createWatchlist(): void {
+    const name = prompt('Watchlist name');
+
+    if (!name?.trim()) {
+      return;
+    }
+
+    this.watchlistService.createWatchlist(name);
   }
 
   addToWatchlist(result: SearchResult): void {

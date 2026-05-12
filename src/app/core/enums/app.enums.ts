@@ -22,6 +22,8 @@ export enum StorageKey {
   USER_ID = 'ant_user_id',
   THEME = 'ant_theme',
   WATCHLIST = 'ant_watchlist',
+  WATCHLISTS = 'WATCHLISTS',
+  ACTIVE_WATCHLIST_ID = 'ACTIVE_WATCHLIST_ID',
 }
 
 export enum NavItem {

@@ -1,68 +1,186 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
+
 import { StorageService } from './storage.service';
+
 import { StorageKey } from '../enums/app.enums';
-import { WatchlistItem, Watchlist } from '../models/watchlist.models';
+
+import { Watchlist, WatchlistItem } from '../models/watchlist.models';
+
 import { Exchange } from '../enums/api.enums';
 
-const DEFAULT_WATCHLIST: Watchlist = {
-  id: 'default',
-  name: 'My Watchlist',
-  items: [
-    { instrumentId: '22', tradingSymbol: 'ACC-EQ', formattedName: 'ACC', exchange: Exchange.NSE },
-    { instrumentId: '2885', tradingSymbol: 'TCS-EQ', formattedName: 'TCS', exchange: Exchange.NSE },
-    { instrumentId: '1333', tradingSymbol: 'HDFCBANK-EQ', formattedName: 'HDFC Bank', exchange: Exchange.NSE },
-    { instrumentId: '11536', tradingSymbol: 'INFY-EQ', formattedName: 'Infosys', exchange: Exchange.NSE },
-    { instrumentId: '10999', tradingSymbol: 'RELIANCE-EQ', formattedName: 'Reliance', exchange: Exchange.NSE },
-    { instrumentId: '4963', tradingSymbol: 'WIPRO-EQ', formattedName: 'Wipro', exchange: Exchange.NSE },
-  ],
-};
+const DEFAULT_WATCHLISTS: Watchlist[] = [
+  {
+    id: 'default',
+    name: 'My Watchlist',
 
-@Injectable({ providedIn: 'root' })
+    items: [
+      {
+        instrumentId: '22',
+        tradingSymbol: 'ACC-EQ',
+        formattedName: 'ACC',
+        exchange: Exchange.NSE,
+      },
+
+      {
+        instrumentId: '2885',
+        tradingSymbol: 'TCS-EQ',
+        formattedName: 'TCS',
+        exchange: Exchange.NSE,
+      },
+
+      {
+        instrumentId: '11536',
+        tradingSymbol: 'INFY-EQ',
+        formattedName: 'Infosys',
+        exchange: Exchange.NSE,
+      },
+    ],
+  },
+];
+
+@Injectable({
+  providedIn: 'root',
+})
 export class WatchlistService {
-  private readonly watchlistSubject: BehaviorSubject<Watchlist>;
-  readonly watchlist$;
+  private storage = inject(StorageService);
+  // =========================================================
+  // SIGNAL STATE
+  // =========================================================
 
-  constructor(private storage: StorageService) {
-    const saved = this.storage.get<Watchlist>(StorageKey.WATCHLIST);
-    this.watchlistSubject = new BehaviorSubject<Watchlist>(saved ?? DEFAULT_WATCHLIST);
-    this.watchlist$ = this.watchlistSubject.asObservable();
+  readonly watchlists = signal<Watchlist[]>(
+    this.storage.get<Watchlist[]>(StorageKey.WATCHLISTS) ?? DEFAULT_WATCHLISTS,
+  );
+
+  readonly activeWatchlistId = signal<string>(
+    this.storage.get<string>(StorageKey.ACTIVE_WATCHLIST_ID) ?? 'default',
+  );
+
+  readonly activeWatchlist = computed(() => {
+    return this.watchlists().find((w) => w.id === this.activeWatchlistId()) ?? this.watchlists()[0];
+  });
+
+  readonly activeItems = computed(() => {
+    return this.activeWatchlist()?.items ?? [];
+  });
+
+  constructor() {
+    /**
+     * Persist automatically
+     */
+    effect(() => {
+      this.storage.set(StorageKey.WATCHLISTS, this.watchlists());
+
+      this.storage.set(StorageKey.ACTIVE_WATCHLIST_ID, this.activeWatchlistId());
+    });
   }
 
-  get current(): Watchlist {
-    return this.watchlistSubject.value;
+  // =========================================================
+  // WATCHLIST MANAGEMENT
+  // =========================================================
+
+  createWatchlist(name: string): void {
+    const newWatchlist: Watchlist = {
+      id: crypto.randomUUID(),
+      name,
+      items: [],
+    };
+
+    this.watchlists.update((list) => [...list, newWatchlist]);
   }
+
+  deleteWatchlist(id: string): void {
+    const filtered = this.watchlists().filter((w) => w.id !== id);
+
+    this.watchlists.set(filtered);
+
+    /**
+     * Reset active watchlist
+     */
+    if (this.activeWatchlistId() === id) {
+      this.activeWatchlistId.set(filtered[0]?.id ?? '');
+    }
+  }
+
+  renameWatchlist(id: string, name: string): void {
+    this.watchlists.update((list) => list.map((w) => (w.id === id ? { ...w, name } : w)));
+  }
+
+  setActiveWatchlist(id: string): void {
+    this.activeWatchlistId.set(id);
+  }
+
+  // =========================================================
+  // ITEM MANAGEMENT
+  // =========================================================
 
   addItem(item: WatchlistItem): boolean {
-    const current = this.current;
+    const current = this.activeWatchlist();
+
+    if (!current) return false;
+
     const exists = current.items.some(
-      (i) => i.instrumentId === item.instrumentId && i.exchange === item.exchange
+      (i) => i.instrumentId === item.instrumentId && i.exchange === item.exchange,
     );
-    if (exists) return false;
-    const updated = { ...current, items: [...current.items, item] };
-    this.update(updated);
+
+    if (exists) {
+      return false;
+    }
+
+    this.updateWatchlist(current.id, {
+      ...current,
+
+      items: [...current.items, item],
+    });
+
     return true;
   }
 
   removeItem(instrumentId: string, exchange: Exchange): void {
-    const current = this.current;
-    const updated = {
+    const current = this.activeWatchlist();
+
+    if (!current) return;
+
+    this.updateWatchlist(current.id, {
       ...current,
+
       items: current.items.filter(
-        (i) => !(i.instrumentId === instrumentId && i.exchange === exchange)
+        (i) => !(i.instrumentId === instrumentId && i.exchange === exchange),
       ),
-    };
-    this.update(updated);
+    });
   }
 
   isWatched(instrumentId: string, exchange: Exchange): boolean {
-    return this.current.items.some(
-      (i) => i.instrumentId === instrumentId && i.exchange === exchange
+    return this.activeItems().some(
+      (i) => i.instrumentId === instrumentId && i.exchange === exchange,
     );
   }
 
-  private update(watchlist: Watchlist): void {
-    this.watchlistSubject.next(watchlist);
-    this.storage.set(StorageKey.WATCHLIST, watchlist);
+  // =========================================================
+  // REORDER SUPPORT
+  // =========================================================
+
+  reorderItems(previousIndex: number, currentIndex: number): void {
+    const current = this.activeWatchlist();
+
+    if (!current) return;
+
+    const updatedItems = [...current.items];
+
+    const [movedItem] = updatedItems.splice(previousIndex, 1);
+
+    updatedItems.splice(currentIndex, 0, movedItem);
+
+    this.updateWatchlist(current.id, {
+      ...current,
+      items: updatedItems,
+    });
+  }
+
+  // =========================================================
+  // INTERNAL UPDATE
+  // =========================================================
+
+  private updateWatchlist(id: string, updated: Watchlist): void {
+    this.watchlists.update((list) => list.map((w) => (w.id === id ? updated : w)));
   }
 }

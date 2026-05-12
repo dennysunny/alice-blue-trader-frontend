@@ -6,7 +6,6 @@ export interface WatchlistItem {
   tradingSymbol: string;
   formattedName: string;
   exchange: Exchange;
-  quote?: Quote;
 }
 
 export interface Watchlist {
