@@ -183,3 +183,10 @@
     opacity: 0.5;
   }
 }
+
+/* Hide sidebar on mobile */
+@media (max-width: 768px) {
+  .navbar__menu-btn {
+    display: none;
+  }
+}
