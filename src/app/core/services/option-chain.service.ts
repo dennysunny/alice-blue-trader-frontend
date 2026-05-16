@@ -76,27 +76,36 @@ export class OptionChainService {
     rows: Array<{ CE?: OptionContractRaw; PE?: OptionContractRaw }>,
     spotPrice: number,
   ): OptionChainRowView[] {
-    const parsed = rows.map((row) => {
+    const parsed: OptionChainRowView[] = rows.map((row) => {
       const ce = row.CE ? this.parseContract(row.CE) : undefined;
       const pe = row.PE ? this.parseContract(row.PE) : undefined;
 
-      // Extract strike from tradingsymbol (last numeric segment before C/P)
-      const strike = this.extractStrike(row.CE?.tradingsymbol ?? row.PE?.tradingsymbol ?? '');
+      // ── Strike priority ──────────────────────────────────────────
+      // 1. gval — AliceBlue stores the strike price here for NSE/MCX.
+      //    The docs label it "Greeks or calculated value" but in practice
+      //    it is the numeric strike (e.g. "24700", "52000").
+      // 2. tradingsymbol regex — fallback for BSE and edge cases.
+      const rawGval = parseFloat(row.CE?.gval ?? row.PE?.gval ?? '0');
+      const strike =
+        rawGval > 0
+          ? rawGval
+          : this.extractStrike(row.CE?.tradingsymbol ?? row.PE?.tradingsymbol ?? '');
 
-      return {
-        strikePrice: strike,
-        CE: ce,
-        PE: pe,
-        isAtm: false as boolean,
-      } satisfies OptionChainRowView;
+      return { strikePrice: strike, CE: ce, PE: pe, isAtm: false } satisfies OptionChainRowView;
     });
 
-    // Mark ATM — strike closest to spot
-    if (spotPrice > 0 && parsed.length > 0) {
-      const atm = parsed.reduce((best, cur) =>
-        Math.abs(cur.strikePrice - spotPrice) < Math.abs(best.strikePrice - spotPrice) ? cur : best,
-      );
-      atm.isAtm = true;
+    // Mark ATM row — closest strike to spot price
+    if (parsed.length > 0) {
+      const atmRow =
+        spotPrice > 0
+          ? parsed.reduce((best, cur) =>
+              Math.abs(cur.strikePrice - spotPrice) < Math.abs(best.strikePrice - spotPrice)
+                ? cur
+                : best,
+            )
+          : parsed[Math.floor(parsed.length / 2)]; // fallback: middle row
+
+      atmRow.isAtm = true;
     }
 
     return parsed;
@@ -119,25 +128,26 @@ export class OptionChainService {
       oi,
       pdoi,
       oiChange: parseFloat((oi - pdoi).toFixed(0)),
+      // gval is strike for NSE/MCX — store it raw so component can debug if needed
       gval: parseFloat(raw.gval) || 0,
     };
   }
 
   /**
-   * Extract strike price from NSE/BSE F&O trading symbols.
-   * Monthly: SYMBOL+YYMMMSTRIKE+CE/PE  e.g. NIFTY25APR25000CE
-   * Weekly:  SYMBOL+YY+M+DD+STRIKE+CE/PE  e.g. NIFTY2641924700CE
+   * Fallback: extract strike from trading symbol string.
    *
-   * The digit block before CE/PE may include an embedded date prefix when > 5 digits.
-   * All NSE index strikes fit in 5 digits (≤99999), so we take the last 5 in that case.
+   * NSE monthly : NIFTY25APR24700CE  → last digit block before CE/PE = '24700' (5 chars) → 24700
+   * NSE weekly  : NIFTY2642524700CE  → last digit block = '2642524700' (len > 5) → last 5 = '24700'
+   * BSE monthly : SENSEX25APR80000CE → '80000' (5 chars) → 80000
+   * MCX decimal : GOLD25APR73000CE   → '73000' → 73000
    */
   private extractStrike(symbol: string): number {
     if (!symbol) return 0;
     const match = symbol.match(/(\d+(?:\.\d+)?)(CE|PE)$/i);
     if (!match) return 0;
     const raw = match[1];
-    if (raw.includes('.')) return parseFloat(raw); // MCX/CDS decimal strikes
-    if (raw.length > 5) return parseFloat(raw.slice(-5)); // strip embedded date prefix
+    if (raw.includes('.')) return parseFloat(raw);
+    if (raw.length > 5) return parseFloat(raw.slice(-5));
     return parseFloat(raw);
   }
 }

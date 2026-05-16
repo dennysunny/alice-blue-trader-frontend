@@ -1,8 +1,16 @@
 .funds-page {
-  &__header { display: flex; align-items: center; margin-bottom: 24px; }
+  &__header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+  }
 }
 
-.page-title { font-size: 22px; font-weight: 700; color: var(--color-text); }
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text);
+}
 
 .funds-grid {
   display: grid;
@@ -27,7 +35,11 @@
 
 .funds-row {
   &--highlight {
-    td { color: var(--color-primary) !important; font-weight: 700 !important; }
+    td {
+      color: var(--color-primary) !important;
+      font-weight: 700 !important;
+    }
+
     background: rgba(var(--color-primary-rgb), 0.04);
   }
 
@@ -42,4 +54,13 @@
   }
 }
 
-.text-right { text-align: right; }
+.text-right {
+  text-align: right;
+}
+
+// @media (max-width: 768px) {
+//   .funds-page {
+//     height: 140vh;
+//     /* increase height to allow scrolling on mobile */
+//   }
+// }

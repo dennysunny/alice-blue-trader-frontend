@@ -1,0 +1,112 @@
+<div class="charts-page">
+  <!-- Period selector -->
+  <div class="chart-controls">
+    <div class="seg-btns">
+      @for (p of periods; track p.value) {
+        <button
+          class="seg-btn"
+          [class.active]="activePeriod() === p.value"
+          (click)="setPeriod(p.value)"
+        >
+          {{ p.label }}
+        </button>
+      }
+    </div>
+    <div class="chart-subtitle">{{ chartSubtitle() }}</div>
+  </div>
+
+  <!-- Multi-chart grid -->
+  <div class="charts-grid">
+    <!-- Cumulative P&L -->
+    <div class="chart-card">
+      <div class="chart-card__title">Cumulative P&amp;L</div>
+      <div #pnlChart class="chart-canvas"></div>
+    </div>
+
+    <!-- Daily P&L bar -->
+    <div class="chart-card">
+      <div class="chart-card__title">Daily P&amp;L</div>
+      <div #dailyChart class="chart-canvas"></div>
+    </div>
+
+    <!-- Monthly P&L bar -->
+    <div class="chart-card">
+      <div class="chart-card__title">Monthly P&amp;L</div>
+      <div #monthlyChart class="chart-canvas"></div>
+    </div>
+
+    <!-- Trade count + Win Rate -->
+    <div class="chart-card">
+      <div class="chart-card__title">Trade Count per Day</div>
+      <div #tradesChart class="chart-canvas"></div>
+    </div>
+
+    <!-- Win/Loss count bar (stacked visual) -->
+    <div class="chart-card chart-card--wide">
+      <div class="chart-card__title">Win / Loss Breakdown by Month</div>
+      <div class="win-loss-grid">
+        @for (m of yearSummary.months; track m.month) {
+          @if (m.tradingDays > 0) {
+            <div class="wl-col">
+              <div class="wl-bars">
+                <div
+                  class="wl-bar wl-bar--win"
+                  [style.height.%]="barPct(m.profitDays, m.tradingDays)"
+                  [title]="m.profitDays + ' profit days'"
+                ></div>
+                <div
+                  class="wl-bar wl-bar--loss"
+                  [style.height.%]="barPct(m.lossDays, m.tradingDays)"
+                  [title]="m.lossDays + ' loss days'"
+                ></div>
+              </div>
+              <div class="wl-month">{{ m.monthLabel }}</div>
+              <div class="wl-wr">{{ m.winRate | number: '1.0-0' }}%</div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Summary stats -->
+    <div class="chart-card chart-card--stats">
+      <div class="chart-card__title">{{ viewYear }} at a Glance</div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-item__label">Total P&amp;L</span>
+          <span
+            class="stat-item__value"
+            [class.up]="yearSummary.totalPnl > 0"
+            [class.down]="yearSummary.totalPnl < 0"
+          >
+            {{ yearSummary.totalPnl >= 0 ? '+' : '' }}₹{{ yearSummary.totalPnl | number: '1.0-0' }}
+          </span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__label">Total Trades</span>
+          <span class="stat-item__value">{{ yearSummary.totalTrades }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__label">Win Rate</span>
+          <span class="stat-item__value">{{ yearSummary.winRate | number: '1.1-1' }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__label">Best Month</span>
+          <span class="stat-item__value up"
+            >{{ bestMonth()?.monthLabel }} ₹{{ bestMonth()?.totalPnl | number: '1.0-0' }}</span
+          >
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__label">Worst Month</span>
+          <span class="stat-item__value down"
+            >{{ worstMonth()?.monthLabel }} ₹{{ worstMonth()?.totalPnl | number: '1.0-0' }}</span
+          >
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__label">Active Months</span>
+          <span class="stat-item__value">{{ activeMonths() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

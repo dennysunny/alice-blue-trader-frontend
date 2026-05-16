@@ -281,3 +281,10 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .dashboard {
+    height: 140vh;
+    /* increase height to allow scrolling on mobile */
+  }
+}

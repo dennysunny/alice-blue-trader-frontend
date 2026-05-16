@@ -1,0 +1,48 @@
+<div class="cal-wrap">
+  <!-- Day-of-week headers -->
+  <div class="cal-grid cal-grid--header">
+    @for (d of dayLabels; track d) {
+      <div class="cal-day-label">{{ d }}</div>
+    }
+  </div>
+
+  <!-- Calendar cells -->
+  <div class="cal-grid">
+    @for (day of days(); track day.date) {
+      <div
+        class="cal-cell"
+        [class]="outcomeClass(day)"
+        [class.cal-cell--today]="day.isToday"
+        [class.cal-cell--selected]="day.date === selectedDate"
+        [class.cal-cell--violation]="day.hasViolation"
+        [class.cal-cell--clickable]="day.isCurrentMonth"
+        (click)="select(day)"
+      >
+        <div class="cal-cell__num">{{ day.dayOfMonth }}</div>
+
+        @if (day.report && day.isCurrentMonth) {
+          <div
+            class="cal-cell__pnl"
+            [class.up]="day.report.total_pnl > 0"
+            [class.down]="day.report.total_pnl < 0"
+          >
+            {{ day.report.total_pnl >= 0 ? '+' : '' }}{{ day.report.total_pnl | number: '1.0-0' }}
+          </div>
+          <div class="cal-cell__trades">{{ day.report.total_trades }}T</div>
+
+          @if (day.hasViolation) {
+            <div class="cal-cell__violation-dot" title="Rule violated">⚠</div>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Legend -->
+  <div class="cal-legend">
+    <span class="legend-item legend-item--profit">Profit</span>
+    <span class="legend-item legend-item--loss">Loss</span>
+    <span class="legend-item legend-item--breakeven">Breakeven</span>
+    <span class="legend-item legend-item--violation">⚠ Rule violated</span>
+  </div>
+</div>

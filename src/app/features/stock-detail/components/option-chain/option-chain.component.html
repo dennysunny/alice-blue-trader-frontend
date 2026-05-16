@@ -1,7 +1,6 @@
 <div class="oc-page">
-  <!-- ── Controls Bar ──────────────────────────────────────────────── -->
+  <!-- ── Controls ──────────────────────────────────────────────────── -->
   <div class="oc-controls">
-    <!-- Exchange -->
     <div class="oc-control-group">
       <label class="oc-label">Exchange</label>
       <div class="seg-btns">
@@ -17,7 +16,6 @@
       </div>
     </div>
 
-    <!-- Underlying — searchable dropdown replaces 223 pills -->
     <div class="oc-control-group">
       <label class="oc-label">Underlying</label>
       @if (loadingUnderlyings()) {
@@ -63,7 +61,6 @@
       }
     </div>
 
-    <!-- Expiry -->
     @if (expiries().length > 0) {
       <div class="oc-control-group">
         <label class="oc-label">Expiry</label>
@@ -85,7 +82,6 @@
       </div>
     }
 
-    <!-- Interval -->
     @if (selectedExpiry()) {
       <div class="oc-control-group">
         <label class="oc-label">Strike Interval</label>
@@ -104,7 +100,7 @@
     }
   </div>
 
-  <!-- ── Stats Bar ──────────────────────────────────────────────────── -->
+  <!-- ── Stats ─────────────────────────────────────────────────────── -->
   @if (rows().length > 0 && !loadingChain()) {
     <div class="oc-stats">
       <div class="oc-stat">
@@ -127,11 +123,11 @@
           <span class="oc-stat__value primary">{{ atm.strikePrice | number: '1.0-0' }}</span>
         </div>
         <div class="oc-stat oc-stat--divider">
-          <span class="oc-stat__label">ATM CE LTP</span>
+          <span class="oc-stat__label">ATM CE</span>
           <span class="oc-stat__value">{{ atm.CE?.ltp ?? 0 | number: '1.2-2' }}</span>
         </div>
         <div class="oc-stat oc-stat--divider">
-          <span class="oc-stat__label">ATM PE LTP</span>
+          <span class="oc-stat__label">ATM PE</span>
           <span class="oc-stat__value">{{ atm.PE?.ltp ?? 0 | number: '1.2-2' }}</span>
         </div>
       }
@@ -141,13 +137,9 @@
 
   <!-- ── Loading ────────────────────────────────────────────────────── -->
   @if (loadingChain()) {
-    <div class="oc-loading">
-      <app-spinner size="lg" />
-      <span>Loading option chain…</span>
-    </div>
+    <div class="oc-loading"><app-spinner size="lg" /><span>Loading option chain…</span></div>
   }
 
-  <!-- ── Empty ──────────────────────────────────────────────────────── -->
   @if (!loadingChain() && rows().length === 0 && selectedExpiry()) {
     <div class="oc-empty">No data for {{ selectedUnderlying() }} · {{ selectedExpiry() }}</div>
   }
@@ -156,71 +148,90 @@
   @if (!loadingChain() && rows().length > 0) {
     <div class="oc-table-wrap">
       <table class="oc-table">
+        <colgroup>
+          <col class="ce-oi-chg" />
+          <col class="ce-oi-num" />
+          <col class="ce-oi-bar" />
+          <col class="ce-chg" />
+          <col class="ce-pdc" />
+          <col class="ce-ltp" />
+          <col class="strike" />
+          <col class="pe-ltp" />
+          <col class="pe-pdc" />
+          <col class="pe-chg" />
+          <col class="pe-oi-bar" />
+          <col class="pe-oi-num" />
+          <col class="pe-oi-chg" />
+        </colgroup>
         <thead>
           <tr class="oc-header-row">
+            <!--
+              CE side: 7 cols — OI CHG | OI NUM | OI BAR | CHG% | PDC | LTP
+              Strike: 1 col
+              PE side: 7 cols — LTP | PDC | CHG% | OI BAR | OI NUM | OI CHG
+            -->
             <th colspan="6" class="oc-th-ce">CALLS</th>
             <th class="oc-th-strike">STRIKE</th>
             <th colspan="6" class="oc-th-pe">PUTS</th>
           </tr>
           <tr class="oc-subheader">
-            <th class="tr">OI Chg</th>
+            <!-- CE -->
+            <th class="tr">OI CHG</th>
             <th class="tr">OI</th>
-            <th class="tr hide-sm">Vol</th>
-            <th class="tr">Chg %</th>
+            <th class="oi-bar-th"></th>
+            <th class="tr">CHG %</th>
             <th class="tr hide-sm">PDC</th>
-            <th class="tr oc-ltp-col">LTP</th>
+            <th class="tr ltp-th">LTP</th>
+            <!-- Strike -->
             <th class="oc-strike-sub"></th>
-            <th class="oc-ltp-col">LTP</th>
+            <!-- PE -->
+            <th class="ltp-th">LTP</th>
             <th class="hide-sm">PDC</th>
-            <th>Chg %</th>
-            <th class="hide-sm">Vol</th>
+            <th>CHG %</th>
+            <th class="oi-bar-th"></th>
             <th>OI</th>
-            <th>OI Chg</th>
+            <th>OI CHG</th>
           </tr>
         </thead>
         <tbody>
-          @for (row of rows(); track row.strikePrice) {
+          @for (row of rows(); track row.CE?.token ?? row.PE?.token) {
             <tr class="oc-row" [class.oc-row--atm]="row.isAtm">
               <!-- CE: OI Change -->
-              <td class="tr">
+              <td class="tr num-cell">
                 @if (row.CE; as ce) {
-                  <span [class]="'num ' + oiChangeClass(ce.oiChange)">{{
-                    ce.oiChange | number: '1.0-0'
-                  }}</span>
+                  <span [class]="'num ' + oiChangeClass(ce.oiChange)">
+                    {{ ce.oiChange | number: '1.0-0' }}
+                  </span>
                 }
               </td>
 
-              <!-- CE: OI bar -->
-              <td class="tr oi-cell">
+              <!-- CE: OI Number -->
+              <td class="tr num-cell">
                 @if (row.CE; as ce) {
-                  <div class="oi-bar-row oi-bar-row--ce">
-                    <div
-                      class="oi-bar oi-bar--ce"
-                      [style.width.%]="oiBarWidth(ce.oi, maxCeOi())"
-                    ></div>
-                    <span class="num">{{ ce.oi | number: '1.0-0' }}</span>
+                  <span class="num">{{ ce.oi | number: '1.0-0' }}</span>
+                }
+              </td>
+
+              <!-- CE: OI Bar (isolated column, fixed width) -->
+              <td class="bar-cell bar-cell--ce">
+                @if (row.CE; as ce) {
+                  <div class="bar-track">
+                    <div class="bar bar--ce" [style.width.%]="oiBarWidth(ce.oi, maxCeOi())"></div>
                   </div>
                 }
               </td>
 
-              <!-- CE: Volume -->
-              <td class="tr hide-sm">
-                @if (row.CE; as ce) {
-                  <span class="num muted">{{ ce.gval | number: '1.0-0' }}</span>
-                }
-              </td>
-
               <!-- CE: Change % -->
-              <td class="tr">
+              <td class="tr num-cell">
                 @if (row.CE; as ce) {
-                  <span [class]="'num ' + ltpClass(ce.change)"
-                    >{{ ce.changePct | number: '1.2-2' }}%</span
-                  >
+                  <span [class]="'num ' + ltpClass(ce.change)">
+                    {{ ce.changePct | number: '1.2-2' }}%
+                  </span>
                 }
               </td>
 
               <!-- CE: PDC -->
-              <td class="tr hide-sm">
+              <td class="tr num-cell hide-sm">
                 @if (row.CE; as ce) {
                   <span class="num muted">{{ ce.pdc | number: '1.2-2' }}</span>
                 }
@@ -228,7 +239,7 @@
 
               <!-- CE: LTP (clickable) -->
               <td
-                class="oc-ltp-cell tr"
+                class="tr ltp-cell"
                 [class.clickable]="!!row.CE"
                 (click)="row.CE && goToStock(row.CE.token, row.CE.tradingsymbol)"
               >
@@ -247,7 +258,7 @@
 
               <!-- PE: LTP (clickable) -->
               <td
-                class="oc-ltp-cell"
+                class="ltp-cell"
                 [class.clickable]="!!row.PE"
                 (click)="row.PE && goToStock(row.PE.token, row.PE.tradingsymbol)"
               >
@@ -257,47 +268,43 @@
               </td>
 
               <!-- PE: PDC -->
-              <td class="hide-sm">
+              <td class="num-cell hide-sm">
                 @if (row.PE; as pe) {
                   <span class="num muted">{{ pe.pdc | number: '1.2-2' }}</span>
                 }
               </td>
 
               <!-- PE: Change % -->
-              <td>
+              <td class="num-cell">
                 @if (row.PE; as pe) {
-                  <span [class]="'num ' + ltpClass(pe.change)"
-                    >{{ pe.changePct | number: '1.2-2' }}%</span
-                  >
+                  <span [class]="'num ' + ltpClass(pe.change)">
+                    {{ pe.changePct | number: '1.2-2' }}%
+                  </span>
                 }
               </td>
 
-              <!-- PE: Volume -->
-              <td class="hide-sm">
+              <!-- PE: OI Bar (isolated column) -->
+              <td class="bar-cell bar-cell--pe">
                 @if (row.PE; as pe) {
-                  <span class="num muted">{{ pe.gval | number: '1.0-0' }}</span>
-                }
-              </td>
-
-              <!-- PE: OI bar -->
-              <td class="oi-cell">
-                @if (row.PE; as pe) {
-                  <div class="oi-bar-row oi-bar-row--pe">
-                    <span class="num">{{ pe.oi | number: '1.0-0' }}</span>
-                    <div
-                      class="oi-bar oi-bar--pe"
-                      [style.width.%]="oiBarWidth(pe.oi, maxPeOi())"
-                    ></div>
+                  <div class="bar-track">
+                    <div class="bar bar--pe" [style.width.%]="oiBarWidth(pe.oi, maxPeOi())"></div>
                   </div>
                 }
               </td>
 
-              <!-- PE: OI Change -->
-              <td>
+              <!-- PE: OI Number -->
+              <td class="num-cell">
                 @if (row.PE; as pe) {
-                  <span [class]="'num ' + oiChangeClass(pe.oiChange)">{{
-                    pe.oiChange | number: '1.0-0'
-                  }}</span>
+                  <span class="num">{{ pe.oi | number: '1.0-0' }}</span>
+                }
+              </td>
+
+              <!-- PE: OI Change -->
+              <td class="num-cell">
+                @if (row.PE; as pe) {
+                  <span [class]="'num ' + oiChangeClass(pe.oiChange)">
+                    {{ pe.oiChange | number: '1.0-0' }}
+                  </span>
                 }
               </td>
             </tr>

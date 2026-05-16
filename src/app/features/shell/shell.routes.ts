@@ -10,6 +10,7 @@ export const shellRoutes: Routes = [
     component: ShellLayoutComponent,
     canActivate: [authGuard],
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: RouteSegment.DASHBOARD,
         loadChildren: () => import('../dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
@@ -46,7 +47,11 @@ export const shellRoutes: Routes = [
             (m) => m.OptionChainComponent,
           ),
       },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: RouteSegment.REPORTS,
+        loadComponent: () =>
+          import('../reports/components/reports-page/reports-page').then((m) => m.ReportsPage),
+      },
     ],
   },
 ];

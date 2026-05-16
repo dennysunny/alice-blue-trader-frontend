@@ -1,0 +1,190 @@
+.cal-wrap {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-top: 1px solid var(--color-border);
+
+    &--header {
+        background: var(--color-surface-2);
+        border-top: none;
+    }
+}
+
+.cal-day-label {
+    padding: 10px 0;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+// ── Calendar cells ────────────────────────────────────────────────
+.cal-cell {
+    position: relative;
+    min-height: 80px;
+    padding: 8px 10px 6px;
+    border-right: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: background 0.12s;
+
+    &:nth-child(7n) {
+        border-right: none;
+    }
+
+    &--clickable {
+        cursor: pointer;
+    }
+
+    &--clickable:hover {
+        background: var(--color-surface-2);
+    }
+
+    &__num {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-text);
+        line-height: 1;
+    }
+
+    &__pnl {
+        font-size: 12px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+
+        &.up {
+            color: var(--color-up);
+        }
+
+        &.down {
+            color: var(--color-down);
+        }
+    }
+
+    &__trades {
+        font-size: 10px;
+        color: var(--color-text-muted);
+        font-weight: 600;
+    }
+
+    &__violation-dot {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: 11px;
+        color: var(--color-warning);
+    }
+
+    // ── Outcome backgrounds ────────────────────────────────────────
+    &--profit {
+        background: rgba(var(--color-up-rgb), 0.06);
+
+        .cal-cell__num {
+            color: var(--color-text);
+        }
+    }
+
+    &--loss {
+        background: rgba(var(--color-down-rgb), 0.06);
+    }
+
+    &--breakeven {
+        background: rgba(var(--color-primary-rgb), 0.04);
+    }
+
+    &--other-month {
+        opacity: 0.3;
+        pointer-events: none;
+        background: var(--color-surface-2);
+
+        .cal-cell__num {
+            color: var(--color-text-muted);
+        }
+    }
+
+    &--today .cal-cell__num {
+        background: var(--color-primary);
+        color: #fff;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+    }
+
+    &--selected {
+        box-shadow: inset 0 0 0 2px var(--color-primary);
+    }
+
+    &--violation {
+        // subtle orange tint on top of outcome colour
+        box-shadow: inset 0 0 0 1px rgba(var(--color-warning-rgb), 0.5);
+    }
+}
+
+// ── Legend ────────────────────────────────────────────────────────
+.cal-legend {
+    display: flex;
+    gap: 16px;
+    padding: 10px 16px;
+    background: var(--color-surface-2);
+    border-top: 1px solid var(--color-border);
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--color-text-muted);
+
+    &::before {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+    }
+
+    &--profit::before {
+        background: rgba(var(--color-up-rgb), 0.4);
+    }
+
+    &--loss::before {
+        background: rgba(var(--color-down-rgb), 0.4);
+    }
+
+    &--breakeven::before {
+        background: rgba(var(--color-primary-rgb), 0.3);
+    }
+
+    &--violation {
+        color: var(--color-warning);
+    }
+}
+
+@media (max-width: 640px) {
+    .cal-cell {
+        min-height: 60px;
+        padding: 5px 6px;
+    }
+
+    .cal-cell__pnl {
+        font-size: 10px;
+    }
+}

@@ -96,3 +96,10 @@
     display: none;
   }
 }
+
+@media (max-width: 768px) {
+  .portfolio-page {
+    height: 140vh;
+    /* increase height to allow scrolling on mobile */
+  }
+}

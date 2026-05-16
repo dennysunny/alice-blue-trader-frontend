@@ -143,6 +143,7 @@ export class OptionChainComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (rows) => {
           this.rows.set(rows);
+          console.log('option chain rows', rows);
           this.loadingChain.set(false);
           this.subscribeToWsFeed(rows);
         },
@@ -195,8 +196,6 @@ export class OptionChainComponent implements OnInit, OnDestroy {
       if (r.CE?.token) tokens.push({ instrumentId: r.CE.token, exchange: Exchange.NFO });
       if (r.PE?.token) tokens.push({ instrumentId: r.PE.token, exchange: Exchange.NFO });
     });
-
-    console.log('rows', rows);
 
     if (tokens.length > 0) {
       this.ws.connect();

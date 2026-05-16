@@ -225,6 +225,11 @@
 
 /* Mobile */
 @media (max-width: 768px) {
+  .positions-page {
+    height: 140vh;
+    /* increase height to allow scrolling on mobile */
+  }
+
   .table-wrap {
     display: none;
   }

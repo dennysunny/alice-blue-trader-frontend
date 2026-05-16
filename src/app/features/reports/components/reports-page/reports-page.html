@@ -1,0 +1,120 @@
+<div class="reports-page">
+  <!-- ── Page Header ───────────────────────────────────────────────── -->
+  <div class="reports-header">
+    <div class="reports-header__left">
+      <h1 class="page-title">Reports</h1>
+      <div class="month-nav">
+        <button class="month-nav__btn" (click)="prevMonth()">‹</button>
+        <span class="month-nav__label">{{ monthLabel() }}</span>
+        <button class="month-nav__btn" (click)="nextMonth()">›</button>
+      </div>
+    </div>
+
+    <!-- Year summary chips -->
+    @if (yearSummary()) {
+      <div class="year-chips">
+        <div
+          class="year-chip"
+          [class.year-chip--up]="yearTotalPnl() > 0"
+          [class.year-chip--down]="yearTotalPnl() < 0"
+        >
+          <span class="year-chip__label">{{ viewYear() }} P&amp;L</span>
+          <span class="year-chip__value"
+            >{{ yearTotalPnl() >= 0 ? '+' : '' }}₹{{ yearTotalPnl() | number: '1.0-0' }}</span
+          >
+        </div>
+        <div class="year-chip">
+          <span class="year-chip__label">Win Rate</span>
+          <span class="year-chip__value">{{ yearWinRate() | number: '1.1-1' }}%</span>
+        </div>
+        <div class="year-chip">
+          <span class="year-chip__label">Total Trades</span>
+          <span class="year-chip__value">{{ yearTrades() }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── Tab Bar ───────────────────────────────────────────────────── -->
+  <div class="tabs">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === ReportTab.CALENDAR"
+      (click)="setTab(ReportTab.CALENDAR)"
+    >
+      🗓 Calendar
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === ReportTab.CHARTS"
+      (click)="setTab(ReportTab.CHARTS)"
+    >
+      ◔ Charts
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === ReportTab.LEDGER"
+      (click)="setTab(ReportTab.LEDGER)"
+    >
+      🕮 Ledger
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === ReportTab.DAILY"
+      (click)="setTab(ReportTab.DAILY)"
+    >
+      🜲 Rules
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><app-spinner size="lg" /></div>
+  }
+
+  <!-- ── Calendar Tab ──────────────────────────────────────────────── -->
+  @if (!loading() && activeTab() === ReportTab.CALENDAR) {
+    <div class="tab-body">
+      <div class="reports-grid">
+        <div class="reports-grid__main">
+          <app-reports-calendar
+            [year]="viewYear()"
+            [month]="viewMonth()"
+            [reports]="currentMonthSummary()?.days ?? []"
+            [selectedDate]="selectedDate()"
+            (dateSelected)="selectDate($event)"
+          />
+        </div>
+        <div class="reports-grid__side">
+          @if (selectedReport(); as report) {
+            <app-daily-summary [report]="report" />
+          } @else if (currentMonthSummary(); as month) {
+            <app-daily-summary [monthSummary]="month" />
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Charts Tab ────────────────────────────────────────────────── -->
+  @if (!loading() && activeTab() === ReportTab.CHARTS) {
+    <div class="tab-body">
+      @if (yearSummary(); as year) {
+        <app-reports-chart [yearSummary]="year" [currentMonth]="viewMonth()" />
+      }
+    </div>
+  }
+
+  <!-- ── Ledger Tab ────────────────────────────────────────────────── -->
+  @if (!loading() && activeTab() === ReportTab.LEDGER) {
+    <div class="tab-body">
+      <app-reports-ledger [year]="viewYear()" [month]="viewMonth()" />
+    </div>
+  }
+
+  <!-- ── Rules Tab ─────────────────────────────────────────────────── -->
+  @if (!loading() && activeTab() === ReportTab.DAILY) {
+    <div class="tab-body">
+      <app-trading-rules />
+    </div>
+  }
+</div>
