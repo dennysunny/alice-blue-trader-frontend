@@ -1,0 +1,198 @@
+<div class="rules-page">
+  <div class="rules-header">
+    <h2 class="rules-title">Trading Rules</h2>
+    <p class="rules-desc">
+      Define your daily limits. After each trading day, the Reports page automatically checks
+      whether you followed your rules and flags any violations on the calendar.
+    </p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><app-spinner size="lg" /></div>
+  } @else {
+    <div class="rules-grid">
+      <form [formGroup]="form" (ngSubmit)="save()" class="rules-form card">
+        <div class="form-section">
+          <div class="form-section__title">Order Controls</div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label class="fl">Max Trades Per Day</label>
+              <input
+                class="fc"
+                type="number"
+                formControlName="max_trades_per_day"
+                min="1"
+                max="100"
+              />
+              <span class="hint">Stop trading after this many trades</span>
+            </div>
+            <div class="fg">
+              <label class="fl">Max Quantity Per Trade</label>
+              <input class="fc" type="number" formControlName="max_quantity_per_trade" min="1" />
+              <span class="hint">Maximum lots/shares per single order</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section__title">Loss Limits</div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label class="fl">Max Loss Per Day (₹)</label>
+              <input class="fc" type="number" formControlName="max_loss_per_day" min="0" />
+              <span class="hint">Stop trading when daily loss exceeds this</span>
+            </div>
+            <div class="fg">
+              <label class="fl">Max Loss Per Trade (₹)</label>
+              <input class="fc" type="number" formControlName="max_loss_per_trade" min="0" />
+              <span class="hint">Maximum loss allowed on a single trade</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section__title">Constraints (Optional)</div>
+
+          <div class="form-row">
+            <div class="fcb">
+              <input type="checkbox" formControlName="enforce_stoploss" />
+              <label class="fl">Enforce Stoploss</label>
+            </div>
+            <div class="fcb">
+              <input type="checkbox" formControlName="allow_revenge_trading" />
+              <label class="fl">Allow Revenge Trading</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-row">
+            <div class="fg">
+              <label class="fl">Max Consecutive Losses</label>
+              <input class="fc" type="number" formControlName="max_consecutive_losses" min="0" />
+            </div>
+            <div class="fg">
+              <label class="fl">Cooldown Minutes</label>
+              <input class="fc" type="number" formControlName="cooldown_minutes" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section__title">Target (Optional)</div>
+
+          <div class="form-row">
+            <div class="fg">
+              <label class="fl">Daily Target (₹)</label>
+              <input
+                class="fc"
+                type="number"
+                formControlName="target_per_day"
+                min="0"
+                placeholder="Optional"
+              />
+              <span class="hint">Book profits and stop once this is reached</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fg" style="padding: 0 20px">
+          <label class="fl">Notes / Reminders</label>
+          <textarea
+            class="fc fc--textarea"
+            formControlName="notes"
+            placeholder="e.g. Only trade between 9:30–11:30 AM. No revenge trading..."
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="rules-form__footer">
+          <button type="submit" class="save-btn" [disabled]="form.invalid || saving()">
+            @if (saving()) {
+              <span class="saving-dot"></span> Saving…
+            } @else {
+              Save Rules
+            }
+          </button>
+        </div>
+      </form>
+
+      <!-- Current rules preview -->
+      @if (currentRules(); as r) {
+        <div class="rules-preview card">
+          <div class="rules-preview__title">Active Rules</div>
+
+          @if (r.cooldown_minutes) {
+            <div class="rule-item">
+              <div class="rule-item__icon">⏳</div>
+              <div class="rule-item__body">
+                <div class="rule-item__label">Cooldown Minutes</div>
+                <div class="rule-item__value up">{{ r.cooldown_minutes }}</div>
+              </div>
+            </div>
+          }
+
+          <div class="rule-item">
+            <div class="rule-item__icon">📊</div>
+            <div class="rule-item__body">
+              <div class="rule-item__label">Max Trades Per Day</div>
+              <div class="rule-item__value">{{ r.max_trades_per_day }} trades</div>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-item__icon">📦</div>
+            <div class="rule-item__body">
+              <div class="rule-item__label">Max Quantity Per Trade</div>
+              <div class="rule-item__value">{{ r.max_quantity_per_trade }} lots/shares</div>
+            </div>
+          </div>
+
+          <div class="rule-item rule-item--danger">
+            <div class="rule-item__icon">🛑</div>
+            <div class="rule-item__body">
+              <div class="rule-item__label">Max Loss Per Day</div>
+              <div class="rule-item__value down">₹{{ r.max_loss_per_day | number }}</div>
+            </div>
+          </div>
+
+          <div class="rule-item rule-item--danger">
+            <div class="rule-item__icon">⛔</div>
+            <div class="rule-item__body">
+              <div class="rule-item__label">Max Loss Per Trade</div>
+              <div class="rule-item__value down">₹{{ r.max_loss_per_trade | number }}</div>
+            </div>
+          </div>
+
+          @if (r.target_per_day) {
+            <div class="rule-item rule-item--success">
+              <div class="rule-item__icon">🎯</div>
+              <div class="rule-item__body">
+                <div class="rule-item__label">Daily Target</div>
+                <div class="rule-item__value up">₹{{ r.target_per_day | number }}</div>
+              </div>
+            </div>
+          }
+
+          @if (r.notes) {
+            <div class="rule-notes">
+              <div class="rule-notes__title">📝 Notes</div>
+              <div class="rule-notes__text">{{ r.notes }}</div>
+            </div>
+          }
+
+          @if (r.max_consecutive_losses) {
+            <div class="rule-item rule-item--danger">
+              <div class="rule-item__icon">📉</div>
+              <div class="rule-item__body">
+                <div class="rule-item__label">Max Consecutive Losses</div>
+                <div class="rule-item__value down">{{ r.max_consecutive_losses }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

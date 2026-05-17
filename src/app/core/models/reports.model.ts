@@ -14,9 +14,21 @@ export interface DailyReportRow {
   total_brokerage: number;
   total_quantity: number;
   max_drawdown: number;
-  notes?: string;
-  created_at?: string;
-  updated_at?: string;
+  notes?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  net_pnl: number;
+  avg_win: number;
+  avg_loss: number;
+  expectancy: number;
+  win_rate: number;
+  risk_reward: number;
+  biggest_win: number;
+  biggest_loss: number;
+  profit_factor: number;
+  trading_time_minutes: number | null;
+  psychology_score?: number | null;
+  market_condition?: string | null;
 }
 
 export interface TradeRow {
@@ -33,8 +45,26 @@ export interface TradeRow {
   sell_price: number;
   pnl: number;
   brokerage: number;
-  order_id?: string;
-  created_at?: string;
+  order_id?: string | null;
+  created_at?: string | null;
+  gross_pnl?: number | null;
+  net_pnl?: number | null;
+  brokerage_charges?: number | null;
+  transaction_charges?: number | null;
+  gst?: number | null;
+  stt?: number | null;
+  sebi_charges?: number | null;
+  stamp_duty?: number | null;
+  strategy?: string | null;
+  setup_type?: string | null;
+  entry_time?: string | null;
+  exit_time?: string | null;
+  emotions?: string | null;
+  mistakes?: string | null;
+  lessons?: string | null;
+  tags?: string[] | null;
+  status?: string | null;
+  trade_side?: string | null;
 }
 
 export interface TradingRulesRow {
@@ -44,9 +74,16 @@ export interface TradingRulesRow {
   max_loss_per_day: number;
   max_loss_per_trade: number;
   max_quantity_per_trade: number;
-  target_per_day?: number;
-  notes?: string;
-  updated_at?: string;
+  target_per_day?: number | null;
+  notes?: string | null;
+  updated_at?: string | null;
+  allowed_segments?: string[] | null;
+  enforce_stoploss?: boolean;
+  enforce_target?: boolean;
+  allow_revenge_trading?: boolean;
+  cooldown_minutes?: number;
+  max_consecutive_losses?: number;
+  max_daily_drawdown?: number;
 }
 
 // ── View models (enriched for UI) ────────────────────────────────

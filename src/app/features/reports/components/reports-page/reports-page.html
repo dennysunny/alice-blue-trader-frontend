@@ -31,6 +31,17 @@
           <span class="year-chip__label">Total Trades</span>
           <span class="year-chip__value">{{ yearTrades() }}</span>
         </div>
+        <div class="year-chip">
+          <span class="year-chip__label">Brokerage</span>
+          <span class="year-chip__value"> ₹{{ yearTotalBrokerage() | number: '1.0-0' }} </span>
+        </div>
+
+        <div class="year-chip">
+          <span class="year-chip__label">Profit Factor</span>
+          <span class="year-chip__value">
+            {{ yearProfitFactor() | number: '1.2-2' }}
+          </span>
+        </div>
       </div>
     }
   </div>
@@ -42,28 +53,28 @@
       [class.active]="activeTab() === ReportTab.CALENDAR"
       (click)="setTab(ReportTab.CALENDAR)"
     >
-      🗓 Calendar
+      🗓️ Calendar
     </button>
     <button
       class="tab-btn"
       [class.active]="activeTab() === ReportTab.CHARTS"
       (click)="setTab(ReportTab.CHARTS)"
     >
-      ◔ Charts
+      📊 Charts
     </button>
     <button
       class="tab-btn"
       [class.active]="activeTab() === ReportTab.LEDGER"
       (click)="setTab(ReportTab.LEDGER)"
     >
-      🕮 Ledger
+      🗃️ Ledger
     </button>
     <button
       class="tab-btn"
       [class.active]="activeTab() === ReportTab.DAILY"
       (click)="setTab(ReportTab.DAILY)"
     >
-      🜲 Rules
+      🚨 Rules
     </button>
   </div>
 

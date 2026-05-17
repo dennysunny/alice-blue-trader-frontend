@@ -57,17 +57,27 @@ export class ReportsChartsComponent implements AfterViewInit, OnChanges, OnDestr
 
   private charts: IChartApi[] = [];
 
-  ngAfterViewInit(): void {
-    setTimeout(() => this.buildCharts(), 50);
+  constructor() {
     effect(() => {
       if (this.theme.isDark()) this.applyTheme();
     });
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.buildCharts(), 50);
   }
 
   ngOnChanges(ch: SimpleChanges): void {
     if (ch['yearSummary'] && !ch['yearSummary'].firstChange) {
       this.destroyCharts();
       setTimeout(() => this.buildCharts(), 50);
+    }
+
+    if (ch['currentMonth'] && !ch['currentMonth'].firstChange) {
+      if (this.activePeriod() === ChartPeriod.MONTH) {
+        this.destroyCharts();
+        setTimeout(() => this.buildCharts(), 50);
+      }
     }
   }
 

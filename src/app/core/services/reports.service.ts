@@ -196,38 +196,83 @@ export class ReportsService {
   }
 
   private computeDailyRow(date: string, trades: TradeRow[]): DailyReportRow {
-    const profits = trades.filter((t) => t.pnl > 0);
-    const losses = trades.filter((t) => t.pnl < 0);
-    const breakeven = trades.filter((t) => t.pnl === 0);
+    const profits = trades.filter((t) => (t.net_pnl ?? t.pnl) > 0);
+    const losses = trades.filter((t) => (t.net_pnl ?? t.pnl) < 0);
+    const breakeven = trades.filter((t) => (t.net_pnl ?? t.pnl) === 0);
 
-    const grossProfit = profits.reduce((s, t) => s + t.pnl, 0);
-    const grossLoss = losses.reduce((s, t) => s + t.pnl, 0);
-    const totalPnl = trades.reduce((s, t) => s + t.pnl, 0);
+    const grossProfit = profits.reduce((s, t) => s + (t.net_pnl ?? t.pnl), 0);
+    const grossLoss = losses.reduce((s, t) => s + Math.abs(t.net_pnl ?? t.pnl), 0);
+    const totalPnl = trades.reduce((s, t) => s + (t.net_pnl ?? t.pnl), 0);
+    const totalBrokerage = trades.reduce(
+      (s, t) =>
+        s +
+        (t.brokerage_charges ?? 0) +
+        (t.transaction_charges ?? 0) +
+        (t.gst ?? 0) +
+        (t.stt ?? 0) +
+        (t.sebi_charges ?? 0) +
+        (t.stamp_duty ?? 0),
+      0,
+    );
+
+    const avgWin = profits.length > 0 ? grossProfit / profits.length : 0;
+    const avgLoss = losses.length > 0 ? grossLoss / losses.length : 0;
+    const winRate = trades.length > 0 ? (profits.length / trades.length) * 100 : 0;
+    const expectancy = trades.length > 0 ? totalPnl / trades.length : 0;
+    const riskReward = avgLoss > 0 ? avgWin / avgLoss : 0;
+    const biggestWin = profits.length > 0 ? Math.max(...profits.map((t) => t.net_pnl ?? t.pnl)) : 0;
+    const biggestLoss = losses.length > 0 ? Math.min(...losses.map((t) => t.net_pnl ?? t.pnl)) : 0;
+    const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : 0;
 
     // running drawdown
-    let peak = 0,
-      runningPnl = 0,
-      maxDrawdown = 0;
+    let peak = 0;
+    let runningPnl = 0;
+    let maxDrawdown = 0;
+
     trades.forEach((t) => {
-      runningPnl += t.pnl;
-      if (runningPnl > peak) peak = runningPnl;
+      runningPnl += t.net_pnl ?? t.pnl;
+
+      if (runningPnl > peak) {
+        peak = runningPnl;
+      }
+
       const dd = peak - runningPnl;
-      if (dd > maxDrawdown) maxDrawdown = dd;
+
+      if (dd > maxDrawdown) {
+        maxDrawdown = dd;
+      }
     });
 
     return {
       user_id: this.userId,
       date,
+
       total_trades: trades.length,
       winning_trades: profits.length,
       losing_trades: losses.length,
       breakeven_trades: breakeven.length,
+
       total_pnl: +totalPnl.toFixed(2),
+      net_pnl: +totalPnl.toFixed(2),
       gross_profit: +grossProfit.toFixed(2),
       gross_loss: +grossLoss.toFixed(2),
-      total_brokerage: +trades.reduce((s, t) => s + (t.brokerage ?? 0), 0).toFixed(2),
+      total_brokerage: +totalBrokerage.toFixed(2),
       total_quantity: trades.reduce((s, t) => s + t.quantity, 0),
       max_drawdown: +maxDrawdown.toFixed(2),
+
+      avg_win: +avgWin.toFixed(2),
+      avg_loss: +avgLoss.toFixed(2),
+      win_rate: +winRate.toFixed(2),
+      expectancy: +expectancy.toFixed(2),
+      risk_reward: +riskReward.toFixed(2),
+      biggest_win: +biggestWin.toFixed(2),
+      biggest_loss: +biggestLoss.toFixed(2),
+      profit_factor: +profitFactor.toFixed(2),
+
+      trading_time_minutes: 0,
+      psychology_score: null,
+      market_condition: null,
+      notes: null,
     };
   }
 

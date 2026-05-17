@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
+import { DecimalPipe } from '@angular/common';
 
 import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 import { ReportsService } from '../../../../core/services/reports.service';
@@ -15,7 +16,6 @@ import {
   YearSummary,
   ReportTab,
 } from '../../../../core/models/reports.model';
-import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-reports-page',
@@ -37,6 +37,36 @@ export class ReportsPage implements OnInit, OnDestroy {
 
   readonly ReportTab = ReportTab;
   readonly DayOutcome = DayOutcome;
+
+  readonly yearTotalBrokerage = computed(() => {
+    const y = this.yearSummary();
+    if (!y) return 0;
+
+    return y.months.reduce(
+      (monthAcc, month) =>
+        monthAcc + month.days.reduce((dayAcc, day) => dayAcc + day.total_brokerage, 0),
+      0,
+    );
+  });
+
+  readonly yearProfitFactor = computed(() => {
+    const y = this.yearSummary();
+    if (!y) return 0;
+
+    const grossProfit = y.months.reduce(
+      (monthAcc, month) =>
+        monthAcc + month.days.reduce((dayAcc, day) => dayAcc + day.gross_profit, 0),
+      0,
+    );
+
+    const grossLoss = y.months.reduce(
+      (monthAcc, month) =>
+        monthAcc + month.days.reduce((dayAcc, day) => dayAcc + day.gross_loss, 0),
+      0,
+    );
+
+    return grossLoss > 0 ? grossProfit / grossLoss : 0;
+  });
 
   // ── Navigation state ───────────────────────────────────────────
   activeTab = signal<ReportTab>(ReportTab.CALENDAR);

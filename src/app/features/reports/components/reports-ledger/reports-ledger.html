@@ -1,0 +1,141 @@
+<div class="ledger">
+  @if (loading()) {
+    <div class="loading-center"><app-spinner size="lg" /></div>
+  } @else if (trades().length === 0) {
+    <div class="empty">No trades recorded for this month</div>
+  } @else {
+    <!-- Summary bar -->
+    <div class="ledger-summary">
+      <div
+        class="ls-item"
+        [class.ls-item--up]="totalPnl() > 0"
+        [class.ls-item--down]="totalPnl() < 0"
+      >
+        <span class="ls-item__label">Net P&amp;L</span>
+        <span class="ls-item__value"
+          >{{ totalPnl() >= 0 ? '+' : '' }}₹{{ totalPnl() | number: '1.2-2' }}</span
+        >
+      </div>
+      <div class="ls-item">
+        <span class="ls-item__label">Total Trades</span>
+        <span class="ls-item__value">{{ totalTrades() }}</span>
+      </div>
+      <div class="ls-item">
+        <span class="ls-item__label">Winners / Losers</span>
+        <span class="ls-item__value">
+          <span class="up">{{ winTrades() }}</span> / <span class="down">{{ lossTrades() }}</span>
+        </span>
+      </div>
+      <div class="ls-item">
+        <span class="ls-item__label">Total Qty</span>
+        <span class="ls-item__value">{{ totalQty() }}</span>
+      </div>
+      <div class="ls-item">
+        <span class="ls-item__label">Brokerage</span>
+        <span class="ls-item__value muted">₹{{ totalBrokerage() | number: '1.2-2' }}</span>
+      </div>
+    </div>
+
+    <!-- Trades grouped by date -->
+    <div class="ledger-table-wrap">
+      @for (date of sortedDates(); track date) {
+        <div class="date-group">
+          <!-- Date header -->
+          <div class="date-header">
+            <span class="date-header__date">{{ date }}</span>
+            <span class="date-header__count">
+              {{ (groupedByDate().get(date) ?? []).length }} trades
+            </span>
+            <span
+              class="date-header__pnl"
+              [class.up]="dayPnl(date) > 0"
+              [class.down]="dayPnl(date) < 0"
+            >
+              {{ dayPnl(date) >= 0 ? '+' : '' }}₹{{ dayPnl(date) | number: '1.2-2' }}
+            </span>
+          </div>
+
+          <!-- Trades table -->
+          <table class="dt">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Side</th>
+                <th>Product</th>
+                <th class="tr">Qty</th>
+                <th class="tr">Buy ₹</th>
+                <th class="tr">Sell ₹</th>
+                <th class="tr">P&amp;L</th>
+                <th class="tr hide-sm">Brokerage</th>
+                <th class="tr">Gross</th>
+                <th class="tr">Charges</th>
+                <th class="tr">Net</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (
+                trade of groupedByDate().get(date) ?? [];
+                track trade.id ?? trade.trading_symbol
+              ) {
+                <tr [class.row--profit]="trade.net_pnl > 0" [class.row--loss]="trade.net_pnl < 0">
+                  <td>
+                    <span class="sym">{{ trade.trading_symbol }}</span>
+                    <span class="exch">{{ trade.exchange }}</span>
+                  </td>
+                  <td>
+                    <span
+                      [class]="
+                        trade.transaction_type === 'BUY' ? 'side side--buy' : 'side side--sell'
+                      "
+                    >
+                      {{ trade.transaction_type }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="tag">{{ trade.product }}</span>
+                  </td>
+                  <td class="tr num">{{ trade.quantity }}</td>
+                  <td class="tr num">{{ trade.buy_price | number: '1.2-2' }}</td>
+                  <td class="tr num">{{ trade.sell_price | number: '1.2-2' }}</td>
+                  <td
+                    class="tr num"
+                    [class.up]="trade.net_pnl > 0"
+                    [class.down]="trade.net_pnl < 0"
+                  >
+                    {{ trade.net_pnl >= 0 ? '+' : '' }}{{ trade.net_pnl | number: '1.2-2' }}
+                  </td>
+                  <td class="tr num muted hide-sm">
+                    {{ trade.brokerage_charges | number: '1.2-2' }}
+                  </td>
+                  <td class="tr num">
+                    {{ trade.gross_pnl | number: '1.2-2' }}
+                  </td>
+
+                  <td class="tr num muted">
+                    {{
+                      trade.brokerage_charges +
+                        trade.transaction_charges +
+                        trade.gst +
+                        trade.stt +
+                        trade.sebi_charges +
+                        trade.stamp_duty | number: '1.2-2'
+                    }}
+                  </td>
+
+                  <td
+                    class="tr num"
+                    [class.up]="trade.net_pnl > 0"
+                    [class.down]="trade.net_pnl < 0"
+                  >
+                    {{ trade.net_pnl >= 0 ? '+' : '' }}
+                    {{ trade.net_pnl | number: '1.2-2' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

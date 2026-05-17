@@ -1,0 +1,182 @@
+<!-- ── Day Report ──────────────────────────────────────────────── -->
+@if (report; as r) {
+  <div class="summary-card">
+    <div class="summary-card__header">
+      <span class="summary-date">{{ r.date }}</span>
+      <span class="outcome-badge" [class]="outcomeClass(r.outcome)">
+        {{ outcomeLabel(r.outcome) }}
+      </span>
+    </div>
+
+    <!-- P&L -->
+    <div
+      class="pnl-block"
+      [class.pnl-block--up]="r.total_pnl > 0"
+      [class.pnl-block--down]="r.total_pnl < 0"
+    >
+      <div class="pnl-block__label">Net P&amp;L</div>
+      <div class="pnl-block__value">
+        {{ r.total_pnl >= 0 ? '+' : '' }}₹{{ r.total_pnl | number: '1.2-2' }}
+      </div>
+      <div class="pnl-block__sub">
+        Gross profit: ₹{{ r.gross_profit | number: '1.0-0' }} &nbsp;|&nbsp; Gross loss: ₹{{
+          r.gross_loss | number: '1.0-0'
+        }}
+      </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      <div class="stat">
+        <span class="stat__label">Total Trades</span
+        ><span class="stat__value">{{ r.total_trades }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Winning</span
+        ><span class="stat__value up">{{ r.winning_trades }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Losing</span
+        ><span class="stat__value down">{{ r.losing_trades }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Win Rate</span
+        ><span class="stat__value">{{ r.winRate | number: '1.1-1' }}%</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Profit Factor</span
+        ><span class="stat__value">{{ r.profitFactor | number: '1.2-2' }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Total Qty</span
+        ><span class="stat__value">{{ r.total_quantity }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Avg Win</span
+        ><span class="stat__value up">₹{{ r.avgWin | number: '1.0-0' }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Avg Loss</span
+        ><span class="stat__value down">₹{{ r.avgLoss | number: '1.0-0' }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Brokerage</span
+        ><span class="stat__value muted">₹{{ r.total_brokerage | number: '1.0-0' }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Max Drawdown</span
+        ><span class="stat__value down">₹{{ r.max_drawdown | number: '1.0-0' }}</span>
+      </div>
+    </div>
+
+    <!-- Rule violations -->
+    @if (r.ruleViolations.length > 0) {
+      <div class="violations">
+        <div class="violations__title">⚠ Rule Violations ({{ r.ruleViolations.length }})</div>
+        @for (v of r.ruleViolations; track v.rule) {
+          <div class="violation-item">
+            <span class="violation-item__icon">✕</span>
+            <span class="violation-item__label">{{ v.label }}</span>
+          </div>
+        }
+      </div>
+    } @else if (r.total_trades > 0) {
+      <div class="rules-ok">✓ All rules followed</div>
+    }
+
+    <!-- Notes -->
+    @if (r.notes) {
+      <div class="notes">
+        <div class="notes__title">Notes</div>
+        <div class="notes__text">{{ r.notes }}</div>
+      </div>
+    }
+  </div>
+}
+
+<!-- ── Month Summary (when no day selected) ────────────────────── -->
+@if (!report && monthSummary; as m) {
+  <div class="summary-card">
+    <div class="summary-card__header">
+      <span class="summary-date">{{ m.monthLabel }} {{ m.year }}</span>
+    </div>
+
+    <div
+      class="pnl-block"
+      [class.pnl-block--up]="m.totalPnl > 0"
+      [class.pnl-block--down]="m.totalPnl < 0"
+    >
+      <div class="pnl-block__label">Month P&amp;L</div>
+      <div class="pnl-block__value">
+        {{ m.totalPnl >= 0 ? '+' : '' }}₹{{ m.totalPnl | number: '1.2-2' }}
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <span class="stat__label">Trading Days</span
+        ><span class="stat__value">{{ m.tradingDays }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Profit Days</span
+        ><span class="stat__value up">{{ m.profitDays }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Loss Days</span
+        ><span class="stat__value down">{{ m.lossDays }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Win Rate</span
+        ><span class="stat__value">{{ m.winRate | number: '1.1-1' }}%</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Total Trades</span
+        ><span class="stat__value">{{ m.totalTrades }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Total Qty</span
+        ><span class="stat__value">{{ m.totalQuantity }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">Expectancy</span>
+        <span class="stat__value"> ₹{{ m.expectancy | number: '1.0-0' }} </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat__label">Risk/Reward</span>
+        <span class="stat__value">
+          {{ m.risk_reward | number: '1.2-2' }}
+        </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat__label">Biggest Win</span>
+        <span class="stat__value up"> ₹{{ m.biggest_win | number: '1.0-0' }} </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat__label">Biggest Loss</span>
+        <span class="stat__value down"> ₹{{ m.biggest_loss | number: '1.0-0' }} </span>
+      </div>
+    </div>
+
+    @if (m.bestDay) {
+      <div class="best-worst">
+        <div class="bw-item bw-item--best">
+          <span class="bw-item__label">Best Day</span>
+          <span class="bw-item__date">{{ m.bestDay.date }}</span>
+          <span class="bw-item__val up">+₹{{ m.bestDay.total_pnl | number: '1.0-0' }}</span>
+        </div>
+        @if (m.worstDay && m.worstDay.date !== m.bestDay.date) {
+          <div class="bw-item bw-item--worst">
+            <span class="bw-item__label">Worst Day</span>
+            <span class="bw-item__date">{{ m.worstDay.date }}</span>
+            <span class="bw-item__val down">₹{{ m.worstDay.total_pnl | number: '1.0-0' }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="select-hint">← Click a day to see details</div>
+  </div>
+}

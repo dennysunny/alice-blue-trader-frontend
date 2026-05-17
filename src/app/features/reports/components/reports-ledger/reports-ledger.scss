@@ -1,0 +1,223 @@
+.ledger {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.loading-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+}
+
+.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: var(--color-text-muted);
+}
+
+// ── Summary bar ───────────────────────────────────────────────────
+.ledger-summary {
+    display: flex;
+    align-items: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.ls-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 20px;
+    border-right: 1px solid var(--color-border);
+    flex: 1;
+    min-width: 100px;
+
+    &:last-child {
+        border-right: none;
+    }
+
+    &__label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--color-text-muted);
+    }
+
+    &__value {
+        font-size: 18px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-text);
+    }
+
+    &--up .ls-item__value {
+        color: var(--color-up);
+    }
+
+    &--down .ls-item__value {
+        color: var(--color-down);
+    }
+}
+
+// ── Date groups ───────────────────────────────────────────────────
+.ledger-table-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.date-group {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.date-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+
+    &__date {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--color-text);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__count {
+        font-size: 12px;
+        color: var(--color-text-muted);
+        background: var(--color-surface-3);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    &__pnl {
+        margin-left: auto;
+        font-size: 15px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+// ── Trades table ──────────────────────────────────────────────────
+.dt {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--color-text-muted);
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--color-border);
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 9px 12px;
+        font-size: 13px;
+        border-bottom: 1px solid var(--color-border-subtle);
+        white-space: nowrap;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover td {
+        background: var(--color-surface-2);
+    }
+}
+
+.row--profit {
+    background: rgba(var(--color-up-rgb), 0.03);
+}
+
+.row--loss {
+    background: rgba(var(--color-down-rgb), 0.03);
+}
+
+.tr {
+    text-align: right;
+}
+
+.num {
+    font-variant-numeric: tabular-nums;
+}
+
+.muted {
+    color: var(--color-text-muted);
+}
+
+.sym {
+    font-weight: 600;
+}
+
+.exch {
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 5px;
+    letter-spacing: 0.3px;
+}
+
+.tag {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background: var(--color-surface-2);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.side {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+
+    &--buy {
+        background: rgba(var(--color-up-rgb), 0.15);
+        color: var(--color-up);
+    }
+
+    &--sell {
+        background: rgba(var(--color-down-rgb), 0.15);
+        color: var(--color-down);
+    }
+}
+
+.up {
+    color: var(--color-up);
+}
+
+.down {
+    color: var(--color-down);
+}
+
+.hide-sm {
+    @media (max-width: 640px) {
+        display: none;
+    }
+}

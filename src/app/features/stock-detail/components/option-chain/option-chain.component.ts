@@ -143,7 +143,6 @@ export class OptionChainComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (rows) => {
           this.rows.set(rows);
-          console.log('option chain rows', rows);
           this.loadingChain.set(false);
           this.subscribeToWsFeed(rows);
         },
