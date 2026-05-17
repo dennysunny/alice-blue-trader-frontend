@@ -2,27 +2,23 @@
   @let profile = authService.tradingProfile();
   <!-- Header -->
   <div class="profile-card profile-header">
-    <div class="profile-avatar">
-      {{ profile.clientName?.charAt(0) }}
-    </div>
-
-    <div class="profile-meta">
-      <div class="profile-name">
-        {{ profile.clientName }}
+    <div class="profile-card-wrapper">
+      <div class="profile-avatar">
+        {{ profile.clientName?.charAt(0) }}
       </div>
 
-      <div class="profile-id">Client ID: {{ profile.clientId }}</div>
+      <div class="profile-meta">
+        <div class="profile-name">
+          {{ profile.clientName }}
+        </div>
+
+        <div class="profile-id">Client ID: {{ profile.clientId }}</div>
+      </div>
+
+      <div>
+        <button class="logout-btn" (click)="logout()">➜] Logout</button>
+      </div>
     </div>
-
-    <div>
-      <button class="logout-btn" (click)="logout()">➜] Logout</button>
-    </div>
-  </div>
-
-  <!-- Security -->
-  <div class="profile-card">
-    <div class="section-title">Security</div>
-
     <div class="info-grid">
       <div class="info-item">
         <span class="info-label">Account Status</span>
@@ -48,7 +44,7 @@
       </div>
 
       <div class="info-item">
-        <span class="info-label">POA Submitted</span>
+        <span class="info-label">POA</span>
 
         <span
           class="pill"
