@@ -20,11 +20,24 @@
   }
 
   &--collapsed {
-    .shell__main { margin-left: 60px; }
+    .shell__main {
+      margin-left: 60px;
+    }
   }
 
   @media (max-width: 768px) {
-    &__main { margin-left: 0; }
-    &__content { padding: 16px; }
+    &__main {
+      margin-left: 0;
+    }
+
+    &__content {
+      padding: 16px;
+    }
+
+    &--collapsed {
+      .shell__main {
+        margin-left: 0px;
+      }
+    }
   }
 }

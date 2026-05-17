@@ -36,7 +36,8 @@ export class ReportsCalendarComponent {
     const year = this._year();
     const month = this._month();
     const reports = this._reports();
-    const today = new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const today = this.toDateStr(now.getFullYear(), now.getMonth(), now.getDate());
 
     const reportMap = new Map(reports.map((r) => [r.date, r]));
 
@@ -95,7 +96,10 @@ export class ReportsCalendarComponent {
 
   private toDateStr(year: number, month: number, day: number): string {
     const d = new Date(year, month, day);
-    return d.toISOString().slice(0, 10);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
   }
 
   outcomeClass(day: CalendarDay): string {
