@@ -52,6 +52,13 @@ export const shellRoutes: Routes = [
         loadComponent: () =>
           import('../reports/components/reports-page/reports-page').then((m) => m.ReportsPage),
       },
+      {
+        path: RouteSegment.ANALYTICS,
+        loadComponent: () =>
+          import('../analytics/components/analytics-page/analytics-page').then(
+            (m) => m.AnalyticsPageComponent,
+          ),
+      },
     ],
   },
 ];

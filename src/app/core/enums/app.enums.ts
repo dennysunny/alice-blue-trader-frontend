@@ -16,6 +16,7 @@ export enum RouteSegment {
   STOCK_DETAIL = 'stock-detail',
   OPTION_CHAIN = 'option-chain',
   REPORTS = 'reports',
+  ANALYTICS = 'analytics',
 }
 
 export enum StorageKey {

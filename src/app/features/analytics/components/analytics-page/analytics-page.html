@@ -1,0 +1,264 @@
+<div class="analytics-page">
+  <!-- ── Controls Bar ─────────────────────────────────────────────── -->
+  <div class="analytics-controls">
+    <!-- Instrument dropdown -->
+    <div class="ctrl-group">
+      <label class="ctrl-label">Instrument</label>
+      <select
+        class="ctrl-select ctrl-select--instrument"
+        [value]="selectedInstrument().label"
+        (change)="onInstrumentChange($any($event.target).value)"
+      >
+        @for (inst of instruments; track inst.token) {
+          <option [value]="inst.label">{{ inst.label }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Date picker -->
+    <div class="ctrl-group">
+      <label class="ctrl-label">Date</label>
+      <input
+        class="ctrl-input"
+        type="date"
+        [value]="selectedDate()"
+        (change)="onDateChange($any($event.target).value)"
+        [max]="prevTradingDay()"
+      />
+    </div>
+
+    <!-- Resolution -->
+    <div class="ctrl-group">
+      <label class="ctrl-label">Resolution</label>
+      <div class="seg-btns">
+        @for (r of resolutions; track r.value) {
+          <button
+            class="seg-btn"
+            [class.active]="selectedResolution() === r.value"
+            (click)="onResolutionChange(r.value)"
+          >
+            {{ r.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Frame toggle -->
+    <div class="ctrl-group ctrl-group--right">
+      <div class="seg-btns">
+        <button
+          class="seg-btn"
+          [class.active]="activeFrame() === AnalyticsTimeframe.INTRADAY"
+          (click)="setFrame(AnalyticsTimeframe.INTRADAY)"
+        >
+          Intraday
+        </button>
+        <button
+          class="seg-btn"
+          [class.active]="activeFrame() === AnalyticsTimeframe.DAILY"
+          (click)="setFrame(AnalyticsTimeframe.DAILY)"
+        >
+          Daily
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Summary strip (intraday) ─────────────────────────────────── -->
+  @if (intraday(); as a) {
+    <div class="summary-strip">
+      <div class="ss-item">
+        <span class="ss-label">{{ selectedInstrument().label }}</span>
+        <span class="ss-value">{{ selectedDate() }}</span>
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <span class="ss-label">Open</span>
+        <span class="ss-value">{{ a.dayOpen | number: '1.2-2' }}</span>
+      </div>
+      <div class="ss-item">
+        <span class="ss-label">High</span>
+        <span class="ss-value up">{{ a.dayHigh | number: '1.2-2' }}</span>
+      </div>
+      <div class="ss-item">
+        <span class="ss-label">Low</span>
+        <span class="ss-value down">{{ a.dayLow | number: '1.2-2' }}</span>
+      </div>
+      <div class="ss-item">
+        <span class="ss-label">Close</span>
+        <span class="ss-value">{{ a.dayClose | number: '1.2-2' }}</span>
+      </div>
+      <div class="ss-item">
+        <span class="ss-label">Range</span>
+        <span class="ss-value"
+          >{{ a.priceRange | number: '1.0-0' }} ({{ a.rangePercent | number: '1.2-2' }}%)</span
+        >
+      </div>
+      <div class="ss-divider"></div>
+      <div class="ss-item">
+        <span class="ss-label">Gap</span>
+        <span class="ss-value" [class.up]="a.gapPercent > 0" [class.down]="a.gapPercent < 0">
+          {{
+            a.gapType === 'flat'
+              ? '—'
+              : (a.gapPercent > 0 ? '+' : '') + (a.gapPercent | number: '1.2-2') + '%'
+          }}
+          @if (a.gapType !== 'flat') {
+            <span class="gap-badge" [class]="a.gapType">{{ a.gapType | uppercase }}</span>
+          }
+        </span>
+      </div>
+      <div class="ss-item">
+        <span class="ss-label">Trend</span>
+        <span class="ss-value" [class]="trendClass()">{{ trendLabel() }}</span>
+      </div>
+      <div class="ss-item">
+        <span class="ss-label">Strength</span>
+        <span class="ss-value">{{ a.trendStrength }}%</span>
+      </div>
+      @if (a.myDayPnl !== undefined) {
+        <div class="ss-divider"></div>
+        <div class="ss-item">
+          <span class="ss-label">My P&amp;L</span>
+          <span class="ss-value" [class.up]="a.myDayPnl! > 0" [class.down]="a.myDayPnl! < 0">
+            {{ a.myDayPnl! >= 0 ? '+' : '' }}₹{{ a.myDayPnl! | number: '1.0-0' }}
+          </span>
+        </div>
+        <div class="ss-item">
+          <span class="ss-label">My Trades</span>
+          <span class="ss-value">{{ a.myTrades?.length ?? 0 }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="loading-center"><app-spinner size="lg" /></div>
+  }
+
+  <!-- ── Intraday Frame ─────────────────────────────────────────────── -->
+  @if (!loading() && activeFrame() === AnalyticsTimeframe.INTRADAY && intraday(); as a) {
+    @if (a.candles.length === 0) {
+      <div class="no-data">
+        No market data for {{ selectedDate() }}. Try a different date or instrument.
+      </div>
+    } @else {
+      <div class="analytics-body">
+        <!-- Left: chart + sessions + signals -->
+        <div class="analytics-main">
+          <!-- Intraday chart with my trades overlaid -->
+          <app-analytics-intraday-chart [analysis]="a" [resolution]="selectedResolution()" />
+
+          <!-- Session breakdown cards -->
+          <app-analytics-sessions [sessions]="a.sessionStats" />
+
+          <!-- Best opportunities -->
+          @if (a.bestBuySignal || a.bestSellSignal) {
+            <div class="opportunities">
+              <div class="opp-title">Best Opportunities</div>
+              <div class="opp-grid">
+                @if (a.bestBuySignal; as sig) {
+                  <div class="opp-card opp-card--buy">
+                    <div class="opp-card__header">
+                      <span class="opp-badge opp-badge--buy">BUY</span>
+                      <span class="opp-time">{{ sig.time }}</span>
+                      <span class="opp-session">{{ sig.session }}</span>
+                    </div>
+                    <div class="opp-card__reason">{{ sig.reason }}</div>
+                    <div class="opp-card__levels">
+                      <div class="opp-level">
+                        <span class="opp-level__label">Entry</span>
+                        <span class="opp-level__value">{{ sig.entry | number: '1.0-0' }}</span>
+                      </div>
+                      <div class="opp-level">
+                        <span class="opp-level__label">Target</span>
+                        <span class="opp-level__value up">{{ sig.target | number: '1.0-0' }}</span>
+                      </div>
+                      <div class="opp-level">
+                        <span class="opp-level__label">Stop</span>
+                        <span class="opp-level__value down">{{
+                          sig.stopLoss | number: '1.0-0'
+                        }}</span>
+                      </div>
+                      <div class="opp-level">
+                        <span class="opp-level__label">R:R</span>
+                        <span class="opp-level__value">1 : {{ sig.riskReward }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+                @if (a.bestSellSignal; as sig) {
+                  <div class="opp-card opp-card--sell">
+                    <div class="opp-card__header">
+                      <span class="opp-badge opp-badge--sell">SELL</span>
+                      <span class="opp-time">{{ sig.time }}</span>
+                      <span class="opp-session">{{ sig.session }}</span>
+                    </div>
+                    <div class="opp-card__reason">{{ sig.reason }}</div>
+                    <div class="opp-card__levels">
+                      <div class="opp-level">
+                        <span class="opp-level__label">Entry</span>
+                        <span class="opp-level__value">{{ sig.entry | number: '1.0-0' }}</span>
+                      </div>
+                      <div class="opp-level">
+                        <span class="opp-level__label">Target</span>
+                        <span class="opp-level__value up">{{ sig.target | number: '1.0-0' }}</span>
+                      </div>
+                      <div class="opp-level">
+                        <span class="opp-level__label">Stop</span>
+                        <span class="opp-level__value down">{{
+                          sig.stopLoss | number: '1.0-0'
+                        }}</span>
+                      </div>
+                      <div class="opp-level">
+                        <span class="opp-level__label">R:R</span>
+                        <span class="opp-level__value">1 : {{ sig.riskReward }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- All signals list -->
+          <app-analytics-signals [signals]="a.signals" />
+        </div>
+
+        <!-- Right: levels panel -->
+        <div class="analytics-side">
+          <app-analytics-levels
+            [pivots]="a.pivots"
+            [supports]="a.supports"
+            [resistances]="a.resistances"
+            [openingRange]="a.openingRange"
+            [currentPrice]="a.dayClose"
+          />
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ── Daily Frame ────────────────────────────────────────────────── -->
+  @if (!loading() && activeFrame() === AnalyticsTimeframe.DAILY) {
+    @if (loadingDaily()) {
+      <div class="loading-center"><app-spinner size="lg" /></div>
+    } @else {
+      <div class="daily-body">
+        <!-- Daily overview chart -->
+        <app-analytics-daily-chart
+          [data]="dailyData()"
+          [instrument]="selectedInstrument()"
+          (daySelected)="selectDayFromChart($event)"
+        />
+
+        <!-- Day cards grid -->
+        <div class="day-cards">
+          @for (day of dailyData().slice().reverse(); track day.date) {
+            <app-analytics-day-card [day]="day" (clicked)="selectDayFromChart(day.date)" />
+          }
+        </div>
+      </div>
+    }
+  }
+</div>
