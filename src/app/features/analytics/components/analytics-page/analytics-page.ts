@@ -32,7 +32,7 @@ export class AnalyticsPageComponent implements OnInit, OnDestroy {
   // ── Controls ──────────────────────────────────────────────────
   selectedInstrument = signal<AnalyticsInstrument>(DEFAULT_INSTRUMENTS[0]);
   selectedDate = signal<string>(this.prevTradingDay());
-  selectedResolution = signal<CandleResolution>(CandleResolution.FIVE_MIN);
+  selectedResolution = signal<CandleResolution>(CandleResolution.ONE_DAY);
   activeFrame = signal<AnalyticsTimeframe>(AnalyticsTimeframe.INTRADAY);
 
   // ── Data ──────────────────────────────────────────────────────

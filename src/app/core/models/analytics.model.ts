@@ -59,11 +59,12 @@ export const DEFAULT_INSTRUMENTS: AnalyticsInstrument[] = [
 
 export const RESOLUTIONS: { label: string; value: CandleResolution }[] = [
   { label: '1m', value: CandleResolution.ONE_MIN },
-  { label: '3m', value: CandleResolution.THREE_MIN },
-  { label: '5m', value: CandleResolution.FIVE_MIN },
-  { label: '15m', value: CandleResolution.FIFTEEN_MIN },
-  { label: '30m', value: CandleResolution.THIRTY_MIN },
-  { label: '1h', value: CandleResolution.ONE_HOUR },
+  //   { label: '3m', value: CandleResolution.THREE_MIN },
+  //   { label: '5m', value: CandleResolution.FIVE_MIN },
+  //   { label: '15m', value: CandleResolution.FIFTEEN_MIN },
+  //   { label: '30m', value: CandleResolution.THIRTY_MIN },
+  //   { label: '1h', value: CandleResolution.ONE_HOUR },
+  { label: '1D', value: CandleResolution.ONE_DAY },
 ];
 
 // ── Technical levels ──────────────────────────────────────────────
