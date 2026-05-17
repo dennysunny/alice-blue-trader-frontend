@@ -3,23 +3,21 @@ import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 
-import { API_CONFIG, API_ENDPOINTS, API_METHODS } from '../configs/api.config';
+import {
+  API_CONFIG,
+  API_ENDPOINTS,
+  API_METHODS,
+  INITIAL_AUTH_STATE,
+  MOCK_TRADING_PROFILE,
+} from '../configs/api.config';
 import { ApiStatus } from '../enums/api.enums';
 import { RouteSegment, StorageKey } from '../enums/app.enums';
 import { UserSessionApiResponse } from '../models/api-response.models';
 import { AuthState, UserSession } from '../models/auth.models';
-import { StorageService } from './storage.service';
+import { TradingProfile } from '../models/profile.model';
 import { ApiService } from './api.service';
 import { OrderWebSocketService } from './order-websocket.service';
-import { TradingProfile } from '../models/profile.model';
-
-const INITIAL_AUTH_STATE: AuthState = {
-  isAuthenticated: false,
-  user: null,
-  sessionId: null,
-  loading: false,
-  error: null,
-};
+import { StorageService } from './storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -165,6 +163,8 @@ export class AuthService {
               ...this.authState.value,
               user: user as UserSession,
             });
+          } else {
+            this.tradingProfile.set(MOCK_TRADING_PROFILE);
           }
         },
         error: (err) => {

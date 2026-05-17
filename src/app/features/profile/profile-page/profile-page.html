@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="profile-card profile-header">
     <div class="profile-avatar">
-      {{ profile.clientName.charAt(0) }}
+      {{ profile.clientName?.charAt(0) }}
     </div>
 
     <div class="profile-meta">
@@ -14,8 +14,8 @@
       <div class="profile-id">Client ID: {{ profile.clientId }}</div>
     </div>
 
-    <div class="status-badge" [class.status-badge--active]="profile.accountStatus === 'Activated'">
-      {{ profile.accountStatus }}
+    <div>
+      <button class="logout-btn" (click)="logout()">➜] Logout</button>
     </div>
   </div>
 
@@ -24,6 +24,17 @@
     <div class="section-title">Security</div>
 
     <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">Account Status</span>
+
+        <div
+          class="pill"
+          [class.pill--success]="profile.accountStatus === 'Activated'"
+          [class.pill--danger]="profile.accountStatus !== 'Activated'"
+        >
+          {{ profile.accountStatus }}
+        </div>
+      </div>
       <div class="info-item">
         <span class="info-label">TOTP</span>
 
@@ -50,42 +61,44 @@
     </div>
   </div>
 
-  <!-- Exchanges -->
-  <div class="profile-card">
-    <div class="section-title">Exchanges</div>
+  <div class="info-grid">
+    <!-- Exchanges -->
+    <div class="profile-card">
+      <div class="section-title">Exchanges</div>
 
-    <div class="pill-wrap">
-      @for (exchange of profile.exchanges; track exchange) {
-        <span class="pill">
-          {{ exchange }}
-        </span>
-      }
+      <div class="pill-wrap">
+        @for (exchange of profile.exchanges; track exchange) {
+          <span class="pill">
+            {{ exchange }}
+          </span>
+        }
+      </div>
     </div>
-  </div>
 
-  <!-- Products -->
-  <div class="profile-card">
-    <div class="section-title">Products</div>
+    <!-- Products -->
+    <div class="profile-card">
+      <div class="section-title">Products</div>
 
-    <div class="pill-wrap">
-      @for (product of profile.products; track product) {
-        <span class="pill pill--primary">
-          {{ product }}
-        </span>
-      }
+      <div class="pill-wrap">
+        @for (product of profile.products; track product) {
+          <span class="pill pill--primary">
+            {{ product }}
+          </span>
+        }
+      </div>
     </div>
-  </div>
 
-  <!-- Order Types -->
-  <div class="profile-card">
-    <div class="section-title">Order Types</div>
+    <!-- Order Types -->
+    <div class="profile-card">
+      <div class="section-title">Order Types</div>
 
-    <div class="pill-wrap">
-      @for (order of profile.orderComplexity; track order) {
-        <span class="pill pill--secondary">
-          {{ order }}
-        </span>
-      }
+      <div class="pill-wrap">
+        @for (order of profile.orderComplexity; track order) {
+          <span class="pill pill--secondary">
+            {{ order }}
+          </span>
+        }
+      </div>
     </div>
   </div>
 </div>

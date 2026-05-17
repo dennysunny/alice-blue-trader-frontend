@@ -13,6 +13,10 @@ import { AuthService } from '../../../core/services/auth.service';
 export class ProfilePageComponent {
   protected readonly authService = inject(AuthService);
 
+  constructor() {
+    console.log('Trading Profile:', this.authService.tradingProfile());
+  }
+
   yesNo(v: 'Y' | 'N'): string {
     return v === 'Y' ? 'Enabled' : 'Disabled';
   }

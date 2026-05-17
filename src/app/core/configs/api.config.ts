@@ -1,4 +1,6 @@
 import { ErrorCode } from '../enums/api.enums';
+import { AuthState } from '../models/auth.models';
+import { TradingProfile } from '../models/profile.model';
 
 export const API_CONFIG = {
   REST_BASE_URL: 'https://ant.aliceblueonline.com/rest/AliceBlueAPIService/api',
@@ -114,4 +116,23 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.ORDER_BOOK_FAILED]: 'Failed to retrieve the order book.',
   [ErrorCode.NO_ORDERS]: 'No orders found for this user.',
   [ErrorCode.SESSION_EXPIRED]: 'Session Expired',
+};
+
+export const INITIAL_AUTH_STATE: AuthState = {
+  isAuthenticated: false,
+  user: null,
+  sessionId: null,
+  loading: false,
+  error: null,
+};
+
+export const MOCK_TRADING_PROFILE: TradingProfile = {
+  clientId: 'AB123456',
+  clientName: 'Denny Sunny',
+  isTotpEnabled: 'Y',
+  isPoaProvided: 'N',
+  accountStatus: 'Activated',
+  exchanges: ['NSE', 'NFO', 'BSE', 'BFO', 'MCX', 'CDS'],
+  products: ['INTRADAY', 'LONGTERM', 'MTF', 'CO', 'BO'],
+  orderComplexity: ['REGULAR', 'AMO', 'BO', 'CO'],
 };
