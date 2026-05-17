@@ -27,39 +27,42 @@
       />
     </div>
 
-    <!-- Resolution -->
-    <div class="ctrl-group">
-      <label class="ctrl-label">Resolution</label>
-      <div class="seg-btns">
-        @for (r of resolutions; track r.value) {
+    <!-- Frame toggle -->
+    <div class="resolution-group">
+      <!-- Resolution -->
+      <div class="ctrl-group">
+        <label class="ctrl-label">Resolution</label>
+        <div class="seg-btns">
+          @for (r of resolutions; track r.value) {
+            <button
+              class="seg-btn"
+              [class.active]="selectedResolution() === r.value"
+              (click)="onResolutionChange(r.value)"
+            >
+              {{ r.label }}
+            </button>
+          }
+        </div>
+      </div>
+      <!-- Timeframe -->
+      <div class="ctrl-group ctrl-group--right">
+        <label class="ctrl-label">Timeframe</label>
+        <div class="seg-btns">
           <button
             class="seg-btn"
-            [class.active]="selectedResolution() === r.value"
-            (click)="onResolutionChange(r.value)"
+            [class.active]="activeFrame() === AnalyticsTimeframe.INTRADAY"
+            (click)="setFrame(AnalyticsTimeframe.INTRADAY)"
           >
-            {{ r.label }}
+            Intraday
           </button>
-        }
-      </div>
-    </div>
-
-    <!-- Frame toggle -->
-    <div class="ctrl-group ctrl-group--right">
-      <div class="seg-btns">
-        <button
-          class="seg-btn"
-          [class.active]="activeFrame() === AnalyticsTimeframe.INTRADAY"
-          (click)="setFrame(AnalyticsTimeframe.INTRADAY)"
-        >
-          Intraday
-        </button>
-        <button
-          class="seg-btn"
-          [class.active]="activeFrame() === AnalyticsTimeframe.DAILY"
-          (click)="setFrame(AnalyticsTimeframe.DAILY)"
-        >
-          Daily
-        </button>
+          <button
+            class="seg-btn"
+            [class.active]="activeFrame() === AnalyticsTimeframe.DAILY"
+            (click)="setFrame(AnalyticsTimeframe.DAILY)"
+          >
+            Daily
+          </button>
+        </div>
       </div>
     </div>
   </div>

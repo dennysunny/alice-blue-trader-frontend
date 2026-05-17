@@ -83,11 +83,6 @@
         letter-spacing: 0.5px;
         color: var(--color-text-muted);
     }
-
-    @media (max-width: 768px) {
-        width: 100%;
-    }
-
 }
 
 .form-row {
@@ -240,6 +235,12 @@
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 900px) {
+    .form-section {
+        width: 100%;
     }
 }
 

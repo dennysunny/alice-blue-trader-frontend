@@ -136,12 +136,12 @@
               <div class="fg">
                 <label class="fl">Max Consecutive Losses</label>
                 <input class="fc" type="number" formControlName="max_consecutive_losses" min="0" />
-                <span class="hint">Stop trading after this many losses in a row</span>
+                <span class="hint">Stop trading after this many losses</span>
               </div>
               <div class="fg">
                 <label class="fl">Cooldown Minutes</label>
                 <input class="fc" type="number" formControlName="cooldown_minutes" min="0" />
-                <span class="hint">Minutes to wait before allowing another trade</span>
+                <span class="hint">Minutes to wait before another trade</span>
               </div>
             </div>
           </div>
@@ -149,7 +149,7 @@
           <div class="form-section">
             <div class="form-section__title">Target (Optional)</div>
 
-            <div class="form-row">
+            <div class="form-column">
               <div class="fg">
                 <label class="fl">Daily Target (₹)</label>
                 <input
