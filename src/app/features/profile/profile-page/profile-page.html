@@ -1,0 +1,91 @@
+<div class="profile-page">
+  @let profile = authService.tradingProfile();
+  <!-- Header -->
+  <div class="profile-card profile-header">
+    <div class="profile-avatar">
+      {{ profile.clientName.charAt(0) }}
+    </div>
+
+    <div class="profile-meta">
+      <div class="profile-name">
+        {{ profile.clientName }}
+      </div>
+
+      <div class="profile-id">Client ID: {{ profile.clientId }}</div>
+    </div>
+
+    <div class="status-badge" [class.status-badge--active]="profile.accountStatus === 'Activated'">
+      {{ profile.accountStatus }}
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="profile-card">
+    <div class="section-title">Security</div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">TOTP</span>
+
+        <span
+          class="pill"
+          [class.pill--success]="profile.isTotpEnabled === 'Y'"
+          [class.pill--danger]="profile.isTotpEnabled === 'N'"
+        >
+          {{ yesNo(profile.isTotpEnabled) }}
+        </span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">POA Submitted</span>
+
+        <span
+          class="pill"
+          [class.pill--success]="profile.isPoaProvided === 'Y'"
+          [class.pill--danger]="profile.isPoaProvided === 'N'"
+        >
+          {{ yesNo(profile.isPoaProvided) }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exchanges -->
+  <div class="profile-card">
+    <div class="section-title">Exchanges</div>
+
+    <div class="pill-wrap">
+      @for (exchange of profile.exchanges; track exchange) {
+        <span class="pill">
+          {{ exchange }}
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="profile-card">
+    <div class="section-title">Products</div>
+
+    <div class="pill-wrap">
+      @for (product of profile.products; track product) {
+        <span class="pill pill--primary">
+          {{ product }}
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Order Types -->
+  <div class="profile-card">
+    <div class="section-title">Order Types</div>
+
+    <div class="pill-wrap">
+      @for (order of profile.orderComplexity; track order) {
+        <span class="pill pill--secondary">
+          {{ order }}
+        </span>
+      }
+    </div>
+  </div>
+</div>

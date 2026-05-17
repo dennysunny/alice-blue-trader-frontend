@@ -11,6 +11,7 @@ import { AuthState, UserSession } from '../models/auth.models';
 import { StorageService } from './storage.service';
 import { ApiService } from './api.service';
 import { OrderWebSocketService } from './order-websocket.service';
+import { TradingProfile } from '../models/profile.model';
 
 const INITIAL_AUTH_STATE: AuthState = {
   isAuthenticated: false,
@@ -26,6 +27,7 @@ export class AuthService {
   readonly authState$ = this.authState.asObservable();
 
   loggedInUser = signal<UserSession | null>(null);
+  tradingProfile = signal<TradingProfile | null>(null);
 
   constructor(
     private http: HttpClient,
@@ -158,6 +160,7 @@ export class AuthService {
               enabledProducts: products,
             };
             this.loggedInUser.set(user as UserSession);
+            this.tradingProfile.set(response.result[0] as TradingProfile);
             this.authState.next({
               ...this.authState.value,
               user: user as UserSession,

@@ -12,6 +12,11 @@ export const shellRoutes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
+        path: RouteSegment.PROFILE,
+        loadComponent: () =>
+          import('../profile/profile-page/profile-page').then((m) => m.ProfilePageComponent),
+      },
+      {
         path: RouteSegment.DASHBOARD,
         loadChildren: () => import('../dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
       },

@@ -6,6 +6,7 @@ export enum Theme {
 export enum RouteSegment {
   AUTH = 'auth',
   LOGIN = 'login',
+  PROFILE = 'profile',
   CALLBACK = 'callback',
   DASHBOARD = 'dashboard',
   WATCHLIST = 'watchlist',

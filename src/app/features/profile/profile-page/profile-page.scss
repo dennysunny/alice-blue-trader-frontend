@@ -1,0 +1,162 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.profile-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.profile-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.profile-id {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(var(--color-down-rgb), 0.12);
+    color: var(--color-down);
+
+    &--active {
+        background: rgba(var(--color-up-rgb), 0.12);
+        color: var(--color-up);
+    }
+}
+
+.section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--color-text-muted);
+    margin-bottom: 14px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+}
+
+.info-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.pill-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+
+    &--primary {
+        background: rgba(var(--color-primary-rgb), 0.12);
+        color: var(--color-primary);
+        border-color: rgba(var(--color-primary-rgb), 0.2);
+    }
+
+    &--secondary {
+        background: rgba(var(--color-text-rgb), 0.06);
+    }
+
+    &--success {
+        background: rgba(var(--color-up-rgb), 0.12);
+        color: var(--color-up);
+        border-color: rgba(var(--color-up-rgb), 0.2);
+    }
+
+    &--danger {
+        background: rgba(var(--color-down-rgb), 0.12);
+        color: var(--color-down);
+        border-color: rgba(var(--color-down-rgb), 0.2);
+    }
+}
+
+@media (max-width: 768px) {
+
+    .profile-card {
+        padding: 16px;
+    }
+
+    .profile-header {
+        align-items: flex-start;
+    }
+
+    .profile-name {
+        font-size: 18px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pill {
+        font-size: 11px;
+        padding: 7px 10px;
+    }
+}
