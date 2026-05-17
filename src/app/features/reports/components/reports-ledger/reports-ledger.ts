@@ -1,5 +1,13 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 
 import { TradeRow } from '../../../../core/models/reports.model';
 import { ReportsService } from '../../../../core/services/reports.service';
@@ -12,7 +20,7 @@ import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.
   templateUrl: './reports-ledger.html',
   styleUrl: './reports-ledger.scss',
 })
-export class ReportsLedgerComponent implements OnInit, OnChanges {
+export class ReportsLedgerComponent implements OnChanges {
   @Input({ required: true }) year!: number;
   @Input({ required: true }) month!: number;
 
@@ -60,11 +68,10 @@ export class ReportsLedgerComponent implements OnInit, OnChanges {
     return this.trades().filter((t) => (t.net_pnl ?? 0) < 0).length;
   });
 
-  ngOnInit(): void {
-    this.load();
-  }
-  ngOnChanges(): void {
-    this.load();
+  ngOnChanges(simpleChanges: SimpleChanges): void {
+    if (simpleChanges['year'] || simpleChanges['month']) {
+      this.load();
+    }
   }
 
   private load(): void {

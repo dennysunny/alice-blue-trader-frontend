@@ -131,6 +131,55 @@
                     {{ trade.net_pnl | number: '1.2-2' }}
                   </td>
                 </tr>
+                <tr class="mobile-trade-row">
+                  <td colspan="11">
+                    <div
+                      class="trade-card"
+                      [class.trade-card--profit]="trade.net_pnl > 0"
+                      [class.trade-card--loss]="trade.net_pnl < 0"
+                    >
+                      <div class="trade-card__top">
+                        <div>
+                          <div class="trade-card__symbol">
+                            {{ trade.trading_symbol }}
+                          </div>
+
+                          <div class="trade-card__meta">
+                            {{ trade.exchange }} • {{ trade.product }}
+                          </div>
+                        </div>
+
+                        <div
+                          class="trade-card__pnl"
+                          [class.up]="trade.net_pnl > 0"
+                          [class.down]="trade.net_pnl < 0"
+                        >
+                          {{ trade.net_pnl >= 0 ? '+' : '' }}
+                          ₹{{ trade.net_pnl | number: '1.0-0' }}
+                        </div>
+                      </div>
+
+                      <div class="trade-card__stats">
+                        <div class="trade-pill">Qty {{ trade.quantity }}</div>
+
+                        <div class="trade-pill">Buy ₹{{ trade.buy_price | number: '1.0-0' }}</div>
+
+                        <div class="trade-pill">Sell ₹{{ trade.sell_price | number: '1.0-0' }}</div>
+
+                        <div class="trade-pill muted">
+                          Charges ₹{{
+                            (trade.brokerage_charges ?? 0) +
+                              (trade.transaction_charges ?? 0) +
+                              (trade.gst ?? 0) +
+                              (trade.stt ?? 0) +
+                              (trade.sebi_charges ?? 0) +
+                              (trade.stamp_duty ?? 0) | number: '1.0-0'
+                          }}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
               }
             </tbody>
           </table>
