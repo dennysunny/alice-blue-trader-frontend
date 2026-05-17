@@ -24,7 +24,6 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    min-width: 140px;
 
     &--right {
         margin-left: auto;
@@ -71,7 +70,7 @@
     gap: 6px;
     background: var(--color-surface-2);
     padding: 4px;
-    border-radius: 10px;
+    border-radius: 999px;
     border: 1px solid var(--color-border);
 }
 
@@ -95,6 +94,7 @@
     &.active {
         background: var(--color-primary);
         color: #fff;
+        border-radius: 999px;
     }
 }
 
