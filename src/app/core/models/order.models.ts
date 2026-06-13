@@ -107,3 +107,14 @@ export interface Trade {
   orderTag?: string;
   algoId?: string;
 }
+
+export interface Charges {
+  brokerage: number;
+  brokerageCharges: number;
+  transactionCharges: number;
+  gst: number;
+  stt: number;
+  sebiCharges: number;
+  stampDuty: number;
+  totalCharges: number;
+}

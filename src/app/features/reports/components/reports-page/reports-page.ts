@@ -1,21 +1,23 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 
-import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
-import { ReportsService } from '../../../../core/services/reports.service';
-import { ReportsCalendarComponent } from '../reports-calendar/reports-calendar';
-import { ReportsChartsComponent } from '../reports-chart/reports-chart';
-import { ReportsLedgerComponent } from '../reports-ledger/reports-ledger';
-import { TradingRulesComponent } from '../trading-rules/trading-rules';
-import { DailySummaryComponent } from '../daily-summary/daily-summary';
 import {
   DayOutcome,
   DayReport,
   MonthSummary,
-  YearSummary,
   ReportTab,
+  YearSummary,
 } from '../../../../core/models/reports.model';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { ReportsService } from '../../../../core/services/reports.service';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
+import { ExcelImportService } from '../../services/excel-import';
+import { DailySummaryComponent } from '../daily-summary/daily-summary';
+import { ReportsCalendarComponent } from '../reports-calendar/reports-calendar';
+import { ReportsChartsComponent } from '../reports-chart/reports-chart';
+import { ReportsLedgerComponent } from '../reports-ledger/reports-ledger';
+import { TradingRulesComponent } from '../trading-rules/trading-rules';
 
 @Component({
   selector: 'app-reports-page',
@@ -34,6 +36,8 @@ import {
 })
 export class ReportsPage implements OnInit, OnDestroy {
   private readonly svc = inject(ReportsService);
+  private readonly excelImport = inject(ExcelImportService);
+  private readonly notify = inject(NotificationService);
 
   readonly ReportTab = ReportTab;
   readonly DayOutcome = DayOutcome;
@@ -79,6 +83,7 @@ export class ReportsPage implements OnInit, OnDestroy {
   monthReports = signal<DayReport[]>([]);
   selectedReport = signal<DayReport | null>(null);
   loading = signal(false);
+  selectedFileName = signal<string | null>(null);
 
   // ── Computed month summary ─────────────────────────────────────
   currentMonthSummary = computed<MonthSummary | null>(() => {
@@ -175,6 +180,24 @@ export class ReportsPage implements OnInit, OnDestroy {
       'December',
     ];
     return `${MONTHS[this.viewMonth()]} ${this.viewYear()}`;
+  }
+
+  onFileSelected(event: Event) {
+    const file = (<HTMLInputElement>event.target).files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.selectedFileName.set(file.name);
+
+    this.excelImport.importExcel(file).subscribe({
+      next: () => {
+        this.notify.success('Trades Imported');
+      },
+
+      error: console.error,
+    });
   }
 
   ngOnDestroy(): void {

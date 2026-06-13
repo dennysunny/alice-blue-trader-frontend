@@ -14,7 +14,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === ERRORS.HTTP_UNAUTHORIZED || error.status === ERRORS.HTTP_FORBIDDEN) {
+      if (
+        error.status === ERRORS.HTTP_UNAUTHORIZED ||
+        error.status === ERRORS.HTTP_FORBIDDEN ||
+        error.error === ERRORS.UNAUTHORIZED
+      ) {
         authService.logout();
         router.navigate([RouteSegment.AUTH, RouteSegment.LOGIN]);
       }

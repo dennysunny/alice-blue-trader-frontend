@@ -48,6 +48,43 @@ export class ReportsService {
     ).pipe(switchMap(() => this.recomputeDailyReport(trades[0].date)));
   }
 
+  syncTradesFromFile(trades: TradeRow[]): Observable<void> {
+    if (!trades.length) {
+      return of(void 0);
+    }
+
+    const duplicates = trades.filter(
+      (trade, index, arr) =>
+        arr.findIndex((t) => t.user_id === trade.user_id && t.order_id === trade.order_id) !==
+        index,
+    );
+
+    if (duplicates.length) {
+      const duplicateId = duplicates[0]?.order_id;
+      console.table(trades.filter((t) => t.order_id === duplicateId));
+      console.warn('Duplicate trades found:', duplicates);
+      return of(void 0);
+    }
+
+    const dates = [...new Set(trades.map((t) => t.date))];
+
+    return from(
+      this.db.from('trades').upsert(
+        trades.map((t) => ({
+          ...t,
+          user_id: this.userId,
+        })),
+        {
+          onConflict: 'user_id,order_id',
+        },
+      ),
+    ).pipe(
+      switchMap(() => forkJoin(dates.map((date) => this.recomputeDailyReport(date)))),
+
+      map(() => void 0),
+    );
+  }
+
   // ── Daily Reports ────────────────────────────────────────────────
 
   getDailyReport(date: string): Observable<DayReport | null> {

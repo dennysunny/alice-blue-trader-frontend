@@ -2,11 +2,27 @@
   <!-- ── Page Header ───────────────────────────────────────────────── -->
   <div class="reports-header">
     <div class="reports-header__left">
-      <h1 class="page-title">Reports</h1>
-      <div class="month-nav">
-        <button class="month-nav__btn" (click)="prevMonth()">‹</button>
-        <span class="month-nav__label">{{ monthLabel() }}</span>
-        <button class="month-nav__btn" (click)="nextMonth()">›</button>
+      <div class="title-section">
+        <h1 class="page-title">Reports</h1>
+        <div class="month-nav">
+          <button class="month-nav__btn" (click)="prevMonth()">‹</button>
+          <span class="month-nav__label">{{ monthLabel() }}</span>
+          <button class="month-nav__btn" (click)="nextMonth()">›</button>
+        </div>
+      </div>
+      <div class="import-card">
+        <label class="upload-btn">
+          <input type="file" accept=".xlsx" (change)="onFileSelected($event)" />
+
+          <span class="upload-icon">📊</span>
+
+          <div class="upload-content">
+            <div class="upload-title">{{ selectedFileName() || 'Import AliceBlue Tradebook' }}</div>
+            <div class="upload-subtitle">
+              {{ selectedFileName() ? 'Ready to import' : 'Upload .xlsx tradebook export' }}
+            </div>
+          </div>
+        </label>
       </div>
     </div>
 

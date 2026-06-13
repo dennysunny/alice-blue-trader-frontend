@@ -137,6 +137,32 @@ export interface CalendarDay {
   hasViolation: boolean;
 }
 
+export interface AliceBlueExecution {
+  symbol: string;
+  tradeTime: string;
+  orderId: string;
+  tradeId: string;
+  type: 'BUY' | 'SELL';
+  qty: number;
+  price: number;
+}
+
+export interface MatchedTrade {
+  symbol: string;
+  quantity: number;
+
+  buyPrice: number;
+  sellPrice: number;
+
+  entryTime: string;
+  exitTime: string;
+
+  pnl: number;
+
+  buyOrderId: string;
+  sellOrderId: string;
+}
+
 // ── Enums ─────────────────────────────────────────────────────────
 
 export enum DayOutcome {

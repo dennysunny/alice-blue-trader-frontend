@@ -6,7 +6,10 @@
 >
   <div class="orders-page__header">
     <h1 class="page-title">Orders</h1>
-    <button class="refresh-btn" (click)="loadOrders()" title="Refresh">↻ Refresh</button>
+    <div class="order-actions">
+      <app-sync-trade-button></app-sync-trade-button>
+      <button class="refresh-btn" (click)="loadOrders()" title="Refresh">↻ Refresh</button>
+    </div>
   </div>
 
   <div class="tabs">

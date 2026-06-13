@@ -25,6 +25,7 @@ import { Position } from '../../../../core/models/portfolio.models';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { PullToRefreshDirective } from '../../../../shared/directives/app-pull-to-refresh';
 import { OrderWebSocketService } from '../../../../core/services/order-websocket.service';
+import { SyncButtonComponent } from '../../../../shared/components/sync-trade-button/sync-trade-button';
 
 @Component({
   standalone: true,
@@ -37,6 +38,7 @@ import { OrderWebSocketService } from '../../../../core/services/order-websocket
     SpinnerComponent,
     BadgeComponent,
     PullToRefreshDirective,
+    SyncButtonComponent,
   ],
 })
 export class OrdersPageComponent implements OnInit, OnDestroy {
